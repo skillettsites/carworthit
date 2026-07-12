@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import SearchBox from '@/components/SearchBox';
+import JsonLd from '@/components/JsonLd';
+import { faqSchema, serviceSchema } from '@/lib/schema';
 import { REPORT_PRICE_USD } from '@/lib/constants';
 
 const price = `$${REPORT_PRICE_USD.toFixed(2)}`;
@@ -29,6 +31,7 @@ const faqs = [
 export default function Home() {
   return (
     <>
+      <JsonLd data={[serviceSchema(), faqSchema(faqs.map((f) => ({ q: f.q, a: f.a })))]} />
       {/* Hero (dark gradient, CCC-style) */}
       <section id="check" className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900">
         <div className="absolute inset-0 bg-dot-pattern-light opacity-[0.04]" />
