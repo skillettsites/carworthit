@@ -25,6 +25,19 @@ export function generateStaticParams() {
   return ARTICLES.map((a) => ({ slug: a.slug }));
 }
 
+// Related guides for internal linking (topical clustering). Prefer same content
+// type: "common problems" pages link to other problems pages, buying guides to guides.
+function relatedArticles(slug: string) {
+  const isProblems = slug.includes('common-problems');
+  return ARTICLES.filter((a) => a.slug !== slug)
+    .sort((a, b) => {
+      const aSame = a.slug.includes('common-problems') === isProblems ? 0 : 1;
+      const bSame = b.slug.includes('common-problems') === isProblems ? 0 : 1;
+      return aSame - bSame;
+    })
+    .slice(0, 4);
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const a = ARTICLES.find((x) => x.slug === slug);
@@ -79,6 +92,22 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
               </details>
             ))}
           </div>
+        </section>
+
+        <section className="mt-12 border-t border-border pt-8">
+          <h2 className="text-2xl font-bold mb-4">Related guides</h2>
+          <ul className="grid sm:grid-cols-2 gap-3">
+            {relatedArticles(slug).map((r) => (
+              <li key={r.slug}>
+                <Link
+                  href={`/blog/${r.slug}`}
+                  className="block rounded-xl border border-border bg-white p-4 hover:border-brand hover:shadow-sm transition-all font-semibold text-ink hover:text-brand"
+                >
+                  {r.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </section>
 
         <div className="mt-10">
