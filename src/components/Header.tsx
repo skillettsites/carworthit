@@ -4,9 +4,9 @@ import Link from 'next/link';
 
 const NAV = [
   { href: '/how-it-works', label: 'How it works' },
-  { href: '/sample-report', label: 'Sample report' },
-  { href: '/pricing', label: 'Pricing' },
+  { href: '/tools', label: 'Calculators' },
   { href: '/blog', label: 'Guides' },
+  { href: '/pricing', label: 'Pricing' },
 ];
 
 export default function Header() {
