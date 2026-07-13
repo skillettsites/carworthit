@@ -4,6 +4,7 @@ import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import JsonLd from '@/components/JsonLd';
+import GoogleAnalytics from '@/components/GoogleAnalytics';
 import { organizationSchema, websiteSchema } from '@/lib/schema';
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION } from '@/lib/constants';
 
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-bg text-ink">
         <JsonLd data={[organizationSchema(), websiteSchema()]} />
+        <GoogleAnalytics />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
