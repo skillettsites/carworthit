@@ -4,8 +4,27 @@ import Link from 'next/link';
 import articles from '@/content/articles.json';
 import JsonLd from '@/components/JsonLd';
 import SearchBox from '@/components/SearchBox';
+import StickyVinCta from '@/components/StickyVinCta';
 import { articleSchema, faqSchema, breadcrumbSchema } from '@/lib/schema';
 import { SITE_URL } from '@/lib/constants';
+
+// Compact inline CTA injected mid-article (right after the problems table).
+function InlineCta() {
+  return (
+    <div className="not-prose my-8 rounded-2xl border border-brand/30 bg-gradient-to-br from-blue-50 to-cyan-50 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+      <div className="flex-1">
+        <p className="font-bold text-ink">Checking a specific car?</p>
+        <p className="text-sm text-ink-2 mt-1">Run its VIN free to see title brands, salvage and flood history, an odometer check, and open recalls before you buy.</p>
+      </div>
+      <Link
+        href="/#check"
+        className="shrink-0 inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-cyan-400 px-5 py-3 font-bold text-white shadow-lg shadow-blue-500/25 transition-all hover:from-blue-600 hover:to-cyan-500"
+      >
+        Check a VIN free
+      </Link>
+    </div>
+  );
+}
 
 type Article = { slug: string; title: string; metaTitle: string; metaDescription: string; bodyHtml: string; faqs: { q: string; a: string }[] };
 const ARTICLES = articles as Article[];
@@ -54,6 +73,11 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
   const { slug } = await params;
   const a = ARTICLES.find((x) => x.slug === slug);
   if (!a) notFound();
+  // Inject the inline CTA right after the first table (the common-problems table).
+  const html = decode(a.bodyHtml);
+  const splitAt = html.indexOf('</table>');
+  const bodyBefore = splitAt !== -1 ? html.slice(0, splitAt + '</table>'.length) : html;
+  const bodyAfter = splitAt !== -1 ? html.slice(splitAt + '</table>'.length) : '';
   return (
     <>
       <JsonLd
@@ -67,12 +91,14 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
           ]),
         ]}
       />
-      <article className="container-x max-w-3xl py-12">
+      <article className="container-x max-w-3xl py-12 pb-28">
         <nav className="text-sm text-ink-2 mb-4">
           <Link href="/" className="hover:text-ink">Home</Link> / <Link href="/blog" className="hover:text-ink">Guides</Link>
         </nav>
         <h1 className="text-3xl md:text-4xl font-extrabold leading-tight mb-6">{a.title}</h1>
-        <div className="article-body" dangerouslySetInnerHTML={{ __html: decode(a.bodyHtml) }} />
+        <div className="article-body" dangerouslySetInnerHTML={{ __html: bodyBefore }} />
+        <InlineCta />
+        {bodyAfter && <div className="article-body" dangerouslySetInnerHTML={{ __html: bodyAfter }} />}
 
         <div className="mt-12 rounded-2xl border-2 border-brand bg-gradient-to-br from-blue-50 to-cyan-50 p-6 md:p-8 text-center">
           <h2 className="text-xl font-bold">Check any car before you buy</h2>
@@ -114,6 +140,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
           <Link href="/blog" className="text-brand font-semibold hover:underline">← All guides</Link>
         </div>
       </article>
+      <StickyVinCta />
     </>
   );
 }

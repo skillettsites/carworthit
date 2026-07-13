@@ -3,6 +3,7 @@ import Link from 'next/link';
 import FuelCostCalc from '@/components/calc/FuelCostCalc';
 import JsonLd from '@/components/JsonLd';
 import SearchBox from '@/components/SearchBox';
+import StickyVinCta from '@/components/StickyVinCta';
 import { faqSchema, breadcrumbSchema } from '@/lib/schema';
 import { SITE_URL } from '@/lib/constants';
 
@@ -31,7 +32,7 @@ export default function Page() {
           ]),
         ]}
       />
-      <div className="container-x max-w-3xl py-12">
+      <div className="container-x max-w-3xl py-12 pb-28">
         <h1 className="text-3xl md:text-4xl font-extrabold">Fuel Cost Calculator</h1>
         <p className="mt-3 text-lg text-ink-2 leading-relaxed">
           See what any car really costs to fuel. Enter how far you drive, the car&apos;s MPG, and your local gas price to
@@ -82,6 +83,7 @@ export default function Page() {
           <Link href="/depreciation-calculator" className="text-brand font-semibold hover:underline">Try the depreciation calculator →</Link>
         </div>
       </div>
+      <StickyVinCta />
     </>
   );
 }
