@@ -1,9 +1,9 @@
-// Combines the free (NHTSA + fueleconomy) and paid (VinAudit) layers into reports.
+// Combines the free (NHTSA + fueleconomy) and paid (Vehicle Databases) layers into reports.
 import type { FreeReport, FullReport, OwnershipCostEstimate, RunningCosts, VehicleSpecs } from './types';
 import { decodeVin, getRecalls } from './nhtsa';
 import { getRunningCosts } from './fueleconomy';
 import { getSafety } from './nhtsaSafety';
-import { getHistory } from './vinaudit';
+import { getHistory } from './vehicledatabases';
 
 // US national-average ownership costs (AAA-style). Fuel is the car's REAL EPA figure;
 // the rest are national averages, clearly labelled as estimates in the UI.

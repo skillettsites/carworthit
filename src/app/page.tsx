@@ -7,7 +7,7 @@ import { REPORT_PRICE_USD } from '@/lib/constants';
 const price = `$${REPORT_PRICE_USD.toFixed(2)}`;
 
 const reportIncludes = [
-  { icon: '📋', title: 'Title history & brands', body: 'Salvage, junk, flood, lemon and rebuilt brands from NMVTIS, the deal-breakers.' },
+  { icon: '📋', title: 'Title history & brands', body: 'Salvage, junk, flood, lemon and rebuilt title brands, the deal-breakers.' },
   { icon: '🔢', title: 'Odometer / mileage check', body: 'Every reported reading, flagged for rollback and clocking.' },
   { icon: '🚨', title: 'Theft & total-loss', body: 'Whether the car has been reported stolen or written off.' },
   { icon: '⚙️', title: 'Full specs & recalls', body: 'Decoded from the VIN, plus every open NHTSA safety recall.' },
@@ -22,8 +22,8 @@ const steps = [
 ];
 
 const faqs = [
-  { q: 'How is this different from Carfax?', a: `We pull the same core public records (title brands, salvage, odometer, theft) from NMVTIS that a paid report needs, and add the true cost to own that Carfax doesn’t show. Carfax charges $44.99; we charge ${price}.` },
-  { q: 'Where does the data come from?', a: 'Vehicle history is sourced from the National Motor Vehicle Title Information System (NMVTIS). Specs and recalls come from NHTSA, and running costs from the EPA’s fueleconomy.gov.' },
+  { q: 'How is this different from Carfax?', a: `We surface the core checks that decide a purchase (title brands, salvage, odometer, theft, salvage-auction damage) and add the true cost to own that Carfax doesn’t show, for a fraction of the price. Carfax charges $44.99; we charge ${price}. We are independent and not affiliated with Carfax.` },
+  { q: 'Where does the data come from?', a: 'Vehicle history (title brands, salvage, theft, total-loss and auction records) is sourced from a licensed US vehicle-data provider. Specs and recalls come from NHTSA, and running costs from the EPA’s fueleconomy.gov. CarWorthIt is not an approved NMVTIS data provider and our history report is not an official NMVTIS report.' },
   { q: 'Is the preview really free?', a: 'Yes. Specs, safety recalls and running costs are shown free for any valid VIN. You only pay if you want the full history and cost-to-own report.' },
   { q: 'Do I need an account?', a: 'No. Enter a VIN, see the preview, pay once if you want the full report. No subscription, no login.' },
 ];
@@ -56,7 +56,7 @@ export default function Home() {
               <SearchBox dark />
             </div>
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-300">
-              <span>✓ NMVTIS title data</span>
+              <span>✓ Title & salvage data</span>
               <span>✓ Instant free preview</span>
               <span>✓ One-time {price}, no subscription</span>
             </div>

@@ -51,7 +51,22 @@ export interface TitleBrand {
   date?: string;
 }
 
-// The paid data layer (NMVTIS via VinAudit)
+// One salvage/insurance auction appearance (Vehicle Databases `auction`).
+// This is our cheap stand-in for accident data: a car totalled in a wreck
+// almost always passes through a Copart/IAAI-style salvage auction.
+export interface AuctionRecord {
+  date?: string;
+  seller?: string;
+  location?: string;
+  odometer?: number;
+  primaryDamage?: string;
+  secondaryDamage?: string;
+  condition?: string;
+  salePrice?: number;
+  images?: number;
+}
+
+// The paid data layer (Vehicle Databases, a commercial aggregator, not official NMVTIS).
 export interface HistoryData {
   titles: TitleRecord[];
   brands: TitleBrand[];
@@ -59,9 +74,19 @@ export interface HistoryData {
   salvage: boolean;
   theft: boolean;
   totalLoss: boolean;
+  auctionRecords: AuctionRecord[];
+  soldAtSalvageAuction: boolean; // accident proxy: appeared at a salvage/insurance auction
   jsiRecords?: number; // junk/salvage/insurance records count
   ownersEstimate?: number;
   isSample: boolean; // true when using placeholder data (no key yet)
+}
+
+// One row of the KBB-style condition grid from Vehicle Databases market-value.
+export interface ValuationCondition {
+  condition: string; // Outstanding | Clean | Average | Rough
+  tradeIn: number;
+  privateParty: number;
+  dealerRetail: number;
 }
 
 export interface Valuation {
@@ -71,6 +96,7 @@ export interface Valuation {
   tradeIn: number;
   privateParty: number;
   dealerRetail: number;
+  conditions?: ValuationCondition[]; // full condition x price-type grid when live
   insuranceByAge: { band: string; annual: number }[];
   isSample: boolean;
 }

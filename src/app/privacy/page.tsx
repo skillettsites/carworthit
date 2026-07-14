@@ -21,8 +21,8 @@ export default function Page() {
 
       <h2>Third parties</h2>
       <p>
-        We use Stripe for payments and vehicle-data providers (including NMVTIS-approved sources, NHTSA and the EPA) to
-        compile reports. Each processes data under its own terms.
+        We use Stripe for payments and vehicle-data providers (a licensed commercial vehicle-data provider, NHTSA and the
+        EPA) to compile reports. Each processes data under its own terms.
       </p>
 
       <h2>Cookies</h2>

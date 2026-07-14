@@ -112,7 +112,7 @@ export default function ReportUnlock({
           )}
         </div>
         <div className="trust">
-          {cc ? <><span>🔒 Secure checkout</span><span>✓ NMVTIS data</span><span>⚡ Instant</span></> : <span>Paid reports launching soon · free preview available now</span>}
+          {cc ? <><span>🔒 Secure checkout</span><span>✓ Title & salvage data</span><span>⚡ Instant</span></> : <span>Paid reports launching soon · free preview available now</span>}
         </div>
       </div>
 
@@ -144,14 +144,14 @@ export default function ReportUnlock({
                 <p className="lede">Complete title &amp; history check for {vin}</p>
                 <div className="callout"><b>Why this matters:</b> A salvage or flood title can hide unsafe damage. A rolled-back odometer hides the real mileage.</div>
                 <div className="grid2" style={{ marginTop: 14 }}>
-                  <div className="feat"><span className="ic blue">⌕</span><span>Salvage check <span className="note">(NMVTIS)</span></span></div>
+                  <div className="feat"><span className="ic blue">⌕</span><span>Salvage check <span className="note">(title brands)</span></span></div>
                   <div className="feat"><span className="ic amber">⚠</span><span>Title brands <span className="note">(junk/flood)</span></span></div>
                   <div className="feat"><span className="ic blue">#</span><span>Odometer / rollback</span></div>
                   <div className="feat"><span className="ic blue">⌕</span><span>Theft check</span></div>
                   <div className="feat"><span className="ic amber">⚠</span><span>Total-loss check</span></div>
                   <div className="feat"><span className="ic blue">☺</span><span>Ownership history</span></div>
                 </div>
-                <BuyBox product="history" ctaRef={ctaRef} loading={loading} error={error} onBuy={checkout} anchor={<><b>80% cheaper</b> than Carfax ($44.99) · same NMVTIS data</>} />
+                <BuyBox product="history" ctaRef={ctaRef} loading={loading} error={error} onBuy={checkout} anchor={<><b>80% cheaper</b> than Carfax ($44.99)</>} />
               </>
             )}
 

@@ -25,7 +25,7 @@ const tiers = [
     price: `$${PRODUCTS.history.price}`,
     highlight: false,
     badge: 'Popular',
-    features: ['Full NMVTIS title history', 'Salvage, junk & flood brands', 'Theft & total-loss checks', 'Every odometer reading', 'Ownership timeline'],
+    features: ['Full title & salvage history', 'Salvage, junk & flood brands', 'Theft & total-loss checks', 'Salvage-auction damage records', 'Every odometer reading', 'Ownership timeline'],
   },
   {
     name: PRODUCTS.bundle.name,

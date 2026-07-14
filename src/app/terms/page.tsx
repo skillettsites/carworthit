@@ -20,7 +20,7 @@ export default function Page() {
       <p>
         Reports are for informational purposes only and are compiled from data supplied by third parties. We do not
         warrant that the information is complete, accurate, or current, and a report is not a substitute for an
-        independent inspection. See our <a href="/disclaimer">data &amp; NMVTIS disclaimer</a>.
+        independent inspection. See our <a href="/disclaimer">data &amp; disclaimer</a> page.
       </p>
 
       <h2>Payments &amp; refunds</h2>

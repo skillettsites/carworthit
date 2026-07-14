@@ -3,30 +3,31 @@ import Article from '@/components/Article';
 import { SITE_NAME } from '@/lib/constants';
 
 export const metadata: Metadata = {
-  title: 'Data sources & NMVTIS disclaimer',
-  description: 'How CarWorthIt sources vehicle data, and the NMVTIS consumer disclaimer.',
+  title: 'Data sources & disclaimer',
+  description: 'How CarWorthIt sources vehicle data, and our consumer disclaimer.',
 };
 
 export default function Page() {
   return (
-    <Article title="Data sources & NMVTIS disclaimer">
-      <h2>Vehicle history data (NMVTIS)</h2>
+    <Article title="Data sources & disclaimer">
+      <h2>Vehicle history data</h2>
       <p>
-        Vehicle history information in our reports is provided in part by the <strong>National Motor Vehicle Title
-        Information System (NMVTIS)</strong>, an electronic system operated under the U.S. Department of Justice that
-        contains information supplied by state motor vehicle titling agencies, insurance carriers, and the
-        salvage/recycling industry.
+        Vehicle history information in our reports (title records, salvage and title brands, odometer readings, theft,
+        total-loss and salvage-auction records) is supplied by a <strong>licensed commercial vehicle-data provider</strong>
+        that aggregates records from state titling agencies, insurance and salvage sources, and auction data.
       </p>
       <p>
-        NMVTIS data may not reflect all title branding, odometer, or total-loss events applicable to a vehicle, and the
-        absence of a record is not a guarantee that an event did not occur. Not all jurisdictions and data providers
-        report to NMVTIS on the same schedule. A report from {SITE_NAME} does not constitute a mechanical inspection,
-        an appraisal, or a guarantee of a vehicle&apos;s condition, safety, or value. We strongly recommend an
-        independent, in-person inspection before purchase.
-      </p>
-      <p>
-        The official NMVTIS consumer site and the list of approved data providers are available at{' '}
+        <strong>{SITE_NAME} is not an approved NMVTIS data provider, and our reports are not official NMVTIS vehicle
+        history reports.</strong> If you want an official National Motor Vehicle Title Information System (NMVTIS) report,
+        you can buy one from an approved provider listed by the U.S. Department of Justice at{' '}
         <a href="https://vehiclehistory.bja.ojp.gov/" target="_blank" rel="noopener noreferrer">vehiclehistory.bja.ojp.gov</a>.
+      </p>
+      <p>
+        Our history data may not reflect all title branding, odometer, accident, or total-loss events applicable to a
+        vehicle, and the absence of a record is not a guarantee that an event did not occur. We do not provide Carfax or
+        AutoCheck style comprehensive accident or dealer-service histories. A report from {SITE_NAME} does not constitute
+        a mechanical inspection, an appraisal, or a guarantee of a vehicle&apos;s condition, safety, or value. We strongly
+        recommend an independent, in-person inspection before purchase.
       </p>
 
       <h2>Specifications & recalls</h2>

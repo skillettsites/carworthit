@@ -33,16 +33,17 @@ export default function Footer() {
           <ul className="space-y-2 text-ink-2">
             <li><Link href="/terms" className="hover:text-ink">Terms</Link></li>
             <li><Link href="/privacy" className="hover:text-ink">Privacy</Link></li>
-            <li><Link href="/disclaimer" className="hover:text-ink">Data & NMVTIS disclaimer</Link></li>
+            <li><Link href="/disclaimer" className="hover:text-ink">Data & disclaimer</Link></li>
           </ul>
         </div>
       </div>
       <div className="border-t border-border">
         <div className="container-x py-6 text-xs text-ink-2 leading-relaxed">
           <p className="mb-2">
-            © {year} {SITE_NAME}. Vehicle history data provided in part through the National Motor Vehicle Title
-            Information System (NMVTIS). {SITE_NAME} is not affiliated with Carfax or AutoCheck. Reports are for
-            informational purposes and do not guarantee a vehicle&apos;s condition.
+            © {year} {SITE_NAME}. Vehicle history data is supplied by a licensed commercial vehicle-data provider.
+            {SITE_NAME} is not affiliated with Carfax or AutoCheck and is not an approved NMVTIS data provider; reports
+            are not official NMVTIS reports. Reports are for informational purposes and do not guarantee a
+            vehicle&apos;s condition.
           </p>
         </div>
       </div>

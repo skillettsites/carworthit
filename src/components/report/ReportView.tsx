@@ -118,6 +118,33 @@ export default function ReportView({
               <Stat label="Private party" value={usd(valuation.privateParty)} />
               <Stat label="Dealer retail" value={usd(valuation.dealerRetail)} />
             </div>
+            {valuation.conditions && valuation.conditions.length > 0 && (
+              <div className="mt-6">
+                <div className="font-semibold text-sm mb-2">Value by condition</div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm border border-border rounded-xl overflow-hidden">
+                    <thead>
+                      <tr className="bg-surface text-ink-2">
+                        <th className="text-left font-medium px-3 py-2">Condition</th>
+                        <th className="text-right font-medium px-3 py-2">Trade-in</th>
+                        <th className="text-right font-medium px-3 py-2">Private party</th>
+                        <th className="text-right font-medium px-3 py-2">Dealer retail</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {valuation.conditions.map((c) => (
+                        <tr key={c.condition} className="border-t border-border">
+                          <td className="px-3 py-2 font-medium">{c.condition}</td>
+                          <td className="px-3 py-2 text-right">{usd(c.tradeIn)}</td>
+                          <td className="px-3 py-2 text-right">{usd(c.privateParty)}</td>
+                          <td className="px-3 py-2 text-right">{usd(c.dealerRetail)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
             <div className="mt-6">
               <div className="font-semibold text-sm mb-2">Estimated insurance by age</div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -135,7 +162,7 @@ export default function ReportView({
         {/* Purchased: History */}
         {unlockedHistory && history && (
           <Section title="Title history, brands & mileage" accent="blue" id="history">
-            {history.isSample && <SampleNote text="Sample data shown. Live NMVTIS records activate when the data feed is connected." />}
+            {history.isSample && <SampleNote text="Sample data shown. Live title & salvage records activate when the data feed is connected." />}
             <div className="grid grid-cols-3 gap-3 mb-6">
               <Flag ok={!history.salvage} label="Salvage" />
               <Flag ok={!history.theft} label="Theft" />
@@ -149,6 +176,36 @@ export default function ReportView({
                 </ul>
               </div>
             )}
+            {/* Auction appearances = our accident/damage proxy (a totalled car
+                almost always goes through a salvage auction). */}
+            <div className="mb-6">
+              <div className="font-semibold text-sm mb-2">Salvage &amp; auction history</div>
+              {history.auctionRecords.length > 0 ? (
+                <>
+                  <div className="mb-3 rounded-lg bg-bad/5 border border-bad/30 p-3 text-sm text-bad font-medium">
+                    ⚠ This VIN appeared at a salvage/insurance auction, a strong sign it was wrecked or written off.
+                  </div>
+                  <ul className="space-y-3">
+                    {history.auctionRecords.map((a, i) => (
+                      <li key={i} className="rounded-lg border border-border p-3 text-sm">
+                        <div className="flex justify-between gap-4">
+                          <span className="font-medium">{a.seller || 'Auction'}{a.location ? ` · ${a.location}` : ''}</span>
+                          <span className="text-ink-2">{a.date}</span>
+                        </div>
+                        <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-ink-2">
+                          {a.primaryDamage && <span>Damage: <span className="text-ink font-medium">{a.primaryDamage}{a.secondaryDamage ? `, ${a.secondaryDamage}` : ''}</span></span>}
+                          {a.condition && <span>Condition: <span className="text-ink font-medium">{a.condition}</span></span>}
+                          {a.odometer ? <span>Odometer: <span className="text-ink font-medium">{num(a.odometer)} mi</span></span> : null}
+                          {a.salePrice ? <span>Sold: <span className="text-ink font-medium">{usd(a.salePrice)}</span></span> : null}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <p className="text-good font-medium text-sm">✓ No salvage or insurance-auction records found for this VIN.</p>
+              )}
+            </div>
             <div className="mb-6">
               <div className="font-semibold text-sm mb-2">Reported mileage</div>
               {history.odometer.length ? (
@@ -157,13 +214,15 @@ export default function ReportView({
                 </ul>
               ) : <p className="text-ink-2 text-sm">No odometer readings on record.</p>}
             </div>
-            <div>
-              <div className="font-semibold text-sm mb-2">Title & ownership records</div>
-              <ul className="space-y-1 text-sm">
-                {history.titles.map((t, i) => (<li key={i} className="flex justify-between border-b border-border py-1.5"><span>{t.type}{t.state ? ` · ${t.state}` : ''}</span><span className="text-ink-2">{t.date}</span></li>))}
-              </ul>
-              {history.ownersEstimate && <p className="mt-3 text-sm text-ink-2">Estimated owners: <span className="font-medium text-ink">{history.ownersEstimate}</span></p>}
-            </div>
+            {history.titles.length > 0 && (
+              <div>
+                <div className="font-semibold text-sm mb-2">Title & ownership records</div>
+                <ul className="space-y-1 text-sm">
+                  {history.titles.map((t, i) => (<li key={i} className="flex justify-between border-b border-border py-1.5"><span>{t.type}{t.state ? ` · ${t.state}` : ''}</span><span className="text-ink-2">{t.date}</span></li>))}
+                </ul>
+                {history.ownersEstimate && <p className="mt-3 text-sm text-ink-2">Estimated owners: <span className="font-medium text-ink">{history.ownersEstimate}</span></p>}
+              </div>
+            )}
           </Section>
         )}
 
@@ -229,9 +288,9 @@ export default function ReportView({
               <LockedFlag label="Odometer" />
             </div>
             <p className="text-ink-2 text-sm mb-5">
-              Unlock the NMVTIS title history for this VIN: salvage, junk, flood and rebuilt brands, the theft and
-              total-loss checks, every reported odometer reading (to catch rollback), and the ownership timeline. This is
-              the part that catches a bad car.
+              Unlock the full title history for this VIN: salvage, junk, flood and rebuilt brands, the theft and
+              total-loss checks, salvage-auction damage records, every reported odometer reading (to catch rollback), and
+              the ownership timeline. This is the part that catches a bad car.
             </p>
             <BuyTrigger product="history" className={btnBlue}>Unlock full history · $9.99 <span>→</span></BuyTrigger>
           </Section>

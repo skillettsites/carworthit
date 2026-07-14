@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { buildFreeReport } from '@/lib/report';
-import { getHistory } from '@/lib/vinaudit';
-import { getValuation } from '@/lib/valuation';
+import { getHistory, getValuation } from '@/lib/vehicledatabases';
 import ReportView from '@/components/report/ReportView';
 
 export const metadata: Metadata = {

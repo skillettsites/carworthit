@@ -1,6 +1,6 @@
 // Site-wide configuration for CarWorthIt (US market)
 // Pre-data-provider launch: the site is fully live with the FREE preview working,
-// but paid checkout + plate lookup are held back until the VinAudit/ClearVin key
+// but paid checkout + plate lookup are held back until the Vehicle Databases key
 // is in. Flip both to true (and redeploy) to go fully live.
 export const CHECKOUT_ENABLED = false; // buy buttons show "Coming soon" while false
 export const PLATE_ENABLED = false; // plate->VIN needs the paid API; VIN-only while false
@@ -27,6 +27,6 @@ export const isProductId = (v: string): v is ProductId => v === 'valuation' || v
 
 export const SUPPORT_EMAIL = 'support@carworthit.com';
 
-// Whether the paid VinAudit data is live. Flips automatically when the key is set.
-export const HAS_VINAUDIT = !!process.env.VINAUDIT_KEY;
+// Whether the paid Vehicle Databases data is live. Flips automatically when the key is set.
+export const HAS_VDB = !!process.env.VEHICLEDATABASES_KEY;
 export const HAS_STRIPE = !!process.env.STRIPE_SECRET_KEY;

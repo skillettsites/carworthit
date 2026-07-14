@@ -28,19 +28,20 @@ export default function HowItWorks() {
           recall, and pull the EPA&apos;s real running costs, all free, no signup.
         </Step>
         <Step n="3" title={`Unlock the full report, ${price}`}>
-          One payment reveals the NMVTIS title history: salvage, junk, flood and rebuilt brands, the theft and total-loss
-          checks, every reported odometer reading (to catch rollback), the ownership timeline, and the true 5-year cost
-          to own. This is the part that stops you buying a bad car.
+          One payment reveals the full title history: salvage, junk, flood and rebuilt brands, the theft and total-loss
+          checks, salvage-auction damage records, every reported odometer reading (to catch rollback), the ownership
+          timeline, and the true 5-year cost to own. This is the part that stops you buying a bad car.
         </Step>
       </ol>
 
       <div className="mt-12 rounded-2xl border border-border bg-surface p-6">
         <h2 className="text-xl font-bold">Where the data comes from</h2>
         <ul className="mt-3 space-y-2 text-ink-2 text-sm leading-relaxed">
-          <li><strong className="text-ink">NMVTIS</strong>, the US Dept. of Justice National Motor Vehicle Title Information System, for title brands, salvage, junk and odometer records.</li>
+          <li><strong className="text-ink">A licensed vehicle-data provider</strong>, for title brands, salvage, junk, theft, odometer and salvage-auction records.</li>
           <li><strong className="text-ink">NHTSA</strong>, for VIN decoding and open safety recalls.</li>
           <li><strong className="text-ink">EPA fueleconomy.gov</strong>, for official MPG and annual fuel cost.</li>
         </ul>
+        <p className="mt-3 text-xs text-ink-2">CarWorthIt is not an approved NMVTIS data provider; our history report is not an official NMVTIS report.</p>
       </div>
 
       <div className="mt-12">
