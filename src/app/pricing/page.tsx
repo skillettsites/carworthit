@@ -4,7 +4,7 @@ import { PRODUCTS } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Pricing',
-  description: 'Free preview for any car. Valuation $4.99, full history report $9.99, or both in a bundle for $12.99. No subscription.',
+  description: 'Free preview for any car. Valuation $2.99, full history report $6.99, or both in a bundle for $8.99. No subscription.',
 };
 
 const tiers = [
@@ -33,7 +33,7 @@ const tiers = [
     strike: `$${PRODUCTS.bundle.strike}`,
     highlight: true,
     badge: 'Best value',
-    features: ['Everything in History', 'Everything in Valuation', 'One report, one payment', 'Save $2 vs buying separately'],
+    features: ['Everything in History', 'Everything in Valuation', 'One report, one payment', 'Save $1 vs buying separately'],
   },
 ];
 

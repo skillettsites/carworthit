@@ -10,17 +10,17 @@ export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://carworthit.
 export const SITE_TAGLINE = 'Know what a used car is really worth, before you buy.';
 export const GA_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-GKFGSRW0KL';
 export const SITE_DESCRIPTION =
-  'Run any US car by its VIN and get the title history, salvage/theft checks, real mileage, recalls, running costs and what it should cost to own, the essential checks Carfax charges $44.99 for, for $9.99.';
+  'Run any US car by its VIN and get the title history, salvage/theft checks, real mileage, recalls, running costs and what it should cost to own, the essential checks Carfax charges $44.99 for, for $6.99.';
 
-export const REPORT_PRICE_USD = 9.99;
-export const REPORT_PRICE_CENTS = 999;
+export const REPORT_PRICE_USD = 6.99;
+export const REPORT_PRICE_CENTS = 699;
 export const CURRENCY = 'usd';
 
 // Three products, mirroring CarCostCheck (valuation / history / bundle).
 export const PRODUCTS = {
-  valuation: { id: 'valuation', name: 'Valuation', price: 4.99, cents: 499, strike: null },
-  history: { id: 'history', name: 'History Report', price: 9.99, cents: 999, strike: null },
-  bundle: { id: 'bundle', name: 'Complete Bundle', price: 12.99, cents: 1299, strike: 14.98 },
+  valuation: { id: 'valuation', name: 'Valuation', price: 2.99, cents: 299, strike: null },
+  history: { id: 'history', name: 'History Report', price: 6.99, cents: 699, strike: null },
+  bundle: { id: 'bundle', name: 'Complete Bundle', price: 8.99, cents: 899, strike: 9.98 },
 } as const;
 export type ProductId = keyof typeof PRODUCTS;
 export const isProductId = (v: string): v is ProductId => v === 'valuation' || v === 'history' || v === 'bundle';

@@ -297,7 +297,7 @@ export default function ReportView({
               total-loss checks, salvage-auction damage records, every reported odometer reading (to catch rollback), and
               the ownership timeline. This is the part that catches a bad car.
             </p>
-            <BuyTrigger product="history" className={btnBlue}>Unlock full history · $9.99 <span>→</span></BuyTrigger>
+            <BuyTrigger product="history" className={btnBlue}>Unlock full history · $6.99 <span>→</span></BuyTrigger>
           </Section>
         )}
 
@@ -344,7 +344,7 @@ export default function ReportView({
               dealer-retail values, estimated insurance by age and a depreciation outlook.
             </p>
             <div className="text-center">
-              <BuyTrigger product="valuation" className={btnGreen}>Get exact valuation · $4.99 <span>→</span></BuyTrigger>
+              <BuyTrigger product="valuation" className={btnGreen}>Get exact valuation · $2.99 <span>→</span></BuyTrigger>
             </div>
           </Section>
         )}
@@ -372,10 +372,10 @@ export default function ReportView({
             <h3 className="text-2xl font-bold">Get the complete picture</h3>
             <p className="mt-2 text-ink-2 max-w-xl mx-auto">
               The full title history <span className="font-semibold">and</span> the exact valuation in one report, for
-              $2 less than buying them separately.
+              $1 less than buying them separately.
             </p>
             <div className="mt-6">
-              <BuyTrigger product="bundle" className={btnBlue}>Get complete report · $12.99 <span>→</span></BuyTrigger>
+              <BuyTrigger product="bundle" className={btnBlue}>Get complete report · $8.99 <span>→</span></BuyTrigger>
             </div>
           </div>
         )}

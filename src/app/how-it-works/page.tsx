@@ -4,7 +4,7 @@ import { REPORT_PRICE_USD } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'How it works',
-  description: 'Enter a VIN, see a free preview of specs, recalls and running costs, then unlock the full history and cost-to-own report for $9.99.',
+  description: 'Enter a VIN, see a free preview of specs, recalls and running costs, then unlock the full history and cost-to-own report for $6.99.',
 };
 
 const price = `$${REPORT_PRICE_USD.toFixed(2)}`;

@@ -71,7 +71,7 @@ export default function ReportUnlock({
         <div className="grid">
           {showBundle && (
             <div className="card featured" onClick={() => openModal('bundle')} style={{ cursor: cc ? 'pointer' : 'default' }}>
-              <span className="ribbon">★ Best value · Save $2</span>
+              <span className="ribbon">★ Best value · Save $1</span>
               <div className="row">
                 <div className="title">Complete Bundle</div>
                 <div><span className="price">${PRODUCTS.bundle.price}</span><span className="strike">${PRODUCTS.bundle.strike}</span></div>
@@ -173,7 +173,7 @@ export default function ReportUnlock({
                   <div className="feat"><span className="ic blue">#</span><span>Odometer / rollback</span></div>
                   <div className="feat"><span className="ic blue">☺</span><span>Ownership history</span></div>
                 </div>
-                <BuyBox product="bundle" ctaRef={ctaRef} loading={loading} error={error} onBuy={checkout} blue anchor={<>Save $2 vs buying separately</>} />
+                <BuyBox product="bundle" ctaRef={ctaRef} loading={loading} error={error} onBuy={checkout} blue anchor={<>Save $1 vs buying separately</>} />
               </>
             )}
           </div>
