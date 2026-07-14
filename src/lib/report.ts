@@ -31,29 +31,37 @@ function estimateOwnership(specs: VehicleSpecs, running: RunningCosts | null): O
   };
 }
 
-// Rough free value range for the "how much is it worth" teaser (exact value is paid).
-function estimateFreeValue(year: string): { low: number; high: number } | null {
-  if (!year) return null;
-  const age = Math.max(0, new Date().getUTCFullYear() - Number(year));
-  const mean = Math.max(1500, Math.round(30000 * Math.pow(0.86, age)));
-  return { low: Math.round(mean * 0.82), high: Math.round(mean * 1.12) };
-}
-
 export async function buildFreeReport(vin: string): Promise<FreeReport | null> {
   const specs = await decodeVin(vin);
   if (!specs) return null;
   const [running, recalls, safety] = await Promise.all([
-    getRunningCosts(specs.year, specs.make, specs.model),
+    getRunningCosts(specs.year, specs.make, specs.model, {
+      displacementL: specs.displacementL,
+      cylinders: specs.cylinders,
+      driveType: specs.driveType,
+    }),
     getRecalls(specs.make, specs.model, specs.year),
     getSafety(specs.year, specs.make, specs.model),
   ]);
+  // Backfill the engine from EPA when the VIN decoder didn't return it (e.g. the
+  // 2006 Corvette, where vPIC has no engine but EPA knows it's a 6.0L V8).
+  if (!specs.engine && running && (running.displ || running.cylinders)) {
+    specs.engine = [
+      running.cylinders && `${running.cylinders}-cyl`,
+      running.displ && `${Number(running.displ).toFixed(1)}L`,
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
   return {
     specs,
     runningCosts: running,
     recalls,
     safety,
     ownership: estimateOwnership(specs, running),
-    freeValue: estimateFreeValue(specs.year),
+    // No fabricated free value: a spec-only guess is unreliable (it under-valued
+    // collector cars by ~40%), so the exact market value is the paid product.
+    freeValue: null,
     fetchedAt: new Date().toISOString(),
   };
 }

@@ -54,21 +54,44 @@ function numOrUndef(v: unknown): number | undefined {
   return n > 0 ? n : undefined;
 }
 
-async function vdb(path: string): Promise<Record<string, unknown> | null> {
+type VdbResponse = { status: number; body: Record<string, unknown> | null };
+
+// A "hard" error means the data service failed us (auth, quota, rate-limit,
+// outage) — as opposed to a normal 400 "record not found" (a clean vehicle).
+// On a hard error for a PAID lookup we must return unavailable, never fake data.
+function isHardError(status: number): boolean {
+  return status === 401 || status === 403 || status === 429 || status >= 500;
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+async function vdb(path: string): Promise<VdbResponse | null> {
   const key = process.env.VEHICLEDATABASES_KEY;
   if (!key) return null;
-  try {
-    // Note: clean vehicles return HTTP 400 with a JSON error body on the
-    // stolen/auction endpoints, so we read the JSON regardless of res.ok and
-    // interpret the `status` field instead of throwing on non-200.
-    const res = await fetch(`${BASE}${path}`, {
-      headers: { 'x-AuthKey': key },
-      next: { revalidate: CACHE_SECONDS },
-    });
-    return (await res.json().catch(() => null)) as Record<string, unknown> | null;
-  } catch {
-    return null;
+  // Retry only transient failures (429 / 5xx). Quota/auth (403/401) won't recover.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      // Clean vehicles return HTTP 400 with a JSON error body on stolen/auction,
+      // so we read the JSON regardless of res.ok and interpret status ourselves.
+      const res = await fetch(`${BASE}${path}`, {
+        headers: { 'x-AuthKey': key },
+        next: { revalidate: CACHE_SECONDS },
+      });
+      if ((res.status === 429 || res.status >= 500) && attempt < 2) {
+        await sleep(300 * (attempt + 1));
+        continue;
+      }
+      const body = (await res.json().catch(() => null)) as Record<string, unknown> | null;
+      return { status: res.status, body };
+    } catch {
+      if (attempt < 2) {
+        await sleep(300 * (attempt + 1));
+        continue;
+      }
+      return null; // network failure after retries
+    }
   }
+  return null;
 }
 
 function insuranceByAge(base: number) {
@@ -110,13 +133,20 @@ function buildValuation(conditions: ValuationCondition[], isSample: boolean): Va
   };
 }
 
-export async function getValuation(vin: string, year: string): Promise<Valuation> {
+// Returns a real Valuation, or null when it's genuinely unavailable (data
+// service failed, or no value on record for this VIN). Returns SAMPLE data ONLY
+// when no key is configured (local dev) — a paying customer must never be shown
+// fabricated numbers.
+export async function getValuation(vin: string, year: string): Promise<Valuation | null> {
   const clean = vin.trim().toUpperCase();
-  const data = ENABLED.marketValue ? await vdb(`/market-value/v2/${clean}`) : null;
-  const rows = ((data?.data as Record<string, unknown> | undefined)?.market_value as
+  if (!process.env.VEHICLEDATABASES_KEY) return sampleValuation(clean, year); // dev only
+  if (!ENABLED.marketValue) return null;
+  const res = await vdb(`/market-value/v2/${clean}`);
+  if (!res || isHardError(res.status)) return null; // service failure -> unavailable, NOT sample
+  const rows = ((res.body?.data as Record<string, unknown> | undefined)?.market_value as
     | { market_value_data?: Array<{ 'market value'?: MarketValueRow[] }> }
     | undefined)?.market_value_data?.[0]?.['market value'];
-  if (!Array.isArray(rows) || rows.length === 0) return sampleValuation(clean, year);
+  if (!Array.isArray(rows) || rows.length === 0) return null; // no value on record for this VIN
   const conditions: ValuationCondition[] = rows
     .map((r) => ({
       condition: String(r.Condition ?? '').trim(),
@@ -125,7 +155,7 @@ export async function getValuation(vin: string, year: string): Promise<Valuation
       dealerRetail: money(r['Dealer Retail']),
     }))
     .filter((c) => c.tradeIn || c.privateParty || c.dealerRetail);
-  if (conditions.length === 0) return sampleValuation(clean, year);
+  if (conditions.length === 0) return null;
   return buildValuation(conditions, false);
 }
 
@@ -159,26 +189,37 @@ function extractAuctionRecords(data: unknown): AuctionRecord[] {
   });
 }
 
-export async function getHistory(vin: string): Promise<HistoryData> {
+// Returns real history, or null when the data service failed for every call
+// (quota/outage). Sample data ONLY when no key is configured (local dev).
+export async function getHistory(vin: string): Promise<HistoryData | null> {
   const clean = vin.trim().toUpperCase();
-  if (!process.env.VEHICLEDATABASES_KEY) return sampleHistory(clean);
+  if (!process.env.VEHICLEDATABASES_KEY) return sampleHistory(clean); // dev only
 
+  const SKIP = 'skip' as const;
   const [title, stolen, auction, sales] = await Promise.all([
-    ENABLED.titleCheck ? vdb(`/title-check/${clean}`) : Promise.resolve(null),
-    ENABLED.stolenCheck ? vdb(`/stolen-check/${clean}`) : Promise.resolve(null),
-    ENABLED.auction ? vdb(`/auction/${clean}`) : Promise.resolve(null),
-    ENABLED.salesHistory ? vdb(`/sales-history/${clean}`) : Promise.resolve(null),
+    ENABLED.titleCheck ? vdb(`/title-check/${clean}`) : Promise.resolve(SKIP),
+    ENABLED.stolenCheck ? vdb(`/stolen-check/${clean}`) : Promise.resolve(SKIP),
+    ENABLED.auction ? vdb(`/auction/${clean}`) : Promise.resolve(SKIP),
+    ENABLED.salesHistory ? vdb(`/sales-history/${clean}`) : Promise.resolve(SKIP),
   ]);
 
-  // If not a single endpoint returned a real response, treat the key as broken
-  // and fall back to sample data rather than showing a falsely "all clear" car.
-  const anyReal = [title, stolen, auction, sales].some(
-    (x) => x && (x.status === 'success' || x.status === 'error'),
-  );
-  if (!anyReal) return sampleHistory(clean);
+  // A normal 400 "record not found" (clean car) is fine; a hard error (403 quota,
+  // 429, 5xx, network) is not. If EVERY attempted call hard-failed, the data is
+  // unavailable -> return null so the paid report shows an honest error, NOT a
+  // falsely "all clear" (or sample) car.
+  const attempted = [title, stolen, auction, sales].filter((r): r is VdbResponse | null => r !== SKIP);
+  const anyOk = attempted.some((r) => r && !isHardError(r.status));
+  if (!anyOk) return null;
+
+  const bodyOf = (r: VdbResponse | 'skip' | null): Record<string, unknown> | null =>
+    r !== SKIP && r && !isHardError(r.status) ? r.body : null;
+  const titleBody = bodyOf(title);
+  const stolenBody = bodyOf(stolen);
+  const auctionBody = bodyOf(auction);
+  const salesBody = bodyOf(sales);
 
   // Title / salvage
-  const titleData = (title?.data as { salvage?: boolean; salvage_details?: unknown[] } | undefined) ?? undefined;
+  const titleData = (titleBody?.data as { salvage?: boolean; salvage_details?: unknown[] } | undefined) ?? undefined;
   const salvage = titleData?.salvage === true;
   const salvageDetails = Array.isArray(titleData?.salvage_details) ? titleData!.salvage_details : [];
   const brands: TitleBrand[] = salvageDetails.map((raw) => {
@@ -192,15 +233,15 @@ export async function getHistory(vin: string): Promise<HistoryData> {
   if (salvage && brands.length === 0) brands.push({ label: 'Salvage' });
 
   // Theft: a clean car returns status:"error" ("Record(s) were not found").
-  const theft = stolen?.status === 'success';
+  const theft = stolenBody?.status === 'success';
 
   // Auction (accident proxy)
-  const auctionRecords = auction?.status === 'success' ? extractAuctionRecords(auction.data) : [];
+  const auctionRecords = auctionBody?.status === 'success' ? extractAuctionRecords(auctionBody.data) : [];
   const soldAtSalvageAuction = auctionRecords.length > 0;
 
   // Ownership timeline + odometer come from sales-history (5th service, off by
   // default). Auction rows also carry odometer readings, so use those too.
-  const salesRecords = sales?.status === 'success' ? extractAuctionRecords(sales.data) : [];
+  const salesRecords = salesBody?.status === 'success' ? extractAuctionRecords(salesBody.data) : [];
   const titles: TitleRecord[] = salesRecords.map((s) => ({
     state: s.location || '',
     date: s.date || '',
@@ -237,7 +278,7 @@ function hash(s: string): number {
   return h;
 }
 
-function sampleValuation(vin: string, year: string): Valuation {
+export function sampleValuation(vin: string, year: string): Valuation {
   const age = Math.max(0, new Date().getUTCFullYear() - (Number(year) || 2015));
   const h = hash(vin);
   const newPrice = 27000 + (h % 12000);
@@ -259,7 +300,7 @@ function sampleValuation(vin: string, year: string): Valuation {
 
 const US_STATES = ['CA', 'TX', 'FL', 'NY', 'PA', 'OH', 'GA', 'NC', 'MI', 'IL', 'AZ', 'WA', 'CO', 'TN'];
 
-function sampleHistory(vin: string): HistoryData {
+export function sampleHistory(vin: string): HistoryData {
   const h = hash(vin);
   const branded = h % 5 === 0; // ~20% of sample VINs carry a brand, to exercise the UI
   const owners = 1 + (h % 3);

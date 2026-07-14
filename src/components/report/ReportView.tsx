@@ -63,13 +63,13 @@ export default function ReportView({
   free, history, valuation, unlockedHistory, unlockedValuation, vin,
 }: {
   free: FreeReport;
-  history?: HistoryData;
-  valuation?: Valuation;
+  history?: HistoryData | null;
+  valuation?: Valuation | null;
   unlockedHistory: boolean;
   unlockedValuation: boolean;
   vin: string;
 }) {
-  const { specs, runningCosts: rc, recalls, ownership, safety, freeValue } = free;
+  const { specs, runningCosts: rc, recalls, ownership, safety } = free;
   const title = [specs.year, specs.make, specs.model].filter(Boolean).join(' ') || 'Vehicle';
   const fullyUnlocked = unlockedHistory && unlockedValuation;
   const safetyHasStars = !!(safety && (safety.overall || safety.frontal || safety.side || safety.rollover));
@@ -159,6 +159,9 @@ export default function ReportView({
           </Section>
         )}
 
+        {/* Purchased but the data service was unavailable — never show fake data to a payer */}
+        {unlockedValuation && !valuation && <Unavailable title="Valuation" what="market valuation" />}
+
         {/* Purchased: History */}
         {unlockedHistory && history && (
           <Section title="Title history, brands & mileage" accent="blue" id="history">
@@ -225,6 +228,8 @@ export default function ReportView({
             )}
           </Section>
         )}
+
+        {unlockedHistory && !history && <Unavailable title="Title & history" what="history records" />}
 
         {/* Free: Vehicle details */}
         <Section title="Vehicle details">
@@ -300,9 +305,13 @@ export default function ReportView({
         <Section title="Running costs">
           {rc ? (
             <div className="grid sm:grid-cols-3 gap-4">
-              <Stat label="Combined MPG" value={rc.mpgCombined ? String(rc.mpgCombined) : '—'} />
-              <Stat label="City / Highway" value={`${num(rc.mpgCity)} / ${num(rc.mpgHighway)}`} />
-              <Stat label="Est. fuel / year" value={rc.annualFuelCost ? usd(rc.annualFuelCost) : '—'} accent />
+              <Stat label={rc.isElectric ? 'Combined MPGe' : 'Combined MPG'} value={rc.mpgCombined ? String(rc.mpgCombined) : '—'} />
+              {rc.isElectric ? (
+                <Stat label="EPA range" value={rc.rangeMiles ? `${num(rc.rangeMiles)} mi` : '—'} />
+              ) : (
+                <Stat label="City / Highway" value={`${num(rc.mpgCity)} / ${num(rc.mpgHighway)}`} />
+              )}
+              <Stat label={rc.isElectric ? 'Est. electricity / year' : 'Est. fuel / year'} value={rc.annualFuelCost ? usd(rc.annualFuelCost) : '—'} accent />
             </div>
           ) : <p className="text-ink-2 text-sm">EPA running-cost data isn&apos;t available for this exact model.</p>}
           {rc?.source && <p className="mt-4 text-xs text-ink-2">Source: EPA fueleconomy.gov (15,000 mi/yr).</p>}
@@ -328,15 +337,11 @@ export default function ReportView({
         )}
 
         {/* Inline LOCKED: How much is this car worth (opens valuation modal) */}
-        {!unlockedValuation && freeValue && (
+        {!unlockedValuation && (
           <Section title="How much is this car worth?" accent="green">
-            <div className="text-center mb-4">
-              <div className="text-sm text-ink-2">Rough estimated range</div>
-              <div className="text-3xl font-extrabold text-good mt-1">{usd(freeValue.low)} – {usd(freeValue.high)}</div>
-            </div>
             <p className="text-ink-2 text-sm mb-5 text-center">
-              Get the exact market value for this VIN, plus trade-in, private-party and dealer-retail values, insurance
-              by age and depreciation.
+              Get the exact market value for this VIN across condition tiers, plus trade-in, private-party and
+              dealer-retail values, estimated insurance by age and a depreciation outlook.
             </p>
             <div className="text-center">
               <BuyTrigger product="valuation" className={btnGreen}>Get exact valuation · $4.99 <span>→</span></BuyTrigger>
@@ -381,4 +386,20 @@ export default function ReportView({
 
 function SampleNote({ text }: { text: string }) {
   return <div className="mb-4 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs px-3 py-2">{text}</div>;
+}
+
+// Shown when a PAID section couldn't be retrieved (data service down / no record).
+// We never substitute sample data on a paid report, so we say so honestly.
+function Unavailable({ title, what }: { title: string; what: string }) {
+  return (
+    <section className="rounded-2xl border border-warn/40 bg-warn/5 p-6 md:p-8">
+      <h2 className="text-xl font-bold mb-2">{title} temporarily unavailable</h2>
+      <p className="text-sm text-ink-2 leading-relaxed">
+        We couldn&apos;t retrieve the {what} for this VIN right now. Your purchase is recorded and you have not lost it.
+        Please try refreshing in a few minutes, or email{' '}
+        <a href="mailto:support@carworthit.com" className="text-brand hover:underline">support@carworthit.com</a>{' '}
+        with your VIN and we&apos;ll send the full report or refund this section.
+      </p>
+    </section>
+  );
 }

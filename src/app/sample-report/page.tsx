@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { buildFreeReport } from '@/lib/report';
-import { getHistory, getValuation } from '@/lib/vehicledatabases';
+import { sampleHistory, sampleValuation } from '@/lib/vehicledatabases';
 import ReportView from '@/components/report/ReportView';
 
 export const metadata: Metadata = {
@@ -18,7 +18,9 @@ export default async function SampleReport() {
   if (!free) {
     return <div className="container-x py-16 max-w-3xl"><p className="text-ink-2">Sample temporarily unavailable, please try a live VIN.</p></div>;
   }
-  const [history, valuation] = await Promise.all([getHistory(DEMO_VIN), getValuation(DEMO_VIN, free.specs.year)]);
+  // Demo page: always show a populated sample (never spends a credit or hits the API).
+  const history = sampleHistory(DEMO_VIN);
+  const valuation = sampleValuation(DEMO_VIN, free.specs.year);
 
   return (
     <>

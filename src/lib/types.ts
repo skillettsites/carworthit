@@ -22,10 +22,14 @@ export interface VehicleSpecs {
 export interface RunningCosts {
   mpgCity?: number;
   mpgHighway?: number;
-  mpgCombined?: number;
+  mpgCombined?: number; // MPG, or MPGe for electric vehicles
   annualFuelCost?: number; // USD, per fueleconomy.gov (15k mi/yr)
   fuelType?: string;
   co2?: number;
+  isElectric?: boolean;
+  rangeMiles?: number; // total EPA range for EVs
+  displ?: string; // engine displacement (L) — used to backfill specs.engine
+  cylinders?: string;
   source: 'fueleconomy.gov' | 'estimated';
 }
 
@@ -134,5 +138,5 @@ export interface FreeReport {
 }
 
 export interface FullReport extends FreeReport {
-  history: HistoryData;
+  history: HistoryData | null;
 }

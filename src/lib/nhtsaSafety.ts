@@ -24,12 +24,31 @@ const star = (v?: string) => {
 };
 const yesNo = (v?: string) => (v ? /standard|optional|yes/i.test(v) : false);
 
-export async function getSafety(year: string, make: string, model: string): Promise<SafetyRatings | null> {
-  if (!year || !make || !model) return null;
-  const list = (await getJson(
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+// NHTSA's safety model names don't always match the vPIC model (e.g. "F-150"
+// vPIC vs "F-150 4X4" NCAP). If the exact query returns nothing, list the make's
+// rated models for that year and fuzzy-match.
+async function resolveVehicleId(year: string, make: string, model: string): Promise<number | undefined> {
+  const exact = (await getJson(
     `${BASE}/modelyear/${encodeURIComponent(year)}/make/${encodeURIComponent(make)}/model/${encodeURIComponent(model)}`,
   )) as { Results?: Array<{ VehicleId?: number }> } | null;
-  const id = list?.Results?.[0]?.VehicleId;
+  if (exact?.Results?.[0]?.VehicleId) return exact.Results[0].VehicleId;
+  const models = (await getJson(
+    `${BASE}/modelyear/${encodeURIComponent(year)}/make/${encodeURIComponent(make)}`,
+  )) as { Results?: Array<{ Model?: string }> } | null;
+  const target = norm(model);
+  const hit = models?.Results?.find((m) => m.Model && (norm(m.Model).includes(target) || target.includes(norm(m.Model))));
+  if (!hit?.Model) return undefined;
+  const list = (await getJson(
+    `${BASE}/modelyear/${encodeURIComponent(year)}/make/${encodeURIComponent(make)}/model/${encodeURIComponent(hit.Model)}`,
+  )) as { Results?: Array<{ VehicleId?: number }> } | null;
+  return list?.Results?.[0]?.VehicleId;
+}
+
+export async function getSafety(year: string, make: string, model: string): Promise<SafetyRatings | null> {
+  if (!year || !make || !model) return null;
+  const id = await resolveVehicleId(year, make, model);
   if (!id) return null;
   const detail = (await getJson(`${BASE}/VehicleId/${id}`)) as { Results?: Array<Record<string, string>> } | null;
   const r = detail?.Results?.[0];
