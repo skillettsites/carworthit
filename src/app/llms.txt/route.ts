@@ -28,6 +28,7 @@ export function GET() {
     '## Key pages',
     `- [Home and VIN check](${SITE_URL})`,
     `- [How it works](${SITE_URL}/how-it-works)`,
+    `- [About CarWorthIt](${SITE_URL}/about)`,
     `- [Pricing](${SITE_URL}/pricing)`,
     `- [Sample report](${SITE_URL}/sample-report)`,
     `- [All guides](${SITE_URL}/blog)`,
