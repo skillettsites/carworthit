@@ -139,7 +139,12 @@ function buildValuation(conditions: ValuationCondition[], isSample: boolean): Va
 // fabricated numbers.
 export async function getValuation(vin: string, year: string): Promise<Valuation | null> {
   const clean = vin.trim().toUpperCase();
-  if (!process.env.VEHICLEDATABASES_KEY) return sampleValuation(clean, year); // dev only
+  // Sample data is LOCAL DEV ONLY. The old guard was key-presence alone, which
+  // silently turned production into a sample-data server when the key was
+  // missing from Vercel. Never fabricate a number on a live host.
+  if (!process.env.VEHICLEDATABASES_KEY) {
+    return process.env.NODE_ENV === 'production' ? null : sampleValuation(clean, year);
+  }
   if (!ENABLED.marketValue) return null;
   const res = await vdb(`/market-value/v2/${clean}`);
   if (!res || isHardError(res.status)) return null; // service failure -> unavailable, NOT sample
@@ -193,7 +198,12 @@ function extractAuctionRecords(data: unknown): AuctionRecord[] {
 // (quota/outage). Sample data ONLY when no key is configured (local dev).
 export async function getHistory(vin: string): Promise<HistoryData | null> {
   const clean = vin.trim().toUpperCase();
-  if (!process.env.VEHICLEDATABASES_KEY) return sampleHistory(clean); // dev only
+  // Sample data is LOCAL DEV ONLY, same reasoning as getValuation above. A
+  // fabricated "clean" or fabricated salvage brand on a live report is worse
+  // than showing nothing.
+  if (!process.env.VEHICLEDATABASES_KEY) {
+    return process.env.NODE_ENV === 'production' ? null : sampleHistory(clean);
+  }
 
   const SKIP = 'skip' as const;
   const [title, stolen, auction, sales] = await Promise.all([

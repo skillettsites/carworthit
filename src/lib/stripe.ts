@@ -28,7 +28,10 @@ export async function createCheckout(vin: string, product: ProductId, origin: st
 
 // Returns which product was paid for ('valuation' | 'history' | 'bundle'), or null.
 export async function getPaidProduct(vin: string, token: string): Promise<ProductId | null> {
-  if (token.startsWith('dev-') && !HAS_STRIPE) {
+  // Dev-only unlock. Gated on NODE_ENV, NOT on HAS_STRIPE: production had no
+  // STRIPE_SECRET_KEY set in Vercel, which made HAS_STRIPE false and left this
+  // open to anyone on the live site via ?paid=dev-bundle.
+  if (token.startsWith('dev-') && !HAS_STRIPE && process.env.NODE_ENV !== 'production') {
     const p = token.slice(4);
     return isProductId(p) ? p : null;
   }
