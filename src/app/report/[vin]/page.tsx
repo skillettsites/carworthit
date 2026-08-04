@@ -1,6 +1,8 @@
 import Link from 'next/link';
+import { headers } from 'next/headers';
 import type { Metadata } from 'next';
 import { isValidVin } from '@/lib/nhtsa';
+import { logLookup } from '@/lib/db';
 import { buildFreeReport } from '@/lib/report';
 import { getHistory, getValuation } from '@/lib/vehicledatabases';
 import { getPaidProduct } from '@/lib/stripe';
@@ -10,7 +12,7 @@ import SearchBox from '@/components/SearchBox';
 export const dynamic = 'force-dynamic';
 
 type Params = Promise<{ vin: string }>;
-type Search = Promise<{ paid?: string }>;
+type Search = Promise<{ paid?: string; utm_source?: string }>;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { vin } = await params;
@@ -45,6 +47,26 @@ export default async function ReportPage({ params, searchParams }: { params: Par
       </Shell>
     );
   }
+
+  // Log the lookup. Not awaited: a logging outage must never slow or break a
+  // report. The aggregate this builds (year/make/model/state) is the only
+  // proprietary dataset this site will ever have and it cannot be backfilled.
+  const h = await headers();
+  const ua = h.get('user-agent') || '';
+  logLookup({
+    vin,
+    year: free.specs.year,
+    make: free.specs.make,
+    model: free.specs.model,
+    trim: free.specs.trim,
+    bodyClass: free.specs.bodyClass,
+    fuelType: free.specs.fuelType,
+    state: h.get('x-vercel-ip-country-region'),
+    country: h.get('x-vercel-ip-country'),
+    referrer: h.get('referer'),
+    utmSource: typeof sp.utm_source === 'string' ? sp.utm_source : null,
+    isBot: /bot|crawl|spider|headless|preview|monitor/i.test(ua),
+  });
 
   const paidToken = typeof sp.paid === 'string' ? sp.paid : '';
   const product = paidToken ? await getPaidProduct(vin, paidToken) : null;

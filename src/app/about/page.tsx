@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import VinForm from '@/components/VinForm';
-import { SITE_NAME, SITE_URL, PRODUCTS } from '@/lib/constants';
+import { SITE_NAME, SITE_URL, PRODUCTS, ANALYST, MEDIA_EMAIL } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'About CarWorthIt',
@@ -39,12 +39,42 @@ export default function About() {
       <section className="mt-12">
         <h2 className="text-2xl font-bold">Why we built it</h2>
         <p className="mt-3 text-ink-2 leading-relaxed">
-          A single history report from the household names can cost ${'44.99'} or more, and a buyer often needs to check
-          several cars before choosing one. That adds up fast. We think the essential facts about a car, is the title
-          clean, has the odometer been rolled back, was it ever a total loss, what is it actually worth, should not cost
-          more than the tank of gas you spend driving to view it. Our history report starts at ${PRODUCTS.history.price},
-          and a free preview of specs, recalls and running costs is available for any valid VIN with no signup.
+          A single history report from the household names costs more than most buyers expect, and a buyer often needs
+          to check several cars before choosing one. That adds up fast. We think the essential facts about a car, is the
+          title clean, has the odometer been rolled back, was it ever a total loss, what is it actually worth, should not
+          cost more than the tank of gas you spend driving to view it. Our history report starts at $
+          {PRODUCTS.history.price}, and a free preview of specs, recalls and running costs is available for any valid VIN
+          with no signup.
         </p>
+      </section>
+
+      <section className="mt-12">
+        <h2 className="text-2xl font-bold">Who writes this</h2>
+        <p className="mt-3 text-ink-2 leading-relaxed">
+          <strong className="text-ink">{ANALYST.name}</strong>, {ANALYST.role}. {ANALYST.bio}
+        </p>
+        <p className="mt-3 text-ink-2 leading-relaxed">
+          Press and data enquiries:{' '}
+          <a href={`mailto:${MEDIA_EMAIL}`} className="text-brand font-medium hover:underline">
+            {MEDIA_EMAIL}
+          </a>
+          . See our{' '}
+          <Link href="/methodology" className="text-brand font-medium hover:underline">
+            methodology
+          </Link>{' '}
+          for exactly which dataset produces which number.
+        </p>
+      </section>
+
+      <section className="mt-12">
+        <h2 className="text-2xl font-bold">Editorial policy</h2>
+        <ul className="mt-3 space-y-2 text-ink-2 leading-relaxed list-disc pl-5">
+          <li>We do not quote competitors&apos; prices. They change them without notice and a stale figure is worse than no figure, so we rank them instead and tell you to check their site.</li>
+          <li>We never invent a number. If a dataset does not cover something, the report says so rather than estimating and presenting it as fact.</li>
+          <li>Estimates are labelled as estimates, with the assumptions behind them stated on the <Link href="/methodology" className="text-brand font-medium hover:underline">methodology</Link> page.</li>
+          <li>We correct errors rather than quietly deleting them. If you find one, email <a href={`mailto:${MEDIA_EMAIL}`} className="text-brand font-medium hover:underline">{MEDIA_EMAIL}</a>.</li>
+          <li>Any paid link is labelled a paid link, in the text, not behind a tooltip.</li>
+        </ul>
       </section>
 
       <section className="mt-12">

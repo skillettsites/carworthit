@@ -13,7 +13,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'sw
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME}, Used Car VIN Check, History & Cost to Own`,
+    default: `Price My Car by VIN, US Car Value Check | ${SITE_NAME}`,
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     type: 'website',
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: `${SITE_NAME}, Used Car VIN Check, History & Cost to Own`,
+    title: `Price My Car by VIN, US Car Value Check | ${SITE_NAME}`,
     description: SITE_DESCRIPTION,
   },
   alternates: { canonical: SITE_URL },

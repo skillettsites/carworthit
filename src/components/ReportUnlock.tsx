@@ -151,7 +151,7 @@ export default function ReportUnlock({
                   <div className="feat"><span className="ic amber">⚠</span><span>Total-loss check</span></div>
                   <div className="feat"><span className="ic blue">☺</span><span>Ownership history</span></div>
                 </div>
-                <BuyBox product="history" ctaRef={ctaRef} loading={loading} error={error} onBuy={checkout} anchor={<><b>80% cheaper</b> than Carfax ($44.99)</>} />
+                <BuyBox product="history" ctaRef={ctaRef} loading={loading} error={error} onBuy={checkout} anchor={<>A fraction of what <b>Carfax</b> charges</>} />
               </>
             )}
 

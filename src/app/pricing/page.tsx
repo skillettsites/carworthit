@@ -68,7 +68,7 @@ export default function Pricing() {
         ))}
       </div>
 
-      <p className="mt-6 text-center text-sm text-ink-2">Compare: Carfax charges $44.99 and AutoCheck $24.99 for a single history report.</p>
+      <p className="mt-6 text-center text-sm text-ink-2">Carfax is the priciest of the mainstream single-report options and AutoCheck sits below it. We don&apos;t quote their figures here because they change them without notice, so check their sites for today&apos;s price.</p>
 
       <div className="mt-12 max-w-2xl mx-auto">
         <SearchBox />

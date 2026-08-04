@@ -22,7 +22,7 @@ const steps = [
 ];
 
 const faqs = [
-  { q: 'How is this different from Carfax?', a: `We surface the core checks that decide a purchase (title brands, salvage, odometer, theft, salvage-auction damage) and add the true cost to own that Carfax doesn’t show, for a fraction of the price. Carfax charges $44.99; we charge ${price}. We are independent and not affiliated with Carfax.` },
+  { q: 'How is this different from Carfax?', a: `We surface the core checks that decide a purchase (title brands, salvage, odometer, theft, salvage-auction damage) and add the true cost to own that Carfax doesn’t show, for a fraction of the price. Carfax is the most expensive of the mainstream reports; we charge ${price}. Check their site for their current pricing, it changes. We are independent and not affiliated with Carfax.` },
   { q: 'Where does the data come from?', a: 'Vehicle history (title brands, salvage, theft, total-loss and auction records) is sourced from a licensed US vehicle-data provider. Specs and recalls come from NHTSA, and running costs from the EPA’s fueleconomy.gov. CarWorthIt is not an approved NMVTIS data provider and our history report is not an official NMVTIS report.' },
   { q: 'Is the preview really free?', a: 'Yes. Specs, safety recalls and running costs are shown free for any valid VIN. You only pay if you want the full history and cost-to-own report.' },
   { q: 'Do I need an account?', a: 'No. Enter a VIN, see the preview, pay once if you want the full report. No subscription, no login.' },
@@ -39,18 +39,18 @@ export default function Home() {
         <div className="container-x relative py-16 md:py-24">
           <div className="max-w-3xl">
             <span className="inline-block rounded-full border border-blue-400/30 bg-blue-500/10 text-blue-200 text-xs font-semibold px-3 py-1 mb-5">
-              The essential checks Carfax charges $44.99 for, {price}
+              The essential checks, without the big-brand price tag, {price}
             </span>
             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight text-white">
-              Know what a used car is{' '}
+              Price your car by VIN, and see if it&apos;s{' '}
               <span className="bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent">
-                really worth
-              </span>{' '}
-              before you buy.
+                really worth it
+              </span>
+              .
             </h1>
             <p className="mt-5 text-lg text-slate-300 leading-relaxed">
-              Run any US car by its VIN for the title history, salvage and theft checks, real mileage, recalls,
-              running costs and true 5-year cost to own. Free preview in seconds.
+              Enter a VIN for a free report: specs, open recalls, safety ratings and running costs, no signup. Add the
+              title and salvage history or a market valuation priced on your car&apos;s actual mileage and location.
             </p>
             <div className="mt-8">
               <SearchBox dark />
@@ -86,14 +86,19 @@ export default function Home() {
       <section className="bg-surface border-y border-border">
         <div className="container-x py-16">
           <h2 className="text-3xl font-bold text-center">Same essential checks. A fraction of the price.</h2>
+          {/* Competitor prices are named nowhere on this site. Carfax and
+              AutoCheck change theirs without notice, and a stale number in a
+              comparison is the fastest way to lose the trust the comparison
+              was built to earn. Rank them, don't price them. */}
           <div className="mt-10 grid gap-5 md:grid-cols-3 max-w-4xl mx-auto">
-            <PriceCard name="Carfax" price="$44.99" muted />
-            <PriceCard name="AutoCheck" price="$24.99" muted />
-            <PriceCard name="CarWorthIt" price={price} highlight />
+            <PriceCard name="Carfax" price="$$$" note="Most expensive" muted />
+            <PriceCard name="AutoCheck" price="$$" note="Mid-priced" muted />
+            <PriceCard name="CarWorthIt" price={price} note="Flat, one-off" highlight />
           </div>
           <p className="mt-6 text-center text-sm text-ink-2 max-w-2xl mx-auto">
             We focus on the checks that actually decide a purchase (title brands, salvage, odometer, theft) plus the
-            cost-to-own the others leave out.
+            cost-to-own the others leave out. We don&apos;t quote our competitors&apos; prices because they change them
+            without notice, so check their sites for what they charge today.
           </p>
         </div>
       </section>
@@ -144,7 +149,7 @@ export default function Home() {
   );
 }
 
-function PriceCard({ name, price, highlight, muted }: { name: string; price: string; highlight?: boolean; muted?: boolean }) {
+function PriceCard({ name, price, note, highlight, muted }: { name: string; price: string; note?: string; highlight?: boolean; muted?: boolean }) {
   return (
     <div
       className={`rounded-2xl border p-8 text-center ${
@@ -153,6 +158,7 @@ function PriceCard({ name, price, highlight, muted }: { name: string; price: str
     >
       <div className={`font-semibold ${muted ? 'text-ink-2' : 'text-ink'}`}>{name}</div>
       <div className={`mt-2 text-4xl font-extrabold ${highlight ? 'text-brand' : 'text-ink'}`}>{price}</div>
+      {note && <div className="mt-1 text-xs text-ink-2">{note}</div>}
       {highlight && <div className="mt-2 text-xs font-semibold text-good">Best value</div>}
     </div>
   );
