@@ -5,19 +5,22 @@
 // dependency would buy nothing and cost bundle size.
 //
 // Two rules this file must never break:
-//   1. It runs server-side only. SUPABASE_SERVICE_ROLE_KEY bypasses RLS and
-//      must never reach the browser, so nothing here may be imported into a
-//      'use client' component.
+//   1. It uses the ANON key, never the service-role key. The Supabase project
+//      is shared with CarCostCheck and others, and the service-role key
+//      bypasses RLS on every table in it, including CCC's revenue tables.
+//      CarWorthIt is a public repo and must not hold a credential whose blast
+//      radius reaches other sites. The anon key can only INSERT into the three
+//      cwi_* tables (see migration 002) and can reach nothing else.
 //   2. It can never break or slow a page. Every call swallows its own errors
 //      and is not awaited by the render path. A logging outage must not take
 //      the report down.
 import { createHash } from 'crypto';
 
 const URL_BASE = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const VIN_SALT = process.env.CWI_VIN_SALT || '';
 
-export const HAS_DB = !!(URL_BASE && SERVICE_KEY);
+export const HAS_DB = !!(URL_BASE && ANON_KEY);
 
 /**
  * Salted SHA-256 of the VIN. We never store the VIN itself.
@@ -38,8 +41,8 @@ async function insert(table: string, row: Record<string, unknown>): Promise<void
     await fetch(`${URL_BASE}/rest/v1/${table}`, {
       method: 'POST',
       headers: {
-        apikey: SERVICE_KEY,
-        Authorization: `Bearer ${SERVICE_KEY}`,
+        apikey: ANON_KEY,
+        Authorization: `Bearer ${ANON_KEY}`,
         'Content-Type': 'application/json',
         // return=minimal so PostgREST doesn't send the row back; we don't
         // want it and it's a wasted round trip.
