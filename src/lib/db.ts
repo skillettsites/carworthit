@@ -46,7 +46,14 @@ async function insert(table: string, row: Record<string, unknown>): Promise<void
         'Content-Type': 'application/json',
         // return=minimal so PostgREST doesn't send the row back; we don't
         // want it and it's a wasted round trip.
-        Prefer: 'return=minimal,resolution=ignore-duplicates',
+        //
+        // Do NOT add resolution=ignore-duplicates here. It makes PostgREST
+        // treat the request as an upsert, which needs UPDATE permission as
+        // well as INSERT, and our anon policies grant INSERT only. The result
+        // is a silent 401 "new row violates row-level security policy" on
+        // every write. A duplicate (a repeat lead email) simply fails and is
+        // swallowed, which is the behaviour we want anyway.
+        Prefer: 'return=minimal',
       },
       body: JSON.stringify(row),
       cache: 'no-store',
