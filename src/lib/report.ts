@@ -1,9 +1,8 @@
-// Combines the free (NHTSA + fueleconomy) and paid (Vehicle Databases) layers into reports.
-import type { FreeReport, FullReport, OwnershipCostEstimate, RunningCosts, VehicleSpecs } from './types';
+// Combines the free NHTSA + EPA layers into the base report that every tier shows.
+import type { FreeReport, OwnershipCostEstimate, RunningCosts, VehicleSpecs } from './types';
 import { decodeVin, getRecalls } from './nhtsa';
 import { getRunningCosts } from './fueleconomy';
 import { getSafety } from './nhtsaSafety';
-import { getHistory } from './vehicledatabases';
 
 // US national-average ownership costs (AAA-style). Fuel is the car's REAL EPA figure;
 // the rest are national averages, clearly labelled as estimates in the UI.
@@ -48,7 +47,7 @@ export async function buildFreeReport(vin: string): Promise<FreeReport | null> {
   if (!specs.engine && running && (running.displ || running.cylinders)) {
     specs.engine = [
       running.cylinders && `${running.cylinders}-cyl`,
-      running.displ && `${Number(running.displ).toFixed(1)}L`,
+      running.displ && Number.isFinite(Number(running.displ)) && `${Number(running.displ).toFixed(1)}L`,
     ]
       .filter(Boolean)
       .join(' ');
@@ -59,16 +58,10 @@ export async function buildFreeReport(vin: string): Promise<FreeReport | null> {
     recalls,
     safety,
     ownership: estimateOwnership(specs, running),
-    // No fabricated free value: a spec-only guess is unreliable (it under-valued
-    // collector cars by ~40%), so the exact market value is the paid product.
-    freeValue: null,
     fetchedAt: new Date().toISOString(),
   };
 }
 
-export async function buildFullReport(vin: string): Promise<FullReport | null> {
-  const free = await buildFreeReport(vin);
-  if (!free) return null;
-  const history = await getHistory(vin);
-  return { ...free, history };
-}
+// buildFullReport is gone with the history product. The paid layer is now
+// assembled in worthit-report.ts from OneAuto's Carketa valuation and VIN
+// Decode Plus factory data.

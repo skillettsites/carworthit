@@ -2,11 +2,14 @@ import Link from 'next/link';
 import { headers } from 'next/headers';
 import type { Metadata } from 'next';
 import { isValidVin } from '@/lib/nhtsa';
-import { logLookup } from '@/lib/db';
 import { buildFreeReport } from '@/lib/report';
-import { getHistory, getValuation } from '@/lib/vehicledatabases';
-import { getPaidProduct } from '@/lib/stripe';
-import ReportView from '@/components/report/ReportView';
+import { getMarketValuation, getFactoryData } from '@/lib/apis/oneauto';
+import { getPaidSession } from '@/lib/stripe';
+import { buildVerdict } from '@/lib/worthit-report';
+import { logLookup, logPurchase, getCachedReport, cacheReport } from '@/lib/db';
+import type { FactoryData, MarketValuation } from '@/lib/types';
+import WorthItReport from '@/components/report/WorthItReport';
+import ValuationUnlock from '@/components/report/ValuationUnlock';
 import SearchBox from '@/components/SearchBox';
 
 export const dynamic = 'force-dynamic';
@@ -16,7 +19,12 @@ type Search = Promise<{ paid?: string; utm_source?: string }>;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { vin } = await params;
-  return { title: `Vehicle report, VIN ${decodeURIComponent(vin).toUpperCase()}`, robots: { index: false } };
+  return {
+    title: `Vehicle report, VIN ${decodeURIComponent(vin).toUpperCase()}`,
+    // Never indexed. These are per-vehicle pages with no search value, they
+    // would bloat the crawl budget, and a paid report should not be public.
+    robots: { index: false, follow: false },
+  };
 }
 
 export default async function ReportPage({ params, searchParams }: { params: Params; searchParams: Search }) {
@@ -40,8 +48,8 @@ export default async function ReportPage({ params, searchParams }: { params: Par
       <Shell>
         <h1 className="text-2xl font-bold">We couldn&apos;t decode that VIN</h1>
         <p className="mt-2 text-ink-2">
-          The VIN <span className="font-mono">{vin}</span> didn&apos;t return a vehicle from the NHTSA database. Check the
-          characters and try again.
+          The VIN <span className="font-mono">{vin}</span> didn&apos;t return a vehicle from the NHTSA database. Check
+          the characters and try again.
         </p>
         <div className="mt-6 max-w-xl"><SearchBox /></div>
       </Shell>
@@ -49,8 +57,8 @@ export default async function ReportPage({ params, searchParams }: { params: Par
   }
 
   // Log the lookup. Not awaited: a logging outage must never slow or break a
-  // report. The aggregate this builds (year/make/model/state) is the only
-  // proprietary dataset this site will ever have and it cannot be backfilled.
+  // report. The aggregate this builds is the only proprietary dataset this
+  // site will ever have and it cannot be backfilled.
   const h = await headers();
   const ua = h.get('user-agent') || '';
   logLookup({
@@ -68,25 +76,66 @@ export default async function ReportPage({ params, searchParams }: { params: Par
     isBot: /bot|crawl|spider|headless|preview|monitor/i.test(ua),
   });
 
-  const paidToken = typeof sp.paid === 'string' ? sp.paid : '';
-  const product = paidToken ? await getPaidProduct(vin, paidToken) : null;
-  const unlockedHistory = product === 'history' || product === 'bundle';
-  const unlockedValuation = product === 'valuation' || product === 'bundle';
+  // Paid data is fetched only for a verified, paid Stripe session, and only
+  // for the VIN that session was created against.
+  const paid = typeof sp.paid === 'string' ? await getPaidSession(vin, sp.paid) : null;
 
-  const [history, valuation] = await Promise.all([
-    unlockedHistory ? getHistory(vin) : Promise.resolve(undefined),
-    unlockedValuation ? getValuation(vin, free.specs.year) : Promise.resolve(undefined),
-  ]);
+  let valuation: MarketValuation | null = null;
+  let factory: FactoryData | null = null;
+  if (paid) {
+    const token = sp.paid as string;
+
+    // Serve a previously purchased report from cache. Without this, every
+    // revisit re-calls the paid APIs: a buyer who bookmarks their report and
+    // checks it weekly while car shopping costs more than the report sold for.
+    const cached = await getCachedReport<{ valuation: MarketValuation | null; factory: FactoryData | null }>(token);
+    if (cached) {
+      valuation = cached.valuation ?? null;
+      factory = cached.factory ?? null;
+    } else {
+      const wantsFactory = paid.product === 'worthit';
+      [valuation, factory] = await Promise.all([
+        getMarketValuation(vin, paid.ctx.zip, paid.ctx.mileage),
+        wantsFactory ? getFactoryData(vin) : Promise.resolve(null),
+      ]);
+      // Only cache a result worth serving again. Caching a failed lookup would
+      // permanently freeze a paying customer's report as empty.
+      if (valuation) cacheReport(token, vin, paid.product, { valuation, factory });
+    }
+
+    logPurchase({
+      sessionId: sp.paid as string,
+      product: paid.product,
+      amountCents: paid.product === 'worthit' ? 699 : 299,
+      email: paid.email,
+      vin,
+      state: h.get('x-vercel-ip-country-region'),
+    });
+  }
+
+  const verdict = buildVerdict(paid?.ctx.asking ?? null, valuation);
 
   return (
-    <ReportView
-      free={free}
-      history={history}
-      valuation={valuation}
-      unlockedHistory={unlockedHistory}
-      unlockedValuation={unlockedValuation}
-      vin={vin}
-    />
+    <>
+      {paid && !valuation && (
+        <div className="bg-warn/10 border-b border-warn/30 py-3 text-center text-sm">
+          <strong className="text-warn">We couldn&apos;t price this one.</strong> No comparable cars were listed near
+          ZIP {paid.ctx.zip}. Email{' '}
+          <a href="mailto:support@carworthit.com" className="font-semibold underline">support@carworthit.com</a> and
+          we&apos;ll refund you.
+        </div>
+      )}
+      <WorthItReport
+        report={{ free, valuation, factory, verdict, askingPrice: paid?.ctx.asking ?? null }}
+        unlock={
+          <ValuationUnlock
+            vin={vin}
+            tier={paid?.product ?? null}
+            defaults={paid ? { mileage: paid.ctx.mileage, zip: paid.ctx.zip, asking: paid.ctx.asking } : undefined}
+          />
+        }
+      />
+    </>
   );
 }
 

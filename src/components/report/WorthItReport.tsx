@@ -58,7 +58,14 @@ function Row({ label, value }: { label: string; value?: string | null }) {
   );
 }
 
-export default function WorthItReport({ report }: { report: Report }) {
+export default function WorthItReport({
+  report,
+  unlock,
+}: {
+  report: Report;
+  /** The buy/upgrade form. Rendered where the locked content would sit. */
+  unlock?: React.ReactNode;
+}) {
   const { free, valuation, factory, askingPrice } = report;
   const specs = free.specs;
   const verdict = report.verdict ?? buildVerdict(askingPrice, valuation);
@@ -84,10 +91,12 @@ export default function WorthItReport({ report }: { report: Report }) {
           <div className="text-xs uppercase tracking-wider text-slate-400">CarWorthIt report</div>
           <h1 className="mt-1 text-3xl md:text-4xl font-extrabold">{title}</h1>
           <div className="mt-2 font-mono text-sm text-slate-400">VIN {specs.vin}</div>
-          {valuation && (
+          {valuation ? (
             <div className="mt-1 text-sm text-slate-300">
               Priced at {valuation.mileage.toLocaleString('en-US')} miles near ZIP {valuation.zip}
             </div>
+          ) : (
+            <div className="mt-1 text-sm text-slate-300">Free report. Specs, recalls, safety and running costs.</div>
           )}
         </div>
       </div>
@@ -108,19 +117,26 @@ export default function WorthItReport({ report }: { report: Report }) {
             title="What it's worth now"
             sub={`Based on comparable cars currently for sale near ZIP ${valuation.zip}, at around ${valuation.mileage.toLocaleString('en-US')} miles.`}
           >
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div className="rounded-xl border border-border bg-surface p-5 text-center">
-                <div className="text-2xl font-bold text-ink">{usd(valuation.lowPrice)}</div>
-                <div className="mt-1 text-xs text-ink-2">Lowest asking price</div>
-              </div>
+            {/* The low/high tiles only appear when the feed actually gave a
+                range. Repeating the average in all three slots would present a
+                fabricated range as a measured one. */}
+            <div className={`grid gap-4 ${valuation.lowPrice !== null && valuation.highPrice !== null ? 'sm:grid-cols-3' : ''}`}>
+              {valuation.lowPrice !== null && (
+                <div className="rounded-xl border border-border bg-surface p-5 text-center">
+                  <div className="text-2xl font-bold text-ink">{usd(valuation.lowPrice)}</div>
+                  <div className="mt-1 text-xs text-ink-2">Lowest asking price</div>
+                </div>
+              )}
               <div className="rounded-xl border-2 border-brand bg-white p-5 text-center shadow-sm">
                 <div className="text-3xl font-extrabold text-brand">{usd(valuation.averagePrice)}</div>
                 <div className="mt-1 text-xs font-semibold text-ink-2">Market average</div>
               </div>
-              <div className="rounded-xl border border-border bg-surface p-5 text-center">
-                <div className="text-2xl font-bold text-ink">{usd(valuation.highPrice)}</div>
-                <div className="mt-1 text-xs text-ink-2">Highest asking price</div>
-              </div>
+              {valuation.highPrice !== null && (
+                <div className="rounded-xl border border-border bg-surface p-5 text-center">
+                  <div className="text-2xl font-bold text-ink">{usd(valuation.highPrice)}</div>
+                  <div className="mt-1 text-xs text-ink-2">Highest asking price</div>
+                </div>
+              )}
             </div>
             {askingPrice && verdict?.differenceFromAverage !== null && verdict?.differenceFromAverage !== undefined && (
               <div className="mt-5 rounded-xl bg-surface border border-border p-4 text-sm">
@@ -139,6 +155,9 @@ export default function WorthItReport({ report }: { report: Report }) {
             )}
           </Section>
         )}
+
+        {/* BUY / UPGRADE */}
+        {unlock}
 
         {/* WHAT IT COST NEW */}
         {factory && (factory.combinedMsrp || factory.msrp) && (
@@ -213,7 +232,9 @@ export default function WorthItReport({ report }: { report: Report }) {
             )}
             {free.ownership && (
               <div className="mt-5">
-                <Row label="Fuel, 5 years" value={usd(free.ownership.fuel)} />
+                {free.runningCosts?.annualFuelCost ? (
+                  <Row label="Fuel, 5 years" value={usd(free.ownership.fuel)} />
+                ) : null}
                 <Row label="Insurance, 5 years" value={usd(free.ownership.insurance)} />
                 <Row label="Maintenance, 5 years" value={usd(free.ownership.maintenance)} />
                 <Row label="Repairs, 5 years" value={usd(free.ownership.repairs)} />
@@ -228,7 +249,7 @@ export default function WorthItReport({ report }: { report: Report }) {
                   <span className="font-semibold">Estimated 5-year running costs</span>
                   <span className="text-xl font-extrabold text-brand">
                     {usd(
-                      free.ownership.fuel +
+                      (free.runningCosts?.annualFuelCost ? free.ownership.fuel : 0) +
                         free.ownership.insurance +
                         free.ownership.maintenance +
                         free.ownership.repairs +
@@ -237,8 +258,11 @@ export default function WorthItReport({ report }: { report: Report }) {
                   </span>
                 </div>
                 <p className="mt-2 text-xs text-ink-2">
-                  An estimate, not a quote, and it excludes depreciation, which is shown separately above. Only the
-                  fuel figure is specific to this car; the rest are US national averages scaled for its age.
+                  An estimate, not a quote, and it excludes depreciation
+                  {dep ? ', which is shown separately above' : ''}.{' '}
+                  {free.runningCosts?.annualFuelCost
+                    ? 'Only the fuel figure is specific to this car; the rest are US national averages scaled for its age.'
+                    : 'We had no EPA fuel figure for this car, so fuel is excluded entirely. The rest are US national averages scaled for its age.'}
                 </p>
               </div>
             )}
@@ -264,7 +288,18 @@ export default function WorthItReport({ report }: { report: Report }) {
               ))}
             </div>
           )}
-          {free.recalls.length === 0 ? (
+          {free.recalls === null ? (
+            /* NHTSA unreachable. Saying "no recalls found" here would tell a
+               buyer a car with an open airbag campaign is clear. */
+            <div className="rounded-xl border border-border bg-surface p-4 text-sm text-ink-2">
+              We couldn&apos;t reach NHTSA to check recalls just now. This is not the same as there being none, so
+              please check directly at{' '}
+              <a href="https://www.nhtsa.gov/recalls" target="_blank" rel="noopener" className="text-brand hover:underline">
+                nhtsa.gov/recalls
+              </a>{' '}
+              or with a franchised dealer.
+            </div>
+          ) : free.recalls.length === 0 ? (
             <div className="rounded-xl border border-good/30 bg-good/5 p-4 text-sm font-semibold text-good">
               ✓ No open safety recalls found for this year, make and model
             </div>
@@ -333,14 +368,23 @@ export default function WorthItReport({ report }: { report: Report }) {
         <section className="rounded-2xl border border-border bg-white p-6 text-sm text-ink-2">
           <div className="font-semibold text-ink mb-2">Where this report comes from</div>
           <p className="leading-relaxed">
-            Market values are from a licensed US vehicle-pricing provider, calculated from comparable cars currently
-            listed for sale near your ZIP code. Original sticker price, options and warranty come from the factory
-            build record for this VIN. Recalls and safety ratings are from NHTSA, and fuel economy from the EPA. The
-            five-year cost to own is our own estimate.
+            Specifications, open recalls and safety ratings come from NHTSA, and fuel economy from the EPA. The
+            five-year running-cost figure is our own estimate.
+            {valuation
+              ? ' Market values are from a licensed US vehicle-pricing provider, calculated from comparable cars currently listed for sale near your ZIP code.'
+              : ''}
+            {factory
+              ? ' Original sticker price, dealer invoice, factory options and warranty come from the manufacturer build record for this VIN.'
+              : ''}
           </p>
+          {valuation && (
+            <p className="mt-3 leading-relaxed">
+              A valuation is an estimate of what similar cars are being advertised for, not an appraisal of this one.
+              Condition, service history and local demand can move a real sale price either side of it.
+            </p>
+          )}
           <p className="mt-3 leading-relaxed">
-            A valuation is an estimate of what similar cars are selling for, not an appraisal of this one. Condition,
-            service history and local demand can move a real sale price either side of it. Full detail on our{' '}
+            We do not provide vehicle history, title or salvage records. Full detail on our{' '}
             <a href="/methodology" className="text-brand font-medium hover:underline">methodology page</a>.
           </p>
         </section>

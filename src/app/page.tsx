@@ -1,165 +1,250 @@
 import Link from 'next/link';
 import SearchBox from '@/components/SearchBox';
-import JsonLd from '@/components/JsonLd';
-import { faqSchema, serviceSchema } from '@/lib/schema';
-import { REPORT_PRICE_USD } from '@/lib/constants';
+import { PRODUCTS, SITE_URL } from '@/lib/constants';
+import { organizationSchema, websiteSchema, serviceSchema, faqSchema } from '@/lib/schema';
 
-const price = `$${REPORT_PRICE_USD.toFixed(2)}`;
+const price = `$${PRODUCTS.valuation.price}`;
 
-const reportIncludes = [
-  { icon: '📋', title: 'Title history & brands', body: 'Salvage, junk, flood, lemon and rebuilt title brands, the deal-breakers.' },
-  { icon: '🔢', title: 'Odometer / mileage check', body: 'Every reported reading, flagged for rollback and clocking.' },
-  { icon: '🚨', title: 'Theft & total-loss', body: 'Whether the car has been reported stolen or written off.' },
-  { icon: '⚙️', title: 'Full specs & recalls', body: 'Decoded from the VIN, plus every open NHTSA safety recall.' },
-  { icon: '⛽', title: 'Real running costs', body: 'The car’s actual EPA MPG and what it costs to fuel each year.' },
-  { icon: '💰', title: 'True 5-year cost to own', body: 'Fuel, insurance, maintenance, repairs and depreciation, the number nobody else shows you.' },
+const features = [
+  {
+    icon: '📍',
+    title: 'Priced where you are',
+    body: 'Valued against cars actually listed for sale near your ZIP code, not a national average.',
+  },
+  {
+    icon: '🛞',
+    title: 'At your real mileage',
+    body: 'Two identical cars 40,000 miles apart are not worth the same. We price yours, not the model.',
+  },
+  {
+    icon: '🏷️',
+    title: 'What it cost new',
+    body: 'The original window sticker for your exact VIN: MSRP, dealer invoice and the options it was built with.',
+  },
+  {
+    icon: '⚖️',
+    title: 'A straight verdict',
+    body: 'Tell us the asking price and we say whether it is fair, cheap, or too much. Including when it is too much.',
+  },
+  {
+    icon: '🔧',
+    title: 'Open recalls and safety',
+    body: 'NHTSA recall campaigns and 5-star crash-test ratings, free for any VIN.',
+  },
+  {
+    icon: '⛽',
+    title: 'What it costs to run',
+    body: 'Official EPA fuel economy plus an estimate of five-year running costs.',
+  },
 ];
 
 const steps = [
-  { n: '1', title: 'Enter the VIN', body: 'Grab the 17-character VIN from the listing, dashboard or door jamb.' },
-  { n: '2', title: 'See the free preview', body: 'Specs, recalls and running costs load instantly, no signup.' },
-  { n: '3', title: 'Unlock the full report', body: `One ${price} payment reveals the title history, brands, mileage and cost to own.` },
+  { n: '1', title: 'Enter the VIN', body: 'Seventeen characters, on the windscreen, door jamb or the listing itself.' },
+  { n: '2', title: 'See the free report', body: 'Specs, open recalls, safety ratings and running costs load instantly. No signup.' },
+  { n: '3', title: 'Add mileage and ZIP', body: `From ${price}, see what it is worth near you and whether the price is fair.` },
 ];
 
 const faqs = [
-  { q: 'How is this different from Carfax?', a: `We surface the core checks that decide a purchase (title brands, salvage, odometer, theft, salvage-auction damage) and add the true cost to own that Carfax doesn’t show, for a fraction of the price. Carfax is the most expensive of the mainstream reports; we charge ${price}. Check their site for their current pricing, it changes. We are independent and not affiliated with Carfax.` },
-  { q: 'Where does the data come from?', a: 'Vehicle history (title brands, salvage, theft, total-loss and auction records) is sourced from a licensed US vehicle-data provider. Specs and recalls come from NHTSA, and running costs from the EPA’s fueleconomy.gov. CarWorthIt is not an approved NMVTIS data provider and our history report is not an official NMVTIS report.' },
-  { q: 'Is the preview really free?', a: 'Yes. Specs, safety recalls and running costs are shown free for any valid VIN. You only pay if you want the full history and cost-to-own report.' },
-  { q: 'Do I need an account?', a: 'No. Enter a VIN, see the preview, pay once if you want the full report. No subscription, no login.' },
+  {
+    q: 'How do I find out what my car is worth by VIN?',
+    a: 'Enter the 17-character VIN, then your odometer reading and ZIP code. CarWorthIt prices the car against comparable vehicles currently listed for sale near you, at that mileage, and shows the average, the lowest and the highest local asking prices. Most free tools work from year, make and model only, which gives you a national average rather than what your car is actually worth where you live.',
+  },
+  {
+    q: 'Why do you need my mileage and ZIP code?',
+    a: 'Because both change the answer, often by thousands of dollars. Mileage is the single biggest driver of a used car’s value after age, and the same car sells for different money in different markets. A valuation that ignores either is a guess.',
+  },
+  {
+    q: 'Is the VIN report really free?',
+    a: 'Yes. Vehicle specification, open safety recalls, NHTSA crash-test ratings and EPA running costs are free for any valid VIN, with no account and no card. You only pay if you want the valuation and the original factory record.',
+  },
+  {
+    q: 'How is this different from Kelley Blue Book?',
+    a: 'KBB works from year, make, model and trim, and asks a series of questions before giving you a figure. CarWorthIt starts from the VIN, which already knows the exact trim and factory options, then prices it at your mileage against cars listed near you. We are independent and not affiliated with Kelley Blue Book.',
+  },
+  {
+    q: 'Do you sell a vehicle history report?',
+    a: 'No. Accident and title-brand data in the United States sits behind licences we do not hold, and we would rather say so than sell a thin substitute. For title and salvage history use an NMVTIS-approved provider. CarWorthIt covers what a car is worth, what it cost new and what it costs to run.',
+  },
+  {
+    q: 'Is there a subscription?',
+    a: 'No. One payment for one report, no account to create and nothing to cancel.',
+  },
 ];
 
 export default function Home() {
   return (
     <>
-      <JsonLd data={[serviceSchema(), faqSchema(faqs.map((f) => ({ q: f.q, a: f.a })))]} />
-      {/* Hero (dark gradient, CCC-style) */}
-      <section id="check" className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900">
-        <div className="absolute inset-0 bg-dot-pattern-light opacity-[0.04]" />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([organizationSchema(), websiteSchema(), serviceSchema(), faqSchema(faqs)]),
+        }}
+      />
+
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-slate-900">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
         <div className="container-x relative py-16 md:py-24">
           <div className="max-w-3xl">
-            <span className="inline-block rounded-full border border-blue-400/30 bg-blue-500/10 text-blue-200 text-xs font-semibold px-3 py-1 mb-5">
-              The essential checks, without the big-brand price tag, {price}
+            <span className="mb-5 inline-block rounded-full border border-blue-400/30 bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-200">
+              Priced at your mileage, near your ZIP code
             </span>
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight text-white">
+            <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white md:text-5xl">
               Price your car by VIN, and see if it&apos;s{' '}
               <span className="bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent">
                 really worth it
               </span>
               .
             </h1>
-            <p className="mt-5 text-lg text-slate-300 leading-relaxed">
-              Enter a VIN for a free report: specs, open recalls, safety ratings and running costs, no signup. Add the
-              title and salvage history or a market valuation priced on your car&apos;s actual mileage and location.
+            <p className="mt-5 text-lg leading-relaxed text-slate-300">
+              Enter a VIN for a free report: specs, open recalls, safety ratings and running costs, no signup. Add
+              your mileage and ZIP to see what it&apos;s worth against cars actually for sale near you.
             </p>
-            <div className="mt-8">
+            <div className="mt-8" id="check">
               <SearchBox dark />
             </div>
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-300">
-              <span>✓ Title & salvage data</span>
-              <span>✓ Instant free preview</span>
-              <span>✓ One-time {price}, no subscription</span>
+              <span>✓ Free VIN report</span>
+              <span>✓ No account needed</span>
+              <span>✓ Valuations from {price}</span>
+              <span>✓ No subscription</span>
             </div>
           </div>
         </div>
-        <div className="gradient-line" />
       </section>
 
-      {/* What's in the report */}
+      {/* What you get */}
       <section className="container-x py-16">
-        <h2 className="text-3xl font-bold text-center">What&apos;s in every report</h2>
-        <p className="mt-3 text-center text-ink-2 max-w-2xl mx-auto">
-          Everything you need to walk away from a bad car, and negotiate a good one.
-        </p>
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {reportIncludes.map((r) => (
-            <div key={r.title} className="card-hover rounded-2xl border border-border bg-white p-6">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 text-2xl">{r.icon}</div>
-              <h3 className="mt-4 font-semibold text-lg">{r.title}</h3>
-              <p className="mt-1 text-ink-2 text-sm leading-relaxed">{r.body}</p>
+        <h2 className="text-center text-3xl font-bold">What you get</h2>
+        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {features.map((f) => (
+            <div key={f.title} className="card-hover rounded-2xl border border-border bg-white p-6">
+              <div className="text-2xl">{f.icon}</div>
+              <h3 className="mt-3 font-bold">{f.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink-2">{f.body}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Price comparison */}
-      <section className="bg-surface border-y border-border">
+      {/* Why local pricing */}
+      <section className="border-y border-border bg-surface">
         <div className="container-x py-16">
-          <h2 className="text-3xl font-bold text-center">Same essential checks. A fraction of the price.</h2>
-          {/* Competitor prices are named nowhere on this site. Carfax and
-              AutoCheck change theirs without notice, and a stale number in a
-              comparison is the fastest way to lose the trust the comparison
-              was built to earn. Rank them, don't price them. */}
-          <div className="mt-10 grid gap-5 md:grid-cols-3 max-w-4xl mx-auto">
-            <PriceCard name="Carfax" price="$$$" note="Most expensive" muted />
-            <PriceCard name="AutoCheck" price="$$" note="Mid-priced" muted />
-            <PriceCard name="CarWorthIt" price={price} note="Flat, one-off" highlight />
+          <div className="mx-auto max-w-3xl text-center">
+            <h2 className="text-3xl font-bold">Most valuations aren&apos;t about your car</h2>
+            <p className="mt-4 leading-relaxed text-ink-2">
+              Ask a typical free tool what a car is worth and it will want the year, make, model and trim, then hand
+              you a national average. But mileage is the biggest single lever on a used car&apos;s value after age,
+              and the same car sells for different money in Staten Island than it does in rural Texas.
+            </p>
+            <p className="mt-4 leading-relaxed text-ink-2">
+              We start from the VIN, which already knows the exact trim and the factory options it left the line
+              with. Then we price it at your odometer reading, against cars listed for sale near you. That is the
+              whole difference, and it is usually worth thousands.
+            </p>
+            <div className="mt-8">
+              <Link
+                href="/sample-report"
+                className="inline-flex items-center gap-2 rounded-xl border-2 border-brand px-6 py-3 font-bold text-brand transition-colors hover:bg-brand hover:text-white"
+              >
+                See a real sample report →
+              </Link>
+            </div>
           </div>
-          <p className="mt-6 text-center text-sm text-ink-2 max-w-2xl mx-auto">
-            We focus on the checks that actually decide a purchase (title brands, salvage, odometer, theft) plus the
-            cost-to-own the others leave out. We don&apos;t quote our competitors&apos; prices because they change them
-            without notice, so check their sites for what they charge today.
-          </p>
         </div>
       </section>
 
       {/* How it works */}
       <section className="container-x py-16">
-        <h2 className="text-3xl font-bold text-center">How it works</h2>
+        <h2 className="text-center text-3xl font-bold">How it works</h2>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {steps.map((s) => (
-            <div key={s.n} className="card-hover rounded-2xl border border-border bg-white p-6">
-              <div className="h-9 w-9 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 text-white flex items-center justify-center font-bold">{s.n}</div>
-              <h3 className="mt-4 font-semibold text-lg">{s.title}</h3>
-              <p className="mt-1 text-ink-2 text-sm leading-relaxed">{s.body}</p>
+            <div key={s.n} className="rounded-2xl border border-border bg-white p-6">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand font-bold text-white">
+                {s.n}
+              </div>
+              <h3 className="mt-4 font-bold">{s.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink-2">{s.body}</p>
             </div>
           ))}
         </div>
-        <div className="mt-10 text-center">
-          <Link href="/sample-report" className="text-brand font-semibold hover:underline">See a sample report →</Link>
+      </section>
+
+      {/* Pricing */}
+      <section className="border-y border-border bg-surface">
+        <div className="container-x py-16">
+          <h2 className="text-center text-3xl font-bold">Pay once, or not at all</h2>
+          <div className="mx-auto mt-10 grid max-w-4xl gap-5 md:grid-cols-3">
+            <PriceCard name="Free VIN report" price="$0" note="Specs, recalls, safety, running costs" />
+            <PriceCard
+              name={PRODUCTS.valuation.name}
+              price={`$${PRODUCTS.valuation.price}`}
+              note="Local value and a verdict on the price"
+            />
+            <PriceCard
+              name={PRODUCTS.worthit.name}
+              price={`$${PRODUCTS.worthit.price}`}
+              note="Adds what it cost new and its factory options"
+              highlight
+            />
+          </div>
+          <p className="mx-auto mt-6 max-w-2xl text-center text-sm text-ink-2">
+            One-off payments, no subscription and no account. Full detail on{' '}
+            <Link href="/pricing" className="text-brand font-medium hover:underline">pricing</Link>.
+          </p>
         </div>
       </section>
 
       {/* FAQ */}
-      <section className="bg-surface border-t border-border">
-        <div className="container-x py-16 max-w-3xl">
-          <h2 className="text-3xl font-bold text-center">Common questions</h2>
-          <div className="mt-8 space-y-4">
-            {faqs.map((f) => (
-              <details key={f.q} className="rounded-xl border border-border bg-white p-5 group">
-                <summary className="font-semibold cursor-pointer list-none flex justify-between items-center">
-                  {f.q}<span className="text-brand group-open:rotate-45 transition-transform">+</span>
-                </summary>
-                <p className="mt-3 text-ink-2 text-sm leading-relaxed">{f.a}</p>
-              </details>
-            ))}
-          </div>
+      <section className="container-x py-16">
+        <h2 className="text-center text-3xl font-bold">Common questions</h2>
+        <div className="mx-auto mt-10 max-w-3xl space-y-6">
+          {faqs.map((f) => (
+            <div key={f.q} className="rounded-2xl border border-border bg-white p-6">
+              <h3 className="font-bold">{f.q}</h3>
+              <p className="mt-2 leading-relaxed text-ink-2">{f.a}</p>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="container-x py-16 text-center">
-        <h2 className="text-3xl font-bold">Ready to check a car?</h2>
-        <p className="mt-3 text-ink-2">Free preview in seconds. Full report for {price}.</p>
-        <div className="mt-8 max-w-2xl mx-auto">
-          <SearchBox />
+      <section className="bg-slate-900">
+        <div className="container-x py-16">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold text-white">Check a car now</h2>
+            <p className="mt-3 text-slate-300">Free report in seconds. No account, no card.</p>
+            <div className="mt-8">
+              <SearchBox dark />
+            </div>
+          </div>
         </div>
       </section>
     </>
   );
 }
 
-function PriceCard({ name, price, note, highlight, muted }: { name: string; price: string; note?: string; highlight?: boolean; muted?: boolean }) {
+function PriceCard({
+  name,
+  price,
+  note,
+  highlight,
+}: {
+  name: string;
+  price: string;
+  note: string;
+  highlight?: boolean;
+}) {
   return (
     <div
-      className={`rounded-2xl border p-8 text-center ${
-        highlight ? 'border-brand bg-white ring-2 ring-brand shadow-lg' : 'border-border bg-white'
+      className={`rounded-2xl border p-7 text-center ${
+        highlight ? 'border-2 border-brand bg-white shadow-lg ring-2 ring-brand/20' : 'border-border bg-white'
       }`}
     >
-      <div className={`font-semibold ${muted ? 'text-ink-2' : 'text-ink'}`}>{name}</div>
-      <div className={`mt-2 text-4xl font-extrabold ${highlight ? 'text-brand' : 'text-ink'}`}>{price}</div>
-      {note && <div className="mt-1 text-xs text-ink-2">{note}</div>}
-      {highlight && <div className="mt-2 text-xs font-semibold text-good">Best value</div>}
+      <div className="font-semibold text-ink">{name}</div>
+      <div className={`mt-2 text-3xl font-extrabold ${highlight ? 'text-brand' : 'text-ink'}`}>{price}</div>
+      <div className="mt-2 text-xs leading-relaxed text-ink-2">{note}</div>
     </div>
   );
 }

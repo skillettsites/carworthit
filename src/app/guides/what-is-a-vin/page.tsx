@@ -42,7 +42,7 @@ export default function Page() {
         <p>Note: a valid VIN never contains the letters <strong>I, O or Q</strong>, to avoid confusion with 1 and 0.</p>
 
         <h2>Check any VIN for free</h2>
-        <p>Enter a VIN below to instantly decode the specs, see open recalls, and preview the history, no signup.</p>
+        <p>Enter a VIN below to instantly decode the specification, see open safety recalls and crash-test ratings, and get its running costs. No signup.</p>
       </Article>
       <div className="container-x max-w-3xl pb-14">
         <VinForm size="md" />

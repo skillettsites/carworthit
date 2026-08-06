@@ -14,8 +14,8 @@ export default function Page() {
         <h2>1. Before you view, check the VIN</h2>
         <ul>
           <li>Confirm the VIN in the listing matches the car and the title.</li>
-          <li>Run the VIN for <strong>title brands</strong> (salvage, junk, flood, rebuilt), <strong>theft</strong> and <strong>total-loss</strong> records.</li>
-          <li>Check the <strong>odometer history</strong> for any reading lower than an earlier one, a sign of rollback.</li>
+          <li>Buy an official NMVTIS report from an approved provider to check <strong>title brands</strong> (salvage, junk, flood, rebuilt), <strong>theft</strong> and <strong>total-loss</strong> records. CarWorthIt does not supply these.</li>
+          <li>Check the <strong>odometer history</strong> on that report for any reading lower than an earlier one, a sign of rollback.</li>
           <li>Look up open <strong>safety recalls</strong> and ask if they&apos;ve been fixed.</li>
         </ul>
 

@@ -117,6 +117,44 @@ export function logLead(email: string, opts: { vin?: string; product?: string; p
   });
 }
 
+/**
+ * Cache of a purchased report, so revisiting it never re-charges the data APIs.
+ *
+ * Reads go through a SECURITY DEFINER function rather than a SELECT policy:
+ * the anon key is public, and a readable table could be trawled. The function
+ * only ever returns the one row whose Stripe session id you already hold.
+ */
+export async function getCachedReport<T>(sessionId: string): Promise<T | null> {
+  if (!HAS_DB || !sessionId) return null;
+  try {
+    const res = await fetch(`${URL_BASE}/rest/v1/rpc/get_cwi_report`, {
+      method: 'POST',
+      headers: {
+        apikey: ANON_KEY,
+        Authorization: `Bearer ${ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ p_session_id: sessionId }),
+      cache: 'no-store',
+    });
+    if (!res.ok) return null;
+    const payload = await res.json();
+    return payload ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export function cacheReport(sessionId: string, vin: string, product: string, payload: unknown): void {
+  if (!sessionId) return;
+  void insert('cwi_reports', {
+    stripe_session_id: sessionId,
+    vin,
+    product,
+    payload,
+  });
+}
+
 export function logPurchase(row: {
   sessionId: string;
   product: string;

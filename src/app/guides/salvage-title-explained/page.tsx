@@ -29,7 +29,7 @@ export default function Page() {
         <p>Repurchased by the maker under lemon law after repeated unfixable faults.</p>
 
         <h2>How to check</h2>
-        <p>These brands are recorded against a vehicle&apos;s VIN in state and federal title databases. Run the VIN and the full CarWorthIt report flags salvage, junk, flood, rebuilt and total-loss records from our licensed data provider directly.</p>
+        <p>These brands are recorded against a vehicle&apos;s VIN in state and federal title databases. To check them, buy an official NMVTIS report from a provider approved by the US Department of Justice. CarWorthIt does not supply title or salvage records; we tell you what a car is worth, not what has happened to it.</p>
       </Article>
       <div className="container-x max-w-3xl pb-14"><VinForm size="md" /></div>
     </>

@@ -52,13 +52,23 @@ export async function decodeVin(vin: string): Promise<VehicleSpecs | null> {
   };
 }
 
-export async function getRecalls(make: string, model: string, year: string): Promise<Recall[]> {
-  if (!make || !model || !year) return [];
+/**
+ * Open recall campaigns for a year/make/model.
+ *
+ * Returns `null` when NHTSA could not be reached, and `[]` only when NHTSA
+ * genuinely reported no campaigns. The distinction is a safety matter: an
+ * outage previously collapsed into an empty array, and the report then told
+ * the buyer "no open safety recalls found" for a car that might have an open
+ * airbag campaign.
+ */
+export async function getRecalls(make: string, model: string, year: string): Promise<Recall[] | null> {
+  if (!make || !model || !year) return null;
   const url = `${RECALLS}?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&modelYear=${encodeURIComponent(year)}`;
   const data = (await getJson(url)) as
     | { results?: Array<Record<string, string>> }
     | null;
-  if (!data?.results?.length) return [];
+  if (!data) return null; // could not reach NHTSA
+  if (!data.results?.length) return [];
   return data.results.slice(0, 25).map((x) => ({
     campaign: x.NHTSACampaignNumber || '',
     component: x.Component || '',

@@ -5,7 +5,7 @@
 //   Carketa (paid)      what it is worth locally, at this mileage
 //   Decode Plus (paid)  what it cost new, and how it was specified
 //   NHTSA + EPA (free)  recalls, safety ratings, running costs
-//   Ours                five-year cost to own, and the verdict
+//   Ours                five-year running costs, and the verdict
 import type {
   FactoryData,
   FreeReport,
@@ -22,12 +22,16 @@ export interface WorthItReport {
   askingPrice: number | null;
 }
 
+const money = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
+
 /**
  * The verdict. This is the brand promise, so it has to be honest rather than
  * flattering: if a car is overpriced we say so plainly.
  *
- * Bands are set against the local range rather than a flat percentage, because
- * a $2,000 spread means something very different on a $9k car than a $60k one.
+ * Bands are set against the local range where we have one, because a $2,000
+ * spread means something very different on a $9k car than a $60k one. Where the
+ * feed gave no range we fall back to comparing against the average only, rather
+ * than inventing bounds.
  */
 export function buildVerdict(
   askingPrice: number | null,
@@ -35,23 +39,38 @@ export function buildVerdict(
 ): WorthItVerdict | null {
   if (!v) return null;
 
+  const range =
+    v.lowPrice !== null && v.highPrice !== null
+      ? `between ${money(v.lowPrice)} and ${money(v.highPrice)}, averaging ${money(v.averagePrice)}`
+      : `averaging ${money(v.averagePrice)}`;
+
   if (askingPrice === null || !Number.isFinite(askingPrice) || askingPrice <= 0) {
     return {
       standing: 'unknown',
       headline: 'Add the asking price to get a verdict',
-      detail: `Comparable ${''}cars near ${v.zip} are listed between $${v.lowPrice.toLocaleString('en-US')} and $${v.highPrice.toLocaleString('en-US')}, averaging $${v.averagePrice.toLocaleString('en-US')} at around ${v.mileage.toLocaleString('en-US')} miles. Tell us what the seller is asking and we will tell you how it compares.`,
+      detail: `Comparable cars near ${v.zip} are listed ${range} at around ${v.mileage.toLocaleString('en-US')} miles. Tell us what the seller is asking and we will tell you how it compares.`,
       differenceFromAverage: null,
     };
   }
 
   const diff = askingPrice - v.averagePrice;
-  const abs = Math.abs(diff).toLocaleString('en-US');
+  const abs = money(Math.abs(diff));
 
-  if (askingPrice <= v.lowPrice) {
+  // Exactly at the average. Without this, the copy reads "$0 above average".
+  if (diff === 0) {
+    return {
+      standing: 'fair',
+      headline: 'Priced right at the local average',
+      detail: `At ${money(askingPrice)} this is exactly the average asking price for comparable cars near ${v.zip}. Nothing to argue with on price, so judge it on condition and history.`,
+      differenceFromAverage: 0,
+    };
+  }
+
+  if (v.lowPrice !== null && askingPrice <= v.lowPrice) {
     return {
       standing: 'below',
       headline: 'Priced below the local market',
-      detail: `At $${askingPrice.toLocaleString('en-US')} this is at or under the cheapest comparable car near ${v.zip}, and $${abs} below the local average. That is a genuinely good price, so check the condition and history carefully to understand why.`,
+      detail: `At ${money(askingPrice)} this is at or under the cheapest comparable car near ${v.zip}, and ${abs} below the local average. That is a genuinely good price, so check the condition and history carefully to understand why.`,
       differenceFromAverage: diff,
     };
   }
@@ -59,22 +78,25 @@ export function buildVerdict(
     return {
       standing: 'below',
       headline: 'Priced below average',
-      detail: `At $${askingPrice.toLocaleString('en-US')} this is $${abs} below the local average of $${v.averagePrice.toLocaleString('en-US')}, and inside the normal range for the area.`,
+      detail: `At ${money(askingPrice)} this is ${abs} below the local average of ${money(v.averagePrice)}${v.lowPrice !== null && v.highPrice !== null ? ', and inside the normal range for the area' : ''}.`,
       differenceFromAverage: diff,
     };
   }
-  if (askingPrice <= v.highPrice) {
+  if (v.highPrice !== null && askingPrice <= v.highPrice) {
     return {
       standing: 'fair',
       headline: 'Priced in line with the local market',
-      detail: `At $${askingPrice.toLocaleString('en-US')} this sits $${abs} above the local average of $${v.averagePrice.toLocaleString('en-US')}, but still inside the normal range for comparable cars near ${v.zip}. Worth negotiating, not worth walking away from.`,
+      detail: `At ${money(askingPrice)} this sits ${abs} above the local average of ${money(v.averagePrice)}, but still inside the normal range for comparable cars near ${v.zip}. Worth negotiating, not worth walking away from.`,
       differenceFromAverage: diff,
     };
   }
   return {
     standing: 'above',
     headline: 'Priced above the local market',
-    detail: `At $${askingPrice.toLocaleString('en-US')} this is $${abs} above the local average and higher than every comparable car we can see near ${v.zip}. Unless it is unusually well specified or exceptionally low mileage, there is room to negotiate or a better car elsewhere.`,
+    detail:
+      v.highPrice !== null
+        ? `At ${money(askingPrice)} this is ${abs} above the local average and higher than every comparable car we can see near ${v.zip}. Unless it is unusually well specified or exceptionally low mileage, there is room to negotiate or a better car elsewhere.`
+        : `At ${money(askingPrice)} this is ${abs} above the local average of ${money(v.averagePrice)} for comparable cars near ${v.zip}. Unless it is unusually well specified or exceptionally low mileage, there is room to negotiate.`,
     differenceFromAverage: diff,
   };
 }

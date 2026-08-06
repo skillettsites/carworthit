@@ -34,8 +34,8 @@ export default function Press() {
 
       <h1 className="text-4xl font-extrabold">Press and media</h1>
       <p className="mt-4 text-lg text-ink-2 leading-relaxed">
-        We provide data and commentary on used-car values, vehicle history, running costs and what it actually costs to
-        own a car in the United States. Journalists are welcome to use our figures with attribution to {SITE_NAME}.
+        We provide data and commentary on used-car values, depreciation, running costs and what it actually costs to own
+        a car in the United States. Journalists are welcome to use our figures with attribution to {SITE_NAME}.
       </p>
 
       <section className="mt-12 rounded-2xl border border-border bg-white p-6">
@@ -57,8 +57,8 @@ export default function Press() {
         </p>
         <p className="mt-3 text-ink-2 leading-relaxed">{ANALYST.bio}</p>
         <p className="mt-3 text-ink-2 leading-relaxed">
-          Available for comment on used-car pricing and depreciation, vehicle history and title fraud, odometer
-          rollback, running and ownership costs, and vehicle safety recall data.
+          Available for comment on used-car pricing and depreciation, how local markets and mileage drive value, diminished
+          value after an accident, running and ownership costs, and vehicle safety recall data.
         </p>
       </section>
 
@@ -66,9 +66,9 @@ export default function Press() {
         <h2 className="text-2xl font-bold">About the company, in one paragraph</h2>
         <p className="mt-3 text-ink-2 leading-relaxed">
           CarWorthIt is an independent US used-car checking service. Enter a VIN and it returns specs, open safety
-          recalls, crash-test ratings and running costs free, with title and salvage history and a market valuation
-          available as paid reports. It is not affiliated with Carfax, AutoCheck or Experian, and is not an approved
-          NMVTIS data provider.
+          recalls, crash-test ratings and running costs free, with a local market valuation and the original factory
+          record available as paid reports. It does not provide vehicle history reports, is not affiliated with
+          Carfax, AutoCheck, Experian or Kelley Blue Book, and is not an approved NMVTIS data provider.
         </p>
       </section>
 

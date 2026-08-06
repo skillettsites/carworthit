@@ -41,70 +41,6 @@ export interface Recall {
   date?: string;
 }
 
-export interface TitleRecord {
-  state: string;
-  date: string;
-  type: string; // e.g. "Original", "Transfer"
-  mileage?: number;
-  meta?: string;
-}
-
-export interface TitleBrand {
-  label: string; // e.g. "Salvage", "Flood", "Junk", "Lemon", "Rebuilt"
-  state?: string;
-  date?: string;
-}
-
-// One salvage/insurance auction appearance (Vehicle Databases `auction`).
-// This is our cheap stand-in for accident data: a car totalled in a wreck
-// almost always passes through a Copart/IAAI-style salvage auction.
-export interface AuctionRecord {
-  date?: string;
-  seller?: string;
-  location?: string;
-  odometer?: number;
-  primaryDamage?: string;
-  secondaryDamage?: string;
-  condition?: string;
-  salePrice?: number;
-  images?: number;
-}
-
-// The paid data layer (Vehicle Databases, a commercial aggregator, not official NMVTIS).
-export interface HistoryData {
-  titles: TitleRecord[];
-  brands: TitleBrand[];
-  odometer: { date: string; reading: number; source?: string }[];
-  salvage: boolean;
-  theft: boolean;
-  totalLoss: boolean;
-  auctionRecords: AuctionRecord[];
-  soldAtSalvageAuction: boolean; // accident proxy: appeared at a salvage/insurance auction
-  jsiRecords?: number; // junk/salvage/insurance records count
-  ownersEstimate?: number;
-  isSample: boolean; // true when using placeholder data (no key yet)
-}
-
-// One row of the KBB-style condition grid from Vehicle Databases market-value.
-export interface ValuationCondition {
-  condition: string; // Outstanding | Clean | Average | Rough
-  tradeIn: number;
-  privateParty: number;
-  dealerRetail: number;
-}
-
-export interface Valuation {
-  mean: number;
-  low: number;
-  high: number;
-  tradeIn: number;
-  privateParty: number;
-  dealerRetail: number;
-  conditions?: ValuationCondition[]; // full condition x price-type grid when live
-  insuranceByAge: { band: string; annual: number }[];
-  isSample: boolean;
-}
-
 // ---------------------------------------------------------------------------
 // OneAuto US layer (Carketa market pricing + VIN Decode Plus). Replaces the
 // Vehicle Databases valuation, which took no mileage or location and priced a
@@ -119,8 +55,9 @@ export interface Valuation {
  */
 export interface MarketValuation {
   averagePrice: number;
-  lowPrice: number;
-  highPrice: number;
+  /** null when the feed returned no range. Never faked from the average. */
+  lowPrice: number | null;
+  highPrice: number | null;
   mileage: number; // what we asked for, so the report can state its own basis
   zip: string;
   fetchedAt: string;
@@ -186,13 +123,9 @@ export interface SafetyRatings {
 export interface FreeReport {
   specs: VehicleSpecs;
   runningCosts: RunningCosts | null;
-  recalls: Recall[];
+  /** null means NHTSA was unreachable, [] means it reported none. */
+  recalls: Recall[] | null;
   safety: SafetyRatings | null;
   ownership: OwnershipCostEstimate | null;
-  freeValue: { low: number; high: number } | null; // rough range for the valuation teaser
   fetchedAt: string;
-}
-
-export interface FullReport extends FreeReport {
-  history: HistoryData | null;
 }

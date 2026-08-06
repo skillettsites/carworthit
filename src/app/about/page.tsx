@@ -2,27 +2,35 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import VinForm from '@/components/VinForm';
 import { SITE_NAME, SITE_URL, PRODUCTS, ANALYST, MEDIA_EMAIL } from '@/lib/constants';
+import { breadcrumbSchema } from '@/lib/schema';
 
 export const metadata: Metadata = {
   title: 'About CarWorthIt',
   description:
-    'CarWorthIt is an independent, lower-cost US used-car checking service. Who we are, where our data comes from, and what our reports can and cannot tell you.',
+    'CarWorthIt is an independent US car valuation service. Who we are, where our data comes from, what our reports can tell you and what they cannot.',
   alternates: { canonical: `${SITE_URL}/about` },
 };
 
-const schema = {
-  '@context': 'https://schema.org',
-  '@type': 'AboutPage',
-  name: 'About CarWorthIt',
-  url: `${SITE_URL}/about`,
-  mainEntity: {
-    '@type': 'Organization',
-    name: SITE_NAME,
-    url: SITE_URL,
-    description:
-      'Independent US used-car checking service providing VIN-based title, salvage, theft, odometer and market-value reports as a lower-cost alternative to Carfax and AutoCheck.',
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: 'About CarWorthIt',
+    url: `${SITE_URL}/about`,
+    mainEntity: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_URL,
+      description:
+        'Independent US car valuation service. Prices any vehicle by VIN against comparable cars listed nearby, at its real mileage, and shows what it cost new.',
+      employee: { '@type': 'Person', name: ANALYST.name, jobTitle: ANALYST.role, description: ANALYST.bio },
+    },
   },
-};
+  breadcrumbSchema([
+    { name: 'Home', url: SITE_URL },
+    { name: 'About', url: `${SITE_URL}/about` },
+  ]),
+];
 
 export default function About() {
   return (
@@ -31,20 +39,23 @@ export default function About() {
 
       <h1 className="text-4xl font-extrabold">About CarWorthIt</h1>
       <p className="mt-4 text-lg text-ink-2 leading-relaxed">
-        CarWorthIt helps used-car buyers in the United States avoid expensive mistakes. Enter a VIN and we pull together
-        the checks that matter, title and salvage history, odometer readings, theft and total-loss records, safety
-        recalls, and what the car is really worth, in one place, for a fraction of what the big-name reports charge.
+        CarWorthIt answers one question: is this car worth it? Enter a VIN and we tell you what the car is worth
+        against others actually for sale near you, what it cost new, what it costs to run, and whether the price
+        you have been quoted is fair.
       </p>
 
       <section className="mt-12">
         <h2 className="text-2xl font-bold">Why we built it</h2>
         <p className="mt-3 text-ink-2 leading-relaxed">
-          A single history report from the household names costs more than most buyers expect, and a buyer often needs
-          to check several cars before choosing one. That adds up fast. We think the essential facts about a car, is the
-          title clean, has the odometer been rolled back, was it ever a total loss, what is it actually worth, should not
-          cost more than the tank of gas you spend driving to view it. Our history report starts at $
-          {PRODUCTS.history.price}, and a free preview of specs, recalls and running costs is available for any valid VIN
-          with no signup.
+          Most free valuation tools ask for the year, make, model and trim, then give you a national average. That
+          is not what your car is worth. A car&apos;s value depends on its mileage and where it is being sold, and
+          the gap between a national guess and a local reality is routinely thousands of dollars.
+        </p>
+        <p className="mt-3 text-ink-2 leading-relaxed">
+          So we do it the other way round. We start from the VIN, ask for the odometer reading and your ZIP code,
+          and price the car against comparable cars listed near you. Paid reports start at $
+          {PRODUCTS.valuation.price}, and the VIN report covering specs, open recalls, safety ratings and running
+          costs is free for any valid VIN with no signup.
         </p>
       </section>
 
@@ -55,61 +66,59 @@ export default function About() {
         </p>
         <p className="mt-3 text-ink-2 leading-relaxed">
           Press and data enquiries:{' '}
-          <a href={`mailto:${MEDIA_EMAIL}`} className="text-brand font-medium hover:underline">
-            {MEDIA_EMAIL}
-          </a>
-          . See our{' '}
-          <Link href="/methodology" className="text-brand font-medium hover:underline">
-            methodology
-          </Link>{' '}
-          for exactly which dataset produces which number.
+          <a href={`mailto:${MEDIA_EMAIL}`} className="text-brand font-medium hover:underline">{MEDIA_EMAIL}</a>. See
+          our <Link href="/methodology" className="text-brand font-medium hover:underline">methodology</Link> for
+          exactly which dataset produces which number.
         </p>
-      </section>
-
-      <section className="mt-12">
-        <h2 className="text-2xl font-bold">Editorial policy</h2>
-        <ul className="mt-3 space-y-2 text-ink-2 leading-relaxed list-disc pl-5">
-          <li>We do not quote competitors&apos; prices. They change them without notice and a stale figure is worse than no figure, so we rank them instead and tell you to check their site.</li>
-          <li>We never invent a number. If a dataset does not cover something, the report says so rather than estimating and presenting it as fact.</li>
-          <li>Estimates are labelled as estimates, with the assumptions behind them stated on the <Link href="/methodology" className="text-brand font-medium hover:underline">methodology</Link> page.</li>
-          <li>We correct errors rather than quietly deleting them. If you find one, email <a href={`mailto:${MEDIA_EMAIL}`} className="text-brand font-medium hover:underline">{MEDIA_EMAIL}</a>.</li>
-          <li>Any paid link is labelled a paid link, in the text, not behind a tooltip.</li>
-        </ul>
       </section>
 
       <section className="mt-12">
         <h2 className="text-2xl font-bold">Where our data comes from</h2>
         <ul className="mt-3 space-y-2 text-ink-2 leading-relaxed">
-          <li><strong className="text-ink">A licensed US vehicle-data provider</strong>, for title brands, salvage, junk, flood and rebuilt records, theft and total-loss history, odometer readings and salvage-auction damage.</li>
-          <li><strong className="text-ink">NHTSA</strong>, the National Highway Traffic Safety Administration, for VIN decoding, open safety recalls and 5-star crash-test ratings.</li>
-          <li><strong className="text-ink">EPA fueleconomy.gov</strong>, for official MPG figures and estimated annual running costs.</li>
+          <li><strong className="text-ink">A licensed US vehicle-pricing provider</strong>, for market values calculated from comparable cars currently listed for sale near your ZIP code.</li>
+          <li><strong className="text-ink">The factory build record</strong> for your exact VIN, for the original sticker price, dealer invoice price, fitted options, standard equipment and warranty terms.</li>
+          <li><strong className="text-ink">NHTSA</strong>, for VIN decoding, open safety recalls and 5-star crash-test ratings.</li>
+          <li><strong className="text-ink">EPA fueleconomy.gov</strong>, for official MPG figures and annual fuel costs.</li>
+        </ul>
+      </section>
+
+      <section className="mt-12">
+        <h2 className="text-2xl font-bold">Editorial policy</h2>
+        <ul className="mt-3 space-y-2 text-ink-2 leading-relaxed list-disc pl-5">
+          <li>We do not quote competitors&apos; prices. They change them without notice and a stale figure is worse than none, so we rank them instead and tell you to check their site.</li>
+          <li>We never invent a number. If a dataset does not cover your car, the report says so rather than estimating and presenting it as fact.</li>
+          <li>Estimates are labelled as estimates, with the assumptions stated on the <Link href="/methodology" className="text-brand font-medium hover:underline">methodology</Link> page.</li>
+          <li>If we cannot value your car, we refund you.</li>
+          <li>We correct errors on the page rather than quietly deleting them. Found one? Email <a href={`mailto:${MEDIA_EMAIL}`} className="text-brand font-medium hover:underline">{MEDIA_EMAIL}</a>.</li>
+          <li>Any paid link is labelled a paid link, in the text, not behind a tooltip.</li>
         </ul>
       </section>
 
       <section className="mt-12">
         <h2 className="text-2xl font-bold">What we are honest about</h2>
         <p className="mt-3 text-ink-2 leading-relaxed">
-          A history report is powerful, but it is not everything. It can only show what was reported to an insurer, body
-          shop, police or DMV, so a minor accident fixed privately may never appear. No report can see current mechanical
-          condition, hidden rust or the quality of past repairs. That is why we always tell buyers to pair a report with
-          a test drive and, for anything expensive, a pre-purchase inspection by an independent mechanic.
+          A valuation is an estimate of what similar cars are selling for. It is not an appraisal of your specific
+          car. Condition, service history, accident damage and local demand can all move a real sale price either
+          side of our figure, and no data feed can see the state of a clutch or the quality of a past repair.
         </p>
         <p className="mt-3 text-ink-2 leading-relaxed">
-          We are an independent service and are not affiliated with Carfax, AutoCheck or Experian. CarWorthIt is not an
-          approved NMVTIS data provider, and our history report is not an official NMVTIS report. Our reports are for
-          informational purposes and are not a substitute for an in-person inspection.
+          We do not sell a vehicle history report. Accident and title-brand data in the United States sits behind
+          licences we do not hold, and we would rather tell you that than sell you a thin substitute. For that,
+          use an approved provider. Always pair any report with a test drive and, for anything expensive, an
+          inspection by an independent mechanic.
+        </p>
+        <p className="mt-3 text-ink-2 leading-relaxed">
+          We are independent and not affiliated with Carfax, AutoCheck, Experian or Kelley Blue Book. CarWorthIt is
+          not an approved NMVTIS data provider.
         </p>
       </section>
 
       <section className="mt-12">
         <h2 className="text-2xl font-bold">Learn before you buy</h2>
         <p className="mt-3 text-ink-2 leading-relaxed">
-          Our{' '}
-          <Link href="/blog" className="text-brand font-medium hover:underline">
-            buying guides
-          </Link>{' '}
-          walk through checking a title, spotting odometer fraud, reading a history report and inspecting a used car,
-          all free.
+          Our <Link href="/blog" className="text-brand font-medium hover:underline">buying guides</Link> cover
+          pricing a car properly, spotting a bad deal, diminished value after an accident, and what to check before
+          you hand over money. All free.
         </p>
       </section>
 

@@ -12,7 +12,7 @@ export default function StickyVinCta() {
       <div className="container-x flex items-center justify-between gap-3 py-3">
         <div className="min-w-0">
           <p className="font-bold text-ink text-sm sm:text-base leading-tight">Checking a specific car?</p>
-          <p className="text-xs text-ink-2 hidden sm:block mt-0.5">Run its VIN free: title, salvage, odometer, recalls and running costs in seconds.</p>
+          <p className="text-xs text-ink-2 hidden sm:block mt-0.5">Run its VIN free: full specs, open recalls, safety ratings and running costs in seconds.</p>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
           <Link

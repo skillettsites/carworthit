@@ -14,7 +14,7 @@ function InlineCta() {
     <div className="not-prose my-8 rounded-2xl border border-brand/30 bg-gradient-to-br from-blue-50 to-cyan-50 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
       <div className="flex-1">
         <p className="font-bold text-ink">Checking a specific car?</p>
-        <p className="text-sm text-ink-2 mt-1">Run its VIN free to see title brands, salvage and flood history, an odometer check, and open recalls before you buy.</p>
+        <p className="text-sm text-ink-2 mt-1">Run its VIN free for the full specification, open safety recalls, crash-test ratings and running costs. Add your mileage and ZIP to see what it&apos;s worth near you.</p>
       </div>
       <Link
         href="/#check"

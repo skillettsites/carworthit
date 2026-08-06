@@ -3,10 +3,28 @@ import { HAS_STRIPE, CURRENCY, SITE_NAME, PRODUCTS, type ProductId, isProductId 
 
 const stripe = HAS_STRIPE ? new Stripe(process.env.STRIPE_SECRET_KEY as string) : null;
 
-export async function createCheckout(vin: string, product: ProductId, origin: string): Promise<{ url: string }> {
+/**
+ * What the buyer told us, carried through Stripe and read back after payment.
+ *
+ * Stripe metadata is the right home for this. It survives the redirect, it
+ * cannot be tampered with by the customer, and it means we do not need our own
+ * session store just to remember three numbers. Values are strings because
+ * Stripe metadata is string-only.
+ */
+export interface CheckoutContext {
+  vin: string;
+  mileage: number;
+  zip: string;
+  asking: number | null;
+}
+
+export async function createCheckout(
+  product: ProductId,
+  ctx: CheckoutContext,
+  origin: string,
+): Promise<{ url: string }> {
   const p = PRODUCTS[product];
-  // No Stripe key yet -> dev-unlock URL carrying the product, so the full flow is testable.
-  if (!stripe) return { url: `/report/${vin}?paid=dev-${product}` };
+  if (!stripe) return { url: `/report/${ctx.vin}` };
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     line_items: [
@@ -14,33 +32,66 @@ export async function createCheckout(vin: string, product: ProductId, origin: st
         price_data: {
           currency: CURRENCY,
           unit_amount: p.cents,
-          product_data: { name: `${SITE_NAME}, ${p.name}`, description: `VIN ${vin}` },
+          product_data: {
+            name: `${SITE_NAME} ${p.name}`,
+            description: `${p.blurb} VIN ${ctx.vin}.`,
+          },
         },
         quantity: 1,
       },
     ],
-    metadata: { vin, product },
-    success_url: `${origin}/report/${vin}?paid={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${origin}/report/${vin}`,
+    // Collected so we can email the report and answer support queries. Stripe
+    // handles the field, so we are not storing card data anywhere near us.
+    customer_creation: 'if_required',
+    metadata: {
+      vin: ctx.vin,
+      product,
+      mileage: String(ctx.mileage),
+      zip: ctx.zip,
+      asking: ctx.asking === null ? '' : String(ctx.asking),
+    },
+    success_url: `${origin}/report/${ctx.vin}?paid={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${origin}/report/${ctx.vin}`,
   });
-  return { url: session.url || `/report/${vin}` };
+  return { url: session.url || `/report/${ctx.vin}` };
 }
 
-// Returns which product was paid for ('valuation' | 'history' | 'bundle'), or null.
-export async function getPaidProduct(vin: string, token: string): Promise<ProductId | null> {
-  // Dev-only unlock. Gated on NODE_ENV, NOT on HAS_STRIPE: production had no
-  // STRIPE_SECRET_KEY set in Vercel, which made HAS_STRIPE false and left this
-  // open to anyone on the live site via ?paid=dev-bundle.
-  if (token.startsWith('dev-') && !HAS_STRIPE && process.env.NODE_ENV !== 'production') {
-    const p = token.slice(4);
-    return isProductId(p) ? p : null;
-  }
-  if (!stripe) return null;
+export interface PaidSession {
+  product: ProductId;
+  ctx: CheckoutContext;
+  email: string | null;
+}
+
+/**
+ * Verify a returning customer actually paid, and recover what they told us.
+ *
+ * The session id in the URL is the proof of purchase. It is unguessable and we
+ * re-check `payment_status` against Stripe on every render rather than trusting
+ * the URL, so a shared link cannot unlock a different VIN.
+ */
+export async function getPaidSession(vin: string, token: string): Promise<PaidSession | null> {
+  if (!stripe || !token) return null;
   try {
     const s = await stripe.checkout.sessions.retrieve(token);
-    if (s.payment_status !== 'paid' || s.metadata?.vin !== vin) return null;
-    const p = s.metadata?.product || '';
-    return isProductId(p) ? p : null;
+    if (s.payment_status !== 'paid') return null;
+    const m = s.metadata || {};
+    if (m.vin !== vin) return null;
+    const product = m.product || '';
+    if (!isProductId(product)) return null;
+    const mileage = Number(m.mileage);
+    if (!Number.isFinite(mileage) || mileage <= 0) return null;
+    if (!m.zip) return null;
+    const asking = m.asking ? Number(m.asking) : null;
+    return {
+      product,
+      ctx: {
+        vin,
+        mileage,
+        zip: m.zip,
+        asking: Number.isFinite(asking as number) ? (asking as number) : null,
+      },
+      email: s.customer_details?.email || null,
+    };
   } catch {
     return null;
   }

@@ -37,9 +37,14 @@ async function call(path: string, params: Record<string, string | number>): Prom
     Object.entries(params).map(([k, v]) => [k, String(v)]),
   ).toString();
   try {
+    // Cache identical requests for 24h. Without this, a customer refreshing
+    // their paid report re-runs the lookup and we pay for it again: 20p a
+    // refresh on a $2.99 sale. The cache key is the full URL, so it is
+    // naturally scoped to VIN + ZIP + mileage, which is exactly the granularity
+    // a valuation is valid at.
     const res = await fetch(`${BASE_URL}${path}?${qs}`, {
       headers: { 'x-api-key': key },
-      cache: 'no-store',
+      next: { revalidate: 86400 },
     });
     // 204 is a legitimate "no data for this vehicle" and is not chargeable.
     if (res.status === 204) return null;
@@ -81,10 +86,15 @@ export async function getMarketValuation(
   const low = Number(d.low_price_usd);
   const high = Number(d.high_price_usd);
   if (!Number.isFinite(avg) || avg <= 0) return null;
+  // Do NOT fall back to the average when a bound is missing. Three identical
+  // figures labelled "lowest / average / highest" reads as a measured range
+  // that happens to be flat, which is a fabricated claim, and it also makes the
+  // verdict fire its "at or under the cheapest comparable" branch for a car
+  // priced exactly at the average.
   return {
     averagePrice: Math.round(avg),
-    lowPrice: Number.isFinite(low) && low > 0 ? Math.round(low) : Math.round(avg),
-    highPrice: Number.isFinite(high) && high > 0 ? Math.round(high) : Math.round(avg),
+    lowPrice: Number.isFinite(low) && low > 0 ? Math.round(low) : null,
+    highPrice: Number.isFinite(high) && high > 0 ? Math.round(high) : null,
     mileage: Math.round(mileage),
     zip: zip.trim(),
     fetchedAt: new Date().toISOString(),

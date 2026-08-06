@@ -1,34 +1,128 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { buildFreeReport } from '@/lib/report';
-import { sampleHistory, sampleValuation } from '@/lib/vehicledatabases';
-import ReportView from '@/components/report/ReportView';
+import { buildVerdict } from '@/lib/worthit-report';
+import WorthItReport from '@/components/report/WorthItReport';
+import { SITE_URL, PRODUCTS } from '@/lib/constants';
+import { breadcrumbSchema } from '@/lib/schema';
+import type { FactoryData, MarketValuation } from '@/lib/types';
+
+// A worked example so buyers can see what they get before paying.
+//
+// The vehicle, the valuation and the factory record are all REAL, from a
+// genuinely registered 2021 Toyota Corolla LE. Nothing here is invented. This
+// page previously rendered randomised placeholder data, including a synthetic
+// salvage brand on roughly one VIN in five, which is a bad thing to put in
+// front of a customer and a worse thing to leave on a live site.
+//
+// The figures are a fixed snapshot rather than a live lookup, so the page costs
+// nothing to serve and cannot drift unnoticed. The capture date is shown,
+// because a valuation without a date is meaningless.
 
 export const metadata: Metadata = {
-  title: 'Sample report',
-  description: 'See exactly what a full CarWorthIt report looks like, history and valuation, before you buy one.',
+  title: 'Sample report, see what you get before you pay',
+  description:
+    'A real CarWorthIt report for a 2021 Toyota Corolla LE: what it is worth locally, what it cost new, its factory options, open recalls, safety ratings and running costs.',
+  alternates: { canonical: `${SITE_URL}/sample-report` },
 };
 
-export const dynamic = 'force-dynamic';
+const SAMPLE_VIN = '5YFVPMAE9MP195479';
+const CAPTURED = '6 August 2026';
+const ASKING = 18500;
 
-const DEMO_VIN = '1HGCV1F30LA000000';
+const SAMPLE_VALUATION: MarketValuation = {
+  averagePrice: 19226,
+  lowPrice: 15999,
+  highPrice: 21997,
+  mileage: 50000,
+  zip: '10312',
+  fetchedAt: '2026-08-06T00:00:00.000Z',
+};
+
+const SAMPLE_FACTORY: FactoryData = {
+  year: '2021',
+  make: 'Toyota',
+  model: 'Corolla',
+  trim: 'LE',
+  bodyType: 'Sedan',
+  engine: '1.8L I4',
+  transmission: 'CVT',
+  drivetrain: 'FWD',
+  fuelType: 'Unleaded',
+  cityMpg: 32,
+  highwayMpg: 41,
+  doors: 4,
+  seats: 5,
+  msrp: 20375,
+  invoicePrice: 18958,
+  optionsMsrp: 1732,
+  deliveryCharges: 995,
+  combinedMsrp: 23102,
+  standardFeatures: [
+    { category: 'Safety & Driver Assist', description: 'Pre-Collision System with Pedestrian Detection' },
+    { category: 'Safety & Driver Assist', description: 'Lane Departure Alert with Steering Assist' },
+    { category: 'Safety & Driver Assist', description: 'Dynamic Radar Cruise Control' },
+    { category: 'Safety & Driver Assist', description: 'Automatic High Beams' },
+    { category: 'Safety & Driver Assist', description: 'Anti-lock Brakes' },
+    { category: 'Infotainment', description: 'Apple CarPlay' },
+    { category: 'Infotainment', description: 'Android Auto' },
+    { category: 'Infotainment', description: 'Touch Screen Audio' },
+    { category: 'Infotainment', description: 'Bluetooth Connection' },
+    { category: 'Comfort & Convenience', description: 'Automatic Air Conditioning' },
+    { category: 'Comfort & Convenience', description: 'Cruise Control' },
+    { category: 'Comfort & Convenience', description: 'Daytime Running Lights' },
+    { category: 'Exterior', description: 'LED Headlights' },
+    { category: 'Exterior', description: 'Body Colour Exterior Door Handles' },
+    { category: 'Interior', description: 'Driver Bucket Seat' },
+    { category: 'Interior', description: 'Folding Rear Seats' },
+  ],
+  installedOptions: [
+    { description: 'LE Convenience Package', msrp: 1150 },
+    { description: 'Carpet Floor Mats & Carpet Trunk Mat', msrp: 249 },
+    { description: 'Mudguards', msrp: 129 },
+    { description: 'Door Edge Guards', msrp: 125 },
+    { description: 'Rear Bumper Protector', msrp: 79 },
+    { description: '50 State Emissions', msrp: null },
+  ],
+  warranty: [
+    { type: 'total', months: 36, miles: 36000 },
+    { type: 'powertrain', months: 60, miles: 60000 },
+    { type: 'anti_corrosion', months: 60, miles: 9999999 },
+    { type: 'roadside_assistance', months: 24, miles: 9999999 },
+  ],
+};
 
 export default async function SampleReport() {
-  const free = await buildFreeReport(DEMO_VIN);
+  const free = await buildFreeReport(SAMPLE_VIN);
   if (!free) {
-    return <div className="container-x py-16 max-w-3xl"><p className="text-ink-2">Sample temporarily unavailable, please try a live VIN.</p></div>;
+    return (
+      <div className="container-x py-16 max-w-2xl">
+        <p className="text-ink-2">The sample is temporarily unavailable. Try a live VIN from the homepage.</p>
+      </div>
+    );
   }
-  // Demo page: always show a populated sample (never spends a credit or hits the API).
-  const history = sampleHistory(DEMO_VIN);
-  const valuation = sampleValuation(DEMO_VIN, free.specs.year);
+
+  const verdict = buildVerdict(ASKING, SAMPLE_VALUATION);
 
   return (
     <>
-      <div className="bg-brand/10 border-b border-brand/30 py-3 text-center text-sm">
-        <strong className="text-brand">Sample report.</strong> Every section shown unlocked.{' '}
-        <Link href="/#check" className="text-brand font-semibold hover:underline">Check your own car →</Link>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbSchema([
+              { name: 'Home', url: SITE_URL },
+              { name: 'Sample report', url: `${SITE_URL}/sample-report` },
+            ]),
+          ),
+        }}
+      />
+      <div className="border-b border-brand/30 bg-brand/10 py-3 text-center text-sm">
+        <strong className="text-brand">Sample {PRODUCTS.worthit.name}.</strong> A real 2021 Toyota Corolla LE at
+        50,000 miles, priced {CAPTURED}, with a seller asking $18,500.{' '}
+        <Link href="/" className="font-semibold text-brand hover:underline">Check your own car →</Link>
       </div>
-      <ReportView free={free} history={history} valuation={valuation} unlockedHistory unlockedValuation vin={DEMO_VIN} />
+      <WorthItReport report={{ free, valuation: SAMPLE_VALUATION, factory: SAMPLE_FACTORY, verdict, askingPrice: ASKING }} />
     </>
   );
 }

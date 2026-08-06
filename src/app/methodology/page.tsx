@@ -44,6 +44,14 @@ const SOURCES = [
     note: 'Recalls are matched by year, make and model, so a campaign limited to a narrow VIN range may show for a vehicle outside it. Always confirm with a dealer.',
   },
   {
+    field: 'Original MSRP, invoice, factory options, warranty',
+    source: 'Manufacturer build record for the specific VIN',
+    url: null,
+    type: 'Measured',
+    updates: 'Static, as built',
+    note: 'Coverage is not universal, especially on older vehicles. Where there is no record we say so and do not charge for a report we cannot produce.',
+  },
+  {
     field: 'Crash-test ratings',
     source: 'NHTSA NCAP 5-star safety ratings',
     url: 'https://www.nhtsa.gov/ratings',
@@ -60,28 +68,20 @@ const SOURCES = [
     note: 'EPA test-cycle figures at 15,000 miles a year. Real-world economy varies with driving style, climate and condition.',
   },
   {
-    field: 'Title brands, salvage, junk, flood, theft, odometer, auction records',
-    source: 'A licensed commercial US vehicle-data provider',
-    url: null,
-    type: 'Measured, where reported',
-    updates: 'Per lookup, live',
-    note: 'Only ever shows what was actually reported to an insurer, body shop, police force or DMV. A privately repaired accident may never appear anywhere.',
-  },
-  {
-    field: 'Market value',
-    source: 'Commercial market-pricing feed built on dealer listing comparables',
+    field: 'Market value (average, low, high)',
+    source: 'Licensed US market-pricing feed built on dealer listing comparables',
     url: null,
     type: 'Modelled',
     updates: 'Per lookup, live',
     note: 'A statistical estimate from comparable listings, not an appraisal. Condition, service history and local demand can move a real sale price either side of it.',
   },
   {
-    field: '5-year cost to own',
+    field: '5-year running costs',
     source: 'EPA fuel data plus US national averages',
     url: null,
     type: 'Estimated',
     updates: 'Reviewed periodically',
-    note: 'Only the fuel line is specific to your car. Insurance, maintenance, repairs, taxes and depreciation are national averages scaled by vehicle age, and are labelled as estimates in the report.',
+    note: 'Only the fuel line is specific to your car. Insurance, maintenance, repairs, taxes and fees are US national averages scaled by vehicle age. It EXCLUDES depreciation, which we show separately from the real sticker price against the current market value.',
   },
 ];
 
@@ -144,8 +144,8 @@ export default function Methodology() {
       <section className="mt-12">
         <h2 className="text-2xl font-bold">What our data cannot tell you</h2>
         <p className="mt-3 text-ink-2 leading-relaxed">
-          Stating this plainly matters more than the features list. No vehicle history report in the United States,
-          ours or anyone else&apos;s, can see the following:
+          Stating this plainly matters more than the features list. No vehicle valuation or history report in the
+          United States can see the following:
         </p>
         <ul className="mt-3 space-y-2 text-ink-2 leading-relaxed list-disc pl-5">
           <li>An accident that was never reported to an insurer, police force or body shop.</li>
