@@ -41,3 +41,8 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# Local API response fixtures. NEVER commit: this repo is public and the
+# Carketa payload contains comparable listings we are licensed to use but
+# not to redistribute.
+fixtures/

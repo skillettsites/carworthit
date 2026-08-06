@@ -105,6 +105,62 @@ export interface Valuation {
   isSample: boolean;
 }
 
+// ---------------------------------------------------------------------------
+// OneAuto US layer (Carketa market pricing + VIN Decode Plus). Replaces the
+// Vehicle Databases valuation, which took no mileage or location and priced a
+// 2006 Corvette ~40% low as a result.
+// ---------------------------------------------------------------------------
+
+/**
+ * Carketa market pricing, reduced to the three fields the licence permits us
+ * to show a consumer. The API also returns comparable listings, days on market
+ * and the comparables' mileage range; those are trade-only and are dropped at
+ * the client so they cannot be rendered by mistake.
+ */
+export interface MarketValuation {
+  averagePrice: number;
+  lowPrice: number;
+  highPrice: number;
+  mileage: number; // what we asked for, so the report can state its own basis
+  zip: string;
+  fetchedAt: string;
+}
+
+/** The original factory record, from OneAuto VIN Decode Plus (US). */
+export interface FactoryData {
+  year: string;
+  make: string;
+  model: string;
+  trim?: string;
+  bodyType?: string;
+  engine?: string;
+  transmission?: string;
+  drivetrain?: string;
+  fuelType?: string;
+  cityMpg?: number;
+  highwayMpg?: number;
+  doors?: number;
+  seats?: number;
+  msrp: number | null;
+  invoicePrice: number | null;
+  optionsMsrp: number | null;
+  deliveryCharges: number | null;
+  combinedMsrp: number | null;
+  standardFeatures: { category: string; description: string }[];
+  installedOptions: { description: string; msrp: number | null }[];
+  warranty: { type: string; months: number | null; miles: number | null }[];
+}
+
+/** The verdict the whole brand rests on: is this car worth it. */
+export interface WorthItVerdict {
+  /** Where the asking price sits against the local market range. */
+  standing: 'below' | 'fair' | 'above' | 'unknown';
+  headline: string;
+  detail: string;
+  /** Asking price minus the market average. Negative is a saving. */
+  differenceFromAverage: number | null;
+}
+
 export interface OwnershipCostEstimate {
   fiveYearTotal: number;
   depreciation: number;
