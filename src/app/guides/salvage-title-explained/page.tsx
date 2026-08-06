@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
+import { SITE_URL } from '@/lib/constants';
 import Article from '@/components/Article';
 import VinForm from '@/components/VinForm';
 
 export const metadata: Metadata = {
   title: 'Salvage, rebuilt & branded titles explained',
   description: 'What salvage, junk, flood, lemon and rebuilt title brands mean, how they hit value, and when to walk away.',
+  alternates: { canonical: `${SITE_URL}/guides/salvage-title-explained` },
 };
 
 export default function Page() {

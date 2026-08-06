@@ -37,10 +37,16 @@ export default function Footer() {
           </ul>
         </div>
         <div>
-          <div className="mb-3 font-semibold text-ink">Guides &amp; legal</div>
+          <div className="mb-3 font-semibold text-ink">What a car is worth</div>
           <ul className="space-y-2 text-ink-2">
+            <li><Link href="/blog/how-to-price-a-used-car-by-vin" className="hover:text-ink">Pricing a car by VIN</Link></li>
+            <li><Link href="/blog/kelley-blue-book-alternatives" className="hover:text-ink">KBB alternatives</Link></li>
+            <li><Link href="/blog/kbb-vs-edmunds-vs-nada" className="hover:text-ink">KBB vs Edmunds vs NADA</Link></li>
+            <li><Link href="/blog/carvana-vs-carmax-offer" className="hover:text-ink">Carvana vs CarMax</Link></li>
             <li><Link href="/blog" className="hover:text-ink">All guides</Link></li>
-            <li><Link href="/guides/what-is-a-vin" className="hover:text-ink">What is a VIN?</Link></li>
+          </ul>
+          <div className="mb-3 mt-6 font-semibold text-ink">Legal</div>
+          <ul className="space-y-2 text-ink-2">
             <li><Link href="/terms" className="hover:text-ink">Terms</Link></li>
             <li><Link href="/privacy" className="hover:text-ink">Privacy</Link></li>
             <li><Link href="/disclaimer" className="hover:text-ink">Data &amp; disclaimer</Link></li>

@@ -6,7 +6,7 @@ import JsonLd from '@/components/JsonLd';
 import SearchBox from '@/components/SearchBox';
 import StickyVinCta from '@/components/StickyVinCta';
 import { articleSchema, faqSchema, breadcrumbSchema } from '@/lib/schema';
-import { SITE_URL } from '@/lib/constants';
+import { SITE_URL, ANALYST } from '@/lib/constants';
 
 // Compact inline CTA injected mid-article (right after the problems table).
 function InlineCta() {
@@ -26,8 +26,16 @@ function InlineCta() {
   );
 }
 
-type Article = { slug: string; title: string; metaTitle: string; metaDescription: string; bodyHtml: string; faqs: { q: string; a: string }[] };
+type Article = { slug: string; title: string; metaTitle: string; metaDescription: string; bodyHtml: string; faqs: { q: string; a: string }[]; published?: string; updated?: string };
 const ARTICLES = articles as Article[];
+
+const fmtDate = (iso: string) =>
+  new Date(iso + 'T00:00:00Z').toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
 
 function decode(s: string) {
   return s
@@ -44,17 +52,30 @@ export function generateStaticParams() {
   return ARTICLES.map((a) => ({ slug: a.slug }));
 }
 
-// Related guides for internal linking (topical clustering). Prefer same content
-// type: "common problems" pages link to other problems pages, buying guides to guides.
+// Related guides, scored on shared slug terms rather than just content type.
+// The previous version sorted by "is this also a common-problems page" and
+// then took the first four, which meant every buying guide linked to the same
+// four articles regardless of subject. That wastes the strongest internal
+// linking signal on the site and gives a crawler no sense of topic clusters.
+const STOP = new Set(['a', 'an', 'the', 'to', 'of', 'for', 'and', 'is', 'in', 'how', 'what', 'your', 'you', 'car', 'used']);
+const terms = (slug: string) => new Set(slug.split('-').filter((w) => w.length > 2 && !STOP.has(w)));
+
 function relatedArticles(slug: string) {
+  const mine = terms(slug);
   const isProblems = slug.includes('common-problems');
   return ARTICLES.filter((a) => a.slug !== slug)
-    .sort((a, b) => {
-      const aSame = a.slug.includes('common-problems') === isProblems ? 0 : 1;
-      const bSame = b.slug.includes('common-problems') === isProblems ? 0 : 1;
-      return aSame - bSame;
+    .map((a) => {
+      const theirs = terms(a.slug);
+      let score = 0;
+      for (const t of mine) if (theirs.has(t)) score += 2;
+      // A model guide is most useful next to another model guide; an explainer
+      // next to another explainer.
+      if (a.slug.includes('common-problems') === isProblems) score += 1;
+      return { a, score };
     })
-    .slice(0, 4);
+    .sort((x, y) => y.score - x.score)
+    .slice(0, 4)
+    .map((x) => x.a);
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -82,7 +103,13 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
     <>
       <JsonLd
         data={[
-          articleSchema({ title: a.title, description: a.metaDescription, slug: a.slug }),
+          articleSchema({
+            title: a.title,
+            description: a.metaDescription,
+            slug: a.slug,
+            datePublished: a.published,
+            dateModified: a.updated || a.published,
+          }),
           faqSchema(a.faqs),
           breadcrumbSchema([
             { name: 'Home', url: SITE_URL },
@@ -95,7 +122,25 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
         <nav className="text-sm text-ink-2 mb-4">
           <Link href="/" className="hover:text-ink">Home</Link> / <Link href="/blog" className="hover:text-ink">Guides</Link>
         </nav>
-        <h1 className="text-3xl md:text-4xl font-extrabold leading-tight mb-6">{a.title}</h1>
+        <h1 className="text-3xl md:text-4xl font-extrabold leading-tight">{a.title}</h1>
+        <div className="mt-3 mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-2">
+          <span>
+            By{' '}
+            <Link href="/about" className="font-medium text-ink hover:text-brand">
+              {ANALYST.name}
+            </Link>
+            , {ANALYST.role}
+          </span>
+          {a.published && (
+            <>
+              <span aria-hidden>·</span>
+              <span>
+                {a.updated && a.updated !== a.published ? 'Updated' : 'Published'}{' '}
+                <time dateTime={a.updated || a.published}>{fmtDate(a.updated || a.published)}</time>
+              </span>
+            </>
+          )}
+        </div>
         <div className="article-body" dangerouslySetInnerHTML={{ __html: bodyBefore }} />
         <InlineCta />
         {bodyAfter && <div className="article-body" dangerouslySetInnerHTML={{ __html: bodyAfter }} />}

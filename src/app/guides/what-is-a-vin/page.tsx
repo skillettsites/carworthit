@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { SITE_URL } from '@/lib/constants';
 import Link from 'next/link';
 import Article from '@/components/Article';
 import VinForm from '@/components/VinForm';
@@ -6,6 +7,7 @@ import VinForm from '@/components/VinForm';
 export const metadata: Metadata = {
   title: 'What is a VIN and where do I find it?',
   description: 'A VIN is the 17-character code that identifies a specific vehicle. Here is what each part means and the five places you can find it.',
+  alternates: { canonical: `${SITE_URL}/guides/what-is-a-vin` },
 };
 
 export default function Page() {

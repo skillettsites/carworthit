@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Article from '@/components/Article';
-import { SITE_NAME, SUPPORT_EMAIL } from '@/lib/constants';
+import { SITE_NAME, SUPPORT_EMAIL, SITE_URL } from '@/lib/constants';
 
-export const metadata: Metadata = { title: 'Terms of Service', description: `Terms of Service for ${SITE_NAME}.` };
+export const metadata: Metadata = { title: 'Terms of Service', description: `Terms of Service for ${SITE_NAME}.`, alternates: { canonical: `${SITE_URL}/terms` } };
 
 export default function Page() {
   return (

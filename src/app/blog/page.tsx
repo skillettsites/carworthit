@@ -4,6 +4,7 @@ import articles from '@/content/articles.json';
 import SearchBox from '@/components/SearchBox';
 import { SITE_URL } from '@/lib/constants';
 import { breadcrumbSchema } from '@/lib/schema';
+import { ANALYST } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Used car guides: pricing, valuations and diminished value',
@@ -12,12 +13,23 @@ export const metadata: Metadata = {
   alternates: { canonical: `${SITE_URL}/blog` },
 };
 
-type Article = { slug: string; title: string; metaDescription: string };
+type Article = { slug: string; title: string; metaDescription: string; published?: string; updated?: string };
 
 // Grouped rather than dumped as one 48-item list. A flat list buries the
 // cluster that matters and gives crawlers no sense of which pages are the
 // hubs, and readers no way to find the one thing they came for.
 const GROUPS: { heading: string; blurb: string; slugs: string[] }[] = [
+  {
+    heading: 'What a car is worth',
+    blurb:
+      'Pricing a used car properly, and how the free valuation tools compare with each other and with a real cash offer.',
+    slugs: [
+      'how-to-price-a-used-car-by-vin',
+      'kelley-blue-book-alternatives',
+      'kbb-vs-edmunds-vs-nada',
+      'carvana-vs-carmax-offer',
+    ],
+  },
   {
     heading: 'Diminished value after an accident',
     blurb:
@@ -32,8 +44,8 @@ const GROUPS: { heading: string; blurb: string; slugs: string[] }[] = [
     ],
   },
   {
-    heading: 'What a car is worth, and what to pay',
-    blurb: 'Pricing a used car properly, and telling a fair asking price from an optimistic one.',
+    heading: 'Checking a car before you buy',
+    blurb: 'What the paid history services actually give you, and what you can get for nothing.',
     slugs: [
       'cheapest-vin-check',
       'free-vin-check',
@@ -89,12 +101,31 @@ export default function BlogIndex() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
+          __html: JSON.stringify([
             breadcrumbSchema([
               { name: 'Home', url: SITE_URL },
               { name: 'Guides', url: `${SITE_URL}/blog` },
             ]),
-          ),
+            // An explicit ItemList tells a crawler this is a hub and which
+            // pages it points at, rather than leaving it to infer from links.
+            {
+              '@context': 'https://schema.org',
+              '@type': 'CollectionPage',
+              name: 'CarWorthIt used car guides',
+              url: `${SITE_URL}/blog`,
+              author: { '@type': 'Person', name: ANALYST.name, jobTitle: ANALYST.role },
+              mainEntity: {
+                '@type': 'ItemList',
+                numberOfItems: (articles as Article[]).length,
+                itemListElement: (articles as Article[]).map((a, i) => ({
+                  '@type': 'ListItem',
+                  position: i + 1,
+                  url: `${SITE_URL}/blog/${a.slug}`,
+                  name: a.title,
+                })),
+              },
+            },
+          ]),
         }}
       />
 

@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
+import { SITE_URL } from '@/lib/constants';
 import Article from '@/components/Article';
 import VinForm from '@/components/VinForm';
 
 export const metadata: Metadata = {
   title: 'The used-car buying checklist',
   description: 'The exact paperwork, VIN and in-person checks to run before buying a used car in the US.',
+  alternates: { canonical: `${SITE_URL}/guides/used-car-checklist` },
 };
 
 export default function Page() {

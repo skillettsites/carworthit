@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
+import { SITE_URL } from '@/lib/constants';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Used car buying guides',
   description: 'Plain-English guides to checking a used car: VINs, title brands, odometer fraud, and what to look for before you buy.',
+  alternates: { canonical: `${SITE_URL}/guides` },
 };
 
 export const guides = [

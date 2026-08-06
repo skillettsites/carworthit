@@ -7,7 +7,13 @@ import articles from '@/content/articles.json';
 // to tell a crawler which pages are the hubs, so the money pages and the
 // diminished-value cluster are not weighted the same as a model guide.
 
-const DV_CLUSTER = new Set([
+// The two clusters we are actively betting on. Priority is relative, so this
+// just tells a crawler these are hubs rather than one of 40 model guides.
+const HUB_ARTICLES = new Set([
+  'how-to-price-a-used-car-by-vin',
+  'kelley-blue-book-alternatives',
+  'kbb-vs-edmunds-vs-nada',
+  'carvana-vs-carmax-offer',
   'what-is-diminished-value',
   'how-to-calculate-diminished-value',
   'how-to-file-a-diminished-value-claim',
@@ -51,11 +57,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.5,
   }));
 
-  const blogRoutes = (articles as { slug: string }[]).map((a) => ({
+  // Real per-article dates. Claiming all 52 changed today is a false freshness
+  // signal, and one that crawlers learn to discount.
+  const blogRoutes = (articles as { slug: string; published?: string; updated?: string }[]).map((a) => ({
     url: `${SITE_URL}/blog/${a.slug}`,
-    lastModified: now,
+    lastModified: new Date(`${a.updated || a.published || '2026-07-13'}T00:00:00Z`),
     changeFrequency: 'monthly' as const,
-    priority: DV_CLUSTER.has(a.slug) ? 0.8 : 0.5,
+    priority: HUB_ARTICLES.has(a.slug) ? 0.8 : 0.5,
   }));
 
   return [...routes, ...guideRoutes, ...blogRoutes];

@@ -17,15 +17,30 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
-  robots: { index: true, follow: true },
   openGraph: {
     type: 'website',
     url: SITE_URL,
     siteName: SITE_NAME,
+    locale: 'en_US',
     title: `Price My Car by VIN, US Car Value Check | ${SITE_NAME}`,
     description: SITE_DESCRIPTION,
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: `Price My Car by VIN, US Car Value Check | ${SITE_NAME}`,
+    description: SITE_DESCRIPTION,
+  },
+  // Explicitly the homepage. Every other page sets its own; without that, a
+  // page inherits this and declares itself a duplicate of the homepage, which
+  // is how six real pages were quietly telling Google not to index them.
   alternates: { canonical: SITE_URL },
+  // Let AI assistants and search previews quote generously rather than
+  // truncating to a snippet, since being quoted accurately is the whole point.
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large', 'max-video-preview': -1 },
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
