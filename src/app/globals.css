@@ -159,3 +159,53 @@ body {
 .cxm .cta.green:hover{filter:brightness(1.07);}
 .cxm .fine{font-size:11px;color:var(--dim);margin-top:9px;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;}
 .cxm .fine .dot{opacity:.5;}
+
+/* ------------------------------------------------------------------
+   Buy-card and modal pieces the original CarCostCheck port left out.
+   The .cxc/.cxm blocks above were copied across but never wired to a
+   component, so the classes their markup actually uses were missing.
+   ------------------------------------------------------------------ */
+.cxc .sub{font-size:13px;color:var(--muted);line-height:1.35;}
+.cxc .feats.two{grid-template-columns:1fr 1fr;}
+.cxc .cta.ghost{background:transparent;border:1px solid var(--card-border);color:var(--text);}
+.cxc .cta.ghost:hover{border-color:var(--blue-soft);background:rgba(59,130,246,.08);}
+.cxc .card{outline:none;}
+.cxc .card:focus-visible{box-shadow:0 0 0 2px var(--blue-soft);}
+@media (max-width:640px){
+  .cxc .grid{grid-template-columns:1fr;}
+  .cxc .feats,.cxc .feats.two{grid-template-columns:1fr;}
+}
+
+/* Modal form fields. CarCostCheck asks for a postcode; we ask for the
+   odometer reading, ZIP and asking price, so the class is reused rather
+   than renamed to keep the ported styles applying. */
+.cxm .field-label{margin-top:14px;margin-bottom:5px;font-size:12.5px;font-weight:700;color:var(--text);}
+.cxm .postcode{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--card-border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:15px;font-family:inherit;}
+.cxm .postcode::placeholder{color:var(--dim);}
+.cxm .postcode:focus{outline:none;border-color:var(--blue-soft);box-shadow:0 0 0 2px rgba(59,130,246,.25);}
+.cxm .field-hint{margin-top:5px;font-size:11.5px;color:var(--dim);line-height:1.4;}
+.cxm .err{margin-top:12px;background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.4);color:#fca5a5;border-radius:10px;padding:9px 11px;font-size:12.5px;font-weight:600;}
+
+/* Multi-vehicle basket. */
+.cxm .mv{margin-top:16px;}
+.cxm .mv-toggle{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;text-align:left;cursor:pointer;border:1px dashed rgba(34,197,94,.45);background:rgba(34,197,94,.06);border-radius:12px;padding:10px 12px;color:var(--green-soft);font-size:13px;font-weight:800;font-family:inherit;}
+.cxm .mv-toggle:hover{background:rgba(34,197,94,.12);}
+.cxm .mv-toggle small{display:block;margin-top:2px;font-size:10.5px;font-weight:500;color:var(--muted);}
+.cxm .mv-toggle .chev{transition:transform .15s ease;}
+.cxm .mv-toggle .chev.open{transform:rotate(180deg);}
+.cxm .mv-body{margin-top:8px;border:1px solid var(--card-border);background:rgba(34,197,94,.04);border-radius:12px;padding:12px;}
+.cxm .mv-note{font-size:11.5px;color:var(--muted);line-height:1.5;margin-bottom:10px;}
+.cxm .mv-row{display:flex;align-items:center;gap:8px;margin:6px 0;}
+.cxm .mv-row.sub{margin-top:0;}
+.cxm .mv-vin{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;font-weight:700;letter-spacing:.06em;color:var(--text);background:rgba(255,255,255,.06);border:1px solid var(--card-border);border-radius:8px;padding:9px 10px;overflow-x:auto;white-space:nowrap;}
+.cxm .mv-input{flex:1;min-width:0;background:rgba(255,255,255,.05);border:1px dashed var(--blue-soft);border-radius:8px;padding:9px 10px;color:var(--text);font-size:13px;font-family:inherit;text-transform:uppercase;}
+.cxm .mv-input::placeholder{text-transform:none;color:var(--dim);}
+.cxm .mv-input:focus{outline:none;border-style:solid;border-color:var(--blue-soft);}
+.cxm .mv-price{width:74px;text-align:right;font-size:13px;font-weight:800;color:var(--text);line-height:1.15;flex-shrink:0;}
+.cxm .mv-price small{display:block;font-size:10px;color:var(--dim);text-decoration:line-through;font-weight:600;}
+.cxm .mv-spacer{width:26px;flex-shrink:0;}
+.cxm .mv-x{width:26px;height:26px;flex-shrink:0;border:none;border-radius:50%;background:rgba(255,255,255,.1);color:var(--muted);font-size:11px;cursor:pointer;}
+.cxm .mv-x:hover{background:rgba(220,38,38,.25);color:#fca5a5;}
+.cxm .mv-item{border-top:1px solid var(--card-border);padding-top:8px;margin-top:8px;}
+.cxm .mv-add{margin-top:10px;width:100%;border:1px dashed var(--blue-soft);background:transparent;border-radius:10px;padding:9px;color:var(--blue-soft);font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;}
+.cxm .mv-add:hover{background:rgba(59,130,246,.1);}

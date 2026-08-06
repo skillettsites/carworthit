@@ -62,14 +62,17 @@ function Row({ label, value }: { label: string; value?: string | null }) {
 
 export default function WorthItReport({
   report,
-  unlock,
+  buy,
   pack,
+  siblings,
 }: {
   report: Report;
-  /** The buy/upgrade form. Rendered where the locked content would sit. */
-  unlock?: React.ReactNode;
+  /** The buy cards. Rendered at the TOP, the way CarCostCheck does it. */
+  buy?: React.ReactNode;
   /** Top tier only. Built server-side so the logic never ships to the client. */
   pack?: Pack | null;
+  /** Other vehicles bought in the same order, for the switcher. */
+  siblings?: { vins: string[]; index: number; token: string };
 }) {
   const { free, valuation, factory, askingPrice } = report;
   const specs = free.specs;
@@ -105,6 +108,49 @@ export default function WorthItReport({
           )}
         </div>
       </div>
+
+      {/* Switcher for a multi-vehicle order. Sits above everything so a buyer
+          who paid for five cars can see all five and move between them. */}
+      {siblings && siblings.vins.length > 1 && (
+        <div className="border-b border-border bg-white">
+          <div className="container-x max-w-4xl py-3">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-2">
+              Your order, {siblings.vins.length} vehicles
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {siblings.vins.map((v, i) => {
+                const here = i === siblings.index;
+                return (
+                  <a
+                    key={v}
+                    href={`/report/${v}?paid=${encodeURIComponent(siblings.token)}`}
+                    aria-current={here ? 'page' : undefined}
+                    className={`rounded-lg border px-3 py-2 font-mono text-xs transition-colors ${
+                      here
+                        ? 'border-brand bg-brand/10 font-bold text-brand'
+                        : 'border-border text-ink-2 hover:border-brand hover:text-ink'
+                    }`}
+                  >
+                    {here && <span aria-hidden="true">▸ </span>}
+                    {v}
+                  </a>
+                );
+              })}
+              <a
+                href={`/compare?paid=${encodeURIComponent(siblings.token)}`}
+                className="rounded-lg border-2 border-brand bg-brand px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-brand-dark"
+              >
+                Compare all {siblings.vins.length} →
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Buy cards at the TOP, before the free content. The wrapper lives
+          inside BuyCards so a top-tier buyer, for whom it renders nothing,
+          does not get an empty bordered strip across their report. */}
+      {buy}
 
       <div className="container-x py-8 max-w-4xl space-y-6">
         {/* THE VERDICT */}
@@ -170,9 +216,6 @@ export default function WorthItReport({
 
         {/* NEGOTIATION PACK, top tier only */}
         {pack && <NegotiationPack pack={pack} />}
-
-        {/* BUY / UPGRADE */}
-        {unlock}
 
         {/* WHAT IT COST NEW */}
         {factory && (factory.combinedMsrp || factory.msrp) && (

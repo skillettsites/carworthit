@@ -11,7 +11,7 @@ import { SITE_URL, includesFactory, includesNegotiation } from '@/lib/constants'
 import { logLookup, logPurchase, getCachedReport, cacheReport, healCachedReport } from '@/lib/db';
 import type { FactoryData, MarketValuation } from '@/lib/types';
 import WorthItReport from '@/components/report/WorthItReport';
-import ValuationUnlock from '@/components/report/ValuationUnlock';
+import BuyCards from '@/components/report/BuyCards';
 import SearchBox from '@/components/SearchBox';
 
 export const dynamic = 'force-dynamic';
@@ -55,14 +55,61 @@ export default async function ReportPage({ params, searchParams }: { params: Par
 
   const free = await buildFreeReport(vin);
   if (!free) {
+    // A paying customer must never hit a dead end here.
+    //
+    // This branch fires whenever NHTSA vPIC cannot decode the VIN, and vPIC
+    // returns 503 often enough that we already carry a snapshot fallback on
+    // /sample-report for exactly that reason. Because `success_url` always
+    // points at the FIRST vehicle, a five-car buyer whose first VIN failed to
+    // decode lost the only door into their order: no sibling links, no
+    // comparison, no refund route. So resolve the payment before bailing, and
+    // if there is one, hand back the rest of the order and a way to reach us.
+    const paidOnFail = typeof sp.paid === 'string' ? await getPaidSession(vin, sp.paid) : null;
     return (
       <Shell>
         <h1 className="text-2xl font-bold">We couldn&apos;t decode that VIN</h1>
         <p className="mt-2 text-ink-2">
-          The VIN <span className="font-mono">{vin}</span> didn&apos;t return a vehicle from the NHTSA database. Check
-          the characters and try again.
+          The VIN <span className="font-mono">{vin}</span> didn&apos;t return a vehicle from the NHTSA database. That
+          usually means a typo, but NHTSA also goes down from time to time, so it is worth trying again shortly.
         </p>
-        <div className="mt-6 max-w-xl"><SearchBox /></div>
+        {paidOnFail ? (
+          <div className="mt-6 rounded-2xl border border-brand/40 bg-brand/5 p-5">
+            <p className="text-sm font-semibold text-ink">Your purchase is safe.</p>
+            {paidOnFail.vins.length > 1 && (
+              <>
+                <p className="mt-2 text-sm text-ink-2">The other vehicles in this order are ready:</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {paidOnFail.vins
+                    .filter((v) => v !== vin)
+                    .map((v) => (
+                      <Link
+                        key={v}
+                        href={`/report/${v}?paid=${encodeURIComponent(sp.paid as string)}`}
+                        className="rounded-lg border border-border bg-white px-3 py-2 font-mono text-xs text-ink-2 hover:border-brand hover:text-ink"
+                      >
+                        {v}
+                      </Link>
+                    ))}
+                  <Link
+                    href={`/compare?paid=${encodeURIComponent(sp.paid as string)}`}
+                    className="rounded-lg border-2 border-brand bg-brand px-3 py-2 text-xs font-bold text-white hover:bg-brand-dark"
+                  >
+                    Compare all →
+                  </Link>
+                </div>
+              </>
+            )}
+            <p className="mt-3 text-sm text-ink-2">
+              Keep this page&apos;s link. If this VIN still will not decode, email{' '}
+              <a href="mailto:support@carworthit.com" className="font-semibold text-brand hover:underline">
+                support@carworthit.com
+              </a>{' '}
+              and we will sort it out or refund you.
+            </p>
+          </div>
+        ) : (
+          <div className="mt-6 max-w-xl"><SearchBox /></div>
+        )}
       </Shell>
     );
   }
@@ -94,7 +141,10 @@ export default async function ReportPage({ params, searchParams }: { params: Par
   let valuation: MarketValuation | null = null;
   let factory: FactoryData | null = null;
   if (paid) {
-    const token = sp.paid as string;
+    // The cache key, NOT the raw session id. One payment can cover five
+    // vehicles, and `cwi_reports` is keyed on this value, so sharing the raw
+    // session id across them would give all five the first vehicle's report.
+    const token = paid.cacheKey;
 
     // Serve a previously purchased report from cache. Without this, every
     // revisit re-calls the paid APIs: a buyer who bookmarks their report and
@@ -139,17 +189,23 @@ export default async function ReportPage({ params, searchParams }: { params: Par
       }
     }
 
-    logPurchase({
-      sessionId: sp.paid as string,
-      // What Stripe actually collected, not the tier's list price. The old
-      // inline ternary logged every non-worthit sale at 299, and a list price
-      // would now over-report every upgrade, which is charged as the difference.
-      amountCents: paid.amountCents,
-      product: paid.product,
-      email: paid.email,
-      vin,
-      state: h.get('x-vercel-ip-country-region'),
-    });
+    // Log the sale ONCE per order, against the first vehicle. Viewing vehicles
+    // two through five must not each insert a row for the same payment: the
+    // unique index would reject the duplicates anyway, but only after this had
+    // reported one $22 basket as five separate $22 sales.
+    if (paid.index === 0) {
+      logPurchase({
+        sessionId: sp.paid as string,
+        // What Stripe actually collected, not the tier's list price. The old
+        // inline ternary logged every non-worthit sale at 299, a list price
+        // would over-report every upgrade, and neither knew about baskets.
+        amountCents: paid.amountCents,
+        product: paid.product,
+        email: paid.email,
+        vin,
+        state: h.get('x-vercel-ip-country-region'),
+      });
+    }
   }
 
   const verdict = buildVerdict(paid?.ctx.asking ?? null, valuation);
@@ -173,9 +229,18 @@ export default async function ReportPage({ params, searchParams }: { params: Par
       <WorthItReport
         report={{ free, valuation, factory, verdict, askingPrice: paid?.ctx.asking ?? null }}
         pack={pack}
-        unlock={
-          <ValuationUnlock
+        siblings={
+          paid && paid.vins.length > 1
+            ? { vins: paid.vins, index: paid.index, token: sp.paid as string }
+            : undefined
+        }
+        // Cards at the top of the report, the way CarCostCheck does it.
+        buy={
+          <BuyCards
             vin={vin}
+            vehicle={[free.specs.year, free.specs.make, free.specs.model, factory?.trim || free.specs.trim]
+              .filter(Boolean)
+              .join(' ')}
             tier={paid?.product ?? null}
             defaults={paid ? { mileage: paid.ctx.mileage, zip: paid.ctx.zip, asking: paid.ctx.asking } : undefined}
             paidToken={paid ? (sp.paid as string) : null}
