@@ -17,7 +17,7 @@ const faqs = [
   { q: 'How much does a car depreciate per year?', a: 'A typical new car loses about 20 to 30 percent of its value in the first year and roughly 15 percent a year after that, so it is worth around 40 percent of its original price after five years. Reliable brands like Toyota and Honda depreciate more slowly, while luxury cars and many EVs fall faster.' },
   { q: 'Which cars hold their value best?', a: 'Trucks, and reliable brands such as Toyota, Honda, Lexus and Subaru, hold value best. A Toyota Tacoma or 4Runner can keep 60 percent or more of its value after five years. Luxury sedans, large EVs and cars with weak reliability records tend to lose value fastest.' },
   { q: 'Why do new cars lose so much value in the first year?', a: 'A car stops being new the moment it is driven off the lot, and buyers will not pay new-car prices for a used one. First-year depreciation is the steepest, often 20 to 30 percent, which is why buying a lightly used car two to three years old avoids the biggest single hit.' },
-  { q: 'How do I find a specific car’s real value?', a: 'Depreciation curves are estimates. For an exact figure on a specific vehicle, run its VIN on CarWorthIt to get a real market valuation with trade-in, private-party and dealer-retail values based on the actual year, mileage and options.' },
+  { q: 'How do I find a specific car’s real value?', a: 'Depreciation curves are estimates. For a figure on one specific car, run its VIN on CarWorthIt. It prices that exact vehicle at its mileage near your ZIP code, showing the average, lowest and highest asking price locally, plus a verdict on whether the seller is asking too much.' },
 ];
 
 export default function Page() {
@@ -65,7 +65,7 @@ export default function Page() {
 
         <div className="mt-12 rounded-2xl border-2 border-brand bg-gradient-to-br from-blue-50 to-cyan-50 p-6 md:p-8 text-center">
           <h2 className="text-xl font-bold">Want a real value for a specific car?</h2>
-          <p className="mt-2 text-ink-2">Run its VIN for a market valuation with trade-in, private-party and dealer-retail prices.</p>
+          <p className="mt-2 text-ink-2">Run its VIN to see the average, lowest and highest asking price near you at that mileage, plus a verdict on what the seller is asking.</p>
           <div className="mt-5 max-w-xl mx-auto"><SearchBox /></div>
         </div>
 

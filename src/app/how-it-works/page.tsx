@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import VinForm from '@/components/VinForm';
 import { PRODUCTS, SITE_URL } from '@/lib/constants';
 import { howToSchema, breadcrumbSchema } from '@/lib/schema';
@@ -28,7 +27,11 @@ const steps = [
   },
   {
     name: 'Get the valuation and the verdict',
-    text: `From ${price} we price the car against comparable vehicles currently listed for sale near you, and show the local average, the lowest and the highest asking prices. Tell us what the seller wants and we say plainly whether it is fair, cheap, or too much.`,
+    text: `From ${price} you get what that specific car is worth at its mileage in your local market, with the local range from lowest to highest. Tell us what the seller wants and we say plainly whether it is fair, cheap, or too much.`,
+  },
+  {
+    name: 'Take the Negotiation Bundle with you',
+    text: `The ${PRODUCTS.negotiation.name}, $${PRODUCTS.negotiation.price}, turns the valuation into a plan: where to open, what to aim to pay, when to walk away, your case for paying less, what the seller will argue back, and the order to say it in.`,
   },
 ];
 
@@ -54,7 +57,7 @@ export default function HowItWorks() {
 
       <h1 className="text-4xl font-extrabold">How it works</h1>
       <p className="mt-4 text-lg text-ink-2 leading-relaxed">
-        Four steps, about a minute. The VIN report is free; you only pay if you want to know what the car is worth.
+        About a minute. The VIN report is free; you only pay if you want to know what the car is worth.
       </p>
 
       <ol className="mt-10 space-y-8">
@@ -71,25 +74,11 @@ export default function HowItWorks() {
         ))}
       </ol>
 
-      <div className="mt-12 rounded-2xl border border-border bg-surface p-6">
-        <h2 className="text-xl font-bold">Where the data comes from</h2>
-        <ul className="mt-3 space-y-2 text-sm leading-relaxed text-ink-2">
-          <li><strong className="text-ink">A licensed US vehicle-pricing provider</strong>, for market values built from comparable cars currently listed near your ZIP code.</li>
-          <li><strong className="text-ink">The factory build record</strong> for your exact VIN, for original MSRP, dealer invoice price, fitted options, standard equipment and warranty.</li>
-          <li><strong className="text-ink">NHTSA</strong>, for VIN decoding, open safety recalls and crash-test ratings.</li>
-          <li><strong className="text-ink">EPA fueleconomy.gov</strong>, for official MPG and annual fuel cost.</li>
-        </ul>
-        <p className="mt-3 text-xs text-ink-2">
-          Full detail, including what is measured and what is estimated, is on our{' '}
-          <Link href="/methodology" className="text-brand hover:underline">methodology page</Link>.
-        </p>
-      </div>
-
-      <div className="mt-8 rounded-2xl border border-border bg-white p-6">
+      <div className="mt-12 rounded-2xl border border-border bg-white p-6">
         <h2 className="text-xl font-bold">What we don&apos;t do</h2>
         <p className="mt-2 text-sm leading-relaxed text-ink-2">
           We do not sell a vehicle history report. Accident records and title brands in the United States sit behind
-          licences we do not hold, and we would rather tell you that than sell a thin substitute. For title, salvage
+          licenses we do not hold, and we would rather tell you that than sell a thin substitute. For title, salvage
           and theft history, use an NMVTIS-approved provider. CarWorthIt is not affiliated with Carfax, AutoCheck,
           Experian or Kelley Blue Book, and is not an approved NMVTIS data provider.
         </p>

@@ -28,7 +28,7 @@ export interface RunningCosts {
   co2?: number;
   isElectric?: boolean;
   rangeMiles?: number; // total EPA range for EVs
-  displ?: string; // engine displacement (L) — used to backfill specs.engine
+  displ?: string; // engine displacement (L) - used to backfill specs.engine
   cylinders?: string;
   source: 'fueleconomy.gov' | 'estimated';
 }

@@ -101,7 +101,9 @@ export default function SearchBox({ dark = false }: { dark?: boolean }) {
               value={vin}
               onChange={(e) => setVin(e.target.value.toUpperCase())}
               placeholder="Enter 17-character VIN"
-              aria-label="VIN"
+              aria-label="Vehicle Identification Number"
+              aria-invalid={error ? true : undefined}
+              aria-describedby="searchbox-msg"
               maxLength={17}
               className="flex-1 rounded-xl bg-transparent px-4 py-4 font-mono tracking-wider text-lg text-ink outline-none placeholder:text-slate-400"
             />
@@ -117,10 +119,10 @@ export default function SearchBox({ dark = false }: { dark?: boolean }) {
       )}
 
       {error ? (
-        <p className={`mt-2 text-sm ${dark ? 'text-red-300' : 'text-bad'}`}>{error}</p>
+        <p id="searchbox-msg" role="alert" className={`mt-2 text-sm ${dark ? 'text-red-300' : 'text-bad'}`}>{error}</p>
       ) : (
-        <p className={`mt-2 text-sm ${dark ? 'text-slate-300' : 'text-ink-2'}`}>
-          {tab === 'plate' ? 'Free preview instantly. We’ll find the VIN from the plate.' : 'The VIN is on the dashboard, door jamb, or title.'}
+        <p id="searchbox-msg" className={`mt-2 text-sm ${dark ? 'text-slate-300' : 'text-ink-2'}`}>
+          {tab === 'plate' ? 'Free report instantly. We’ll find the VIN from the plate.' : 'The VIN is on the dashboard, door jamb, or title.'}
         </p>
       )}
     </div>

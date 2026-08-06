@@ -17,17 +17,20 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
+  // Deliberately NO `url` or `title` here. Next.js inherits the whole
+  // openGraph object into any page that does not set its own, so pinning them
+  // at the root made 19 of 21 routes announce themselves as the homepage:
+  // /pricing and /about both emitted og:url = https://carworthit.com. Next
+  // fills og:title from each page's own resolved title when it is absent here,
+  // which is what we want. The homepage sets its own url in page.tsx.
   openGraph: {
     type: 'website',
-    url: SITE_URL,
     siteName: SITE_NAME,
     locale: 'en_US',
-    title: `Price My Car by VIN, US Car Value Check | ${SITE_NAME}`,
     description: SITE_DESCRIPTION,
   },
   twitter: {
     card: 'summary_large_image',
-    title: `Price My Car by VIN, US Car Value Check | ${SITE_NAME}`,
     description: SITE_DESCRIPTION,
   },
   // Explicitly the homepage. Every other page sets its own; without that, a
@@ -49,8 +52,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="min-h-full flex flex-col bg-bg text-ink">
         <JsonLd data={[organizationSchema(), websiteSchema()]} />
         <GoogleAnalytics />
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-brand focus:px-4 focus:py-2 focus:font-semibold focus:text-white"
+        >
+          Skip to content
+        </a>
         <Header />
-        <main className="flex-1">{children}</main>
+        <main id="main" className="flex-1">{children}</main>
         <Footer />
       </body>
     </html>

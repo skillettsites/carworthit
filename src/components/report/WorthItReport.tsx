@@ -1,5 +1,7 @@
 import type { WorthItReport as Report } from '@/lib/worthit-report';
 import { buildVerdict, depreciation, groupFeatures } from '@/lib/worthit-report';
+import type { NegotiationPack as Pack } from '@/lib/negotiation';
+import NegotiationPack from './NegotiationPack';
 
 // The paid Worth-It report.
 //
@@ -27,7 +29,7 @@ const warrantyLabel = (t: string) =>
   WARRANTY_LABELS[t.toLowerCase()] ||
   t.replace(/_/g, ' ').replace(/^./, (c) => c.toUpperCase());
 
-/** 9,999,999 is this API's sentinel for an unlimited-mileage warranty. */
+/** The feed uses a 7-digit sentinel (9,999,999) for unlimited mileage. */
 const warrantyMiles = (m: number | null) =>
   m === null ? null : m >= 999999 ? 'Unlimited miles' : `${m.toLocaleString('en-US')} miles`;
 
@@ -61,10 +63,13 @@ function Row({ label, value }: { label: string; value?: string | null }) {
 export default function WorthItReport({
   report,
   unlock,
+  pack,
 }: {
   report: Report;
   /** The buy/upgrade form. Rendered where the locked content would sit. */
   unlock?: React.ReactNode;
+  /** Top tier only. Built server-side so the logic never ships to the client. */
+  pack?: Pack | null;
 }) {
   const { free, valuation, factory, askingPrice } = report;
   const specs = free.specs;
@@ -114,8 +119,8 @@ export default function WorthItReport({
         {/* WHAT IT IS WORTH */}
         {valuation && (
           <Section
-            title="What it's worth now"
-            sub={`Based on comparable cars currently for sale near ZIP ${valuation.zip}, at around ${valuation.mileage.toLocaleString('en-US')} miles.`}
+            title="What this car is worth"
+            sub={`Priced for this VIN: its exact trim and the options it was built with, at ${valuation.mileage.toLocaleString('en-US')} miles, in the market around ZIP ${valuation.zip}.`}
           >
             {/* The low/high tiles only appear when the feed actually gave a
                 range. Repeating the average in all three slots would present a
@@ -146,15 +151,25 @@ export default function WorthItReport({
                 </div>
                 <div className="mt-2 flex justify-between">
                   <span className="text-ink-2">Against the market average</span>
-                  <span className={`font-bold ${verdict.differenceFromAverage > 0 ? 'text-bad' : 'text-good'}`}>
-                    {verdict.differenceFromAverage > 0 ? '+' : '−'}
-                    {usd(Math.abs(verdict.differenceFromAverage))}
-                  </span>
+                  {/* A car priced exactly at the average used to render as a
+                      green "−$0", which reads as a saving of nothing. Zero is
+                      its own case and gets said in words. */}
+                  {verdict.differenceFromAverage === 0 ? (
+                    <span className="font-bold text-ink">Exactly the average</span>
+                  ) : (
+                    <span className={`font-bold ${verdict.differenceFromAverage > 0 ? 'text-bad' : 'text-good'}`}>
+                      {verdict.differenceFromAverage > 0 ? '+' : '−'}
+                      {usd(Math.abs(verdict.differenceFromAverage))}
+                    </span>
+                  )}
                 </div>
               </div>
             )}
           </Section>
         )}
+
+        {/* NEGOTIATION PACK, top tier only */}
+        {pack && <NegotiationPack pack={pack} />}
 
         {/* BUY / UPGRADE */}
         {unlock}
@@ -217,15 +232,15 @@ export default function WorthItReport({
             {free.runningCosts && (
               <div className="grid gap-4 sm:grid-cols-3">
                 <div className="rounded-xl bg-surface border border-border p-4 text-center">
-                  <div className="text-2xl font-bold">{free.runningCosts.mpgCombined ?? '—'}</div>
+                  <div className="text-2xl font-bold">{free.runningCosts.mpgCombined ?? 'n/a'}</div>
                   <div className="text-xs text-ink-2 mt-1">MPG combined</div>
                 </div>
                 <div className="rounded-xl bg-surface border border-border p-4 text-center">
-                  <div className="text-2xl font-bold">{free.runningCosts.mpgCity ?? '—'}</div>
+                  <div className="text-2xl font-bold">{free.runningCosts.mpgCity ?? 'n/a'}</div>
                   <div className="text-xs text-ink-2 mt-1">MPG city</div>
                 </div>
                 <div className="rounded-xl bg-surface border border-border p-4 text-center">
-                  <div className="text-2xl font-bold">{free.runningCosts.mpgHighway ?? '—'}</div>
+                  <div className="text-2xl font-bold">{free.runningCosts.mpgHighway ?? 'n/a'}</div>
                   <div className="text-xs text-ink-2 mt-1">MPG highway</div>
                 </div>
               </div>
@@ -278,14 +293,27 @@ export default function WorthItReport({
                 ['Frontal', free.safety.frontal],
                 ['Side', free.safety.side],
                 ['Rollover', free.safety.rollover],
-              ].map(([label, v]) => (
-                <div key={String(label)} className="rounded-xl bg-surface border border-border p-4 text-center">
-                  <div className="text-lg tracking-tight text-warn">
-                    {typeof v === 'number' && v > 0 ? '★'.repeat(v) + '☆'.repeat(5 - v) : <span className="text-ink-2 text-sm">n/a</span>}
+              ].map(([label, v]) => {
+                const rated = typeof v === 'number' && v > 0;
+                return (
+                  <div key={String(label)} className="rounded-xl bg-surface border border-border p-4 text-center">
+                    {/* The stars are decorative: repeated ★ glyphs read out as
+                        "black star black star black star" or as nothing at all,
+                        so the rating is also stated in words for assistive tech
+                        and the count is shown to everyone. */}
+                    <div className="text-lg tracking-tight text-warn" aria-hidden="true">
+                      {rated ? '★'.repeat(v as number) + '☆'.repeat(5 - (v as number)) : <span className="text-ink-2 text-sm">n/a</span>}
+                    </div>
+                    <div className="text-xs text-ink-2 mt-1">
+                      {String(label)}
+                      {rated && <span className="ml-1 font-semibold text-ink">{v}/5</span>}
+                    </div>
+                    <span className="sr-only">
+                      {rated ? `${String(label)} rating, ${v} out of 5 stars` : `${String(label)} rating not available`}
+                    </span>
                   </div>
-                  <div className="text-xs text-ink-2 mt-1">{String(label)}</div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
           {free.recalls === null ? (
@@ -364,28 +392,20 @@ export default function WorthItReport({
           </Section>
         )}
 
-        {/* SOURCES */}
-        <section className="rounded-2xl border border-border bg-white p-6 text-sm text-ink-2">
-          <div className="font-semibold text-ink mb-2">Where this report comes from</div>
-          <p className="leading-relaxed">
-            Specifications, open recalls and safety ratings come from NHTSA, and fuel economy from the EPA. The
-            five-year running-cost figure is our own estimate.
-            {valuation
-              ? ' Market values are from a licensed US vehicle-pricing provider, calculated from comparable cars currently listed for sale near your ZIP code.'
-              : ''}
-            {factory
-              ? ' Original sticker price, dealer invoice, factory options and warranty come from the manufacturer build record for this VIN.'
-              : ''}
+        {/* Kept deliberately short. The old block opened with a breakdown of who
+            supplies what and led with the caveat rather than the product, which
+            read as an apology for the report the customer had just bought. The
+            two things a buyer genuinely needs are here; the full sourcing lives
+            on /methodology for editors, and is no longer advertised to
+            customers. */}
+        <section className="rounded-2xl border border-border bg-white p-6 text-xs leading-relaxed text-ink-2">
+          <p>
+            Market values are an estimate, not an appraisal. Condition and service history move a real sale price
+            either side of them.
           </p>
-          {valuation && (
-            <p className="mt-3 leading-relaxed">
-              A valuation is an estimate of what similar cars are being advertised for, not an appraisal of this one.
-              Condition, service history and local demand can move a real sale price either side of it.
-            </p>
-          )}
-          <p className="mt-3 leading-relaxed">
-            We do not provide vehicle history, title or salvage records. Full detail on our{' '}
-            <a href="/methodology" className="text-brand font-medium hover:underline">methodology page</a>.
+          <p className="mt-2">
+            This report does not cover vehicle history, title or salvage records. For those, use an NMVTIS-approved
+            provider.
           </p>
         </section>
       </div>

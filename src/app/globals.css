@@ -9,8 +9,14 @@
   --brand: #2f6bff;
   --brand-dark: #1e50d6;
   --cyan: #06b6d4;
-  --good: #22c55e;
-  --warn: #f5b400;
+  /* Both of these are used only as text colours (plus 5% and 30% tints for
+     fills and borders), and both previously failed WCAG AA badly on white:
+     #22c55e was 2.28:1 and #f5b400 was 1.84:1. They carry the recall count,
+     the "no open recalls" all-clear, the crash-test stars, the price verdict
+     and the refund notice, so they are the last things on the site that should
+     be hard to read. Darkened to clear 4.5:1. */
+  --good: #15803d;
+  --warn: #b45309;
   --bad: #dc2626;
 }
 
@@ -49,7 +55,11 @@ body {
 .article-body h3 { font-size: 1.15rem; font-weight: 700; color: var(--ink); margin: 1.75rem 0 0.6rem; }
 .article-body ul { list-style: disc; padding-left: 1.4rem; margin-bottom: 1.15rem; }
 .article-body li { margin-bottom: 0.45rem; }
-.article-body table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 0.9rem; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); display: block; overflow-x: auto; }
+/* Scrolling lives on .table-scroll (injected in blog/[slug]), NOT on the table.
+   `display: block` on a table removes it from the accessibility tree. */
+.table-scroll { overflow-x: auto; margin: 1.25rem 0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.table-scroll:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.article-body table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 .article-body thead tr { background: linear-gradient(to right, #eff6ff, #ecfeff); }
 .article-body th { text-align: left; padding: 0.7rem 0.9rem; font-weight: 700; color: #1e40af; border-bottom: 2px solid #bfdbfe; white-space: nowrap; }
 .article-body td { padding: 0.7rem 0.9rem; border-bottom: 1px solid #f1f5f9; color: #374151; vertical-align: top; }
@@ -81,7 +91,7 @@ body {
 @media (prefers-reduced-motion: reduce) { .cta-pulse-soft { animation: none; box-shadow: 0 6px 16px -5px rgba(47,107,255,.55); } }
 
 /* ============================================================
-   Buy cards (.cxc) + modal (.cxm) — ported from CarCostCheck.
+   Buy cards (.cxc) + modal (.cxm) - ported from CarCostCheck.
    ============================================================ */
 .cxc{
   --card-dark:#1b2536;--card-border:#2a3547;--blue:#2f6bff;--blue-soft:#3b82f6;

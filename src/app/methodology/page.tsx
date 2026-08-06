@@ -71,7 +71,7 @@ const SOURCES = [
     field: 'Market value (average, low, high)',
     source: 'Licensed US market-pricing feed built on dealer listing comparables',
     url: null,
-    type: 'Modelled',
+    type: 'Modeled',
     updates: 'Per lookup, live',
     note: 'A statistical estimate from comparable listings, not an appraisal. Condition, service history and local demand can move a real sale price either side of it.',
   },
@@ -104,7 +104,7 @@ export default function Methodology() {
       <section className="mt-12">
         <h2 className="text-2xl font-bold">Source for every field</h2>
         <p className="mt-3 text-ink-2 leading-relaxed">
-          &ldquo;Measured&rdquo; means the figure is a record someone filed. &ldquo;Modelled&rdquo; means it is
+          &ldquo;Measured&rdquo; means the figure is a record someone filed. &ldquo;Modeled&rdquo; means it is
           calculated from comparable data. &ldquo;Estimated&rdquo; means it rests on national averages, and we say so
           wherever it appears.
         </p>

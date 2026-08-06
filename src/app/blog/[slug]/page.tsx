@@ -78,6 +78,20 @@ function relatedArticles(slug: string) {
     .map((x) => x.a);
 }
 
+/**
+ * Wrap every table in a horizontally scrollable div.
+ *
+ * The CSS used to do this with `display: block; overflow-x: auto` on the table
+ * itself, which scrolls but strips the element out of the accessibility tree:
+ * a screen reader stops announcing rows, columns and headers entirely, across
+ * all 44 article tables. Scrolling belongs on a wrapper so the table can stay a
+ * table. tabindex makes the wrapper keyboard-scrollable, which is required once
+ * a region scrolls.
+ */
+function scrollableTables(html: string): string {
+  return html.replace(/<table(\s|>)/g, '<div class="table-scroll" tabindex="0"><table$1').replace(/<\/table>/g, '</table></div>');
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const a = ARTICLES.find((x) => x.slug === slug);
@@ -86,7 +100,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: a.metaTitle || a.title,
     description: a.metaDescription,
     alternates: { canonical: `${SITE_URL}/blog/${slug}` },
-    openGraph: { title: a.metaTitle || a.title, description: a.metaDescription, type: 'article', url: `${SITE_URL}/blog/${slug}` },
+    openGraph: {
+      title: a.metaTitle || a.title,
+      description: a.metaDescription,
+      type: 'article',
+      url: `${SITE_URL}/blog/${slug}`,
+      // Setting an openGraph object here displaces the file-convention image
+      // from app/opengraph-image.tsx that every other route inherits, so it has
+      // to be named explicitly. Without this all 52 articles, the entire
+      // content library, shared as a bare grey box.
+      images: [{ url: `${SITE_URL}/opengraph-image`, width: 1200, height: 630 }],
+    },
   };
 }
 
@@ -97,8 +121,10 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
   // Inject the inline CTA right after the first table (the common-problems table).
   const html = decode(a.bodyHtml);
   const splitAt = html.indexOf('</table>');
-  const bodyBefore = splitAt !== -1 ? html.slice(0, splitAt + '</table>'.length) : html;
-  const bodyAfter = splitAt !== -1 ? html.slice(splitAt + '</table>'.length) : '';
+  // Split BEFORE wrapping. Wrapping first would put the closing </div> of the
+  // first table's wrapper into the second half, leaving unbalanced tags in both.
+  const bodyBefore = scrollableTables(splitAt !== -1 ? html.slice(0, splitAt + '</table>'.length) : html);
+  const bodyAfter = scrollableTables(splitAt !== -1 ? html.slice(splitAt + '</table>'.length) : '');
   return (
     <>
       <JsonLd

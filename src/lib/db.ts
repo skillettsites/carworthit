@@ -155,6 +155,30 @@ export function cacheReport(sessionId: string, vin: string, product: string, pay
   });
 }
 
+/**
+ * Repair a cached report that was stored incomplete.
+ *
+ * `cwi_reports` is keyed on the Stripe session id and anon holds INSERT only,
+ * so the first write for a session is permanent. A row written before the
+ * factory build record arrived would otherwise hide the paid half of the
+ * report forever, for a customer who paid for exactly that. Goes through a
+ * SECURITY DEFINER function rather than an anon UPDATE policy so the public
+ * anon key cannot be used to overwrite arbitrary rows. See migration 004.
+ */
+export function healCachedReport(sessionId: string, payload: unknown): void {
+  if (!HAS_DB || !sessionId) return;
+  void fetch(`${URL_BASE}/rest/v1/rpc/heal_cwi_report`, {
+    method: 'POST',
+    headers: {
+      apikey: ANON_KEY,
+      Authorization: `Bearer ${ANON_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ p_session_id: sessionId, p_payload: payload }),
+    cache: 'no-store',
+  }).catch(() => {});
+}
+
 export function logPurchase(row: {
   sessionId: string;
   product: string;

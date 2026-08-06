@@ -44,7 +44,12 @@ export default function Page() {
         </p>
 
         <h2>Start with the VIN</h2>
-        <p>Every check above starts here, decode the car and preview its history free.</p>
+        <p>
+          Decode the car free: the full factory specification, open safety recalls, NHTSA crash-test ratings and an
+          estimated five-year running cost, with no signup. Then, from $2.99, see what this exact car is worth at its
+          mileage near your ZIP code and whether the price the seller is asking stands up. For the title, theft,
+          total-loss, odometer and lien records in step 1, buy an NMVTIS report from an approved provider.
+        </p>
       </Article>
       <div className="container-x max-w-3xl pb-14"><VinForm size="md" /></div>
     </>

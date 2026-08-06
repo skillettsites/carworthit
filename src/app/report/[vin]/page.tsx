@@ -6,7 +6,9 @@ import { buildFreeReport } from '@/lib/report';
 import { getMarketValuation, getFactoryData } from '@/lib/apis/oneauto';
 import { getPaidSession } from '@/lib/stripe';
 import { buildVerdict } from '@/lib/worthit-report';
-import { logLookup, logPurchase, getCachedReport, cacheReport } from '@/lib/db';
+import { buildNegotiationPack, type NegotiationPack } from '@/lib/negotiation';
+import { SITE_URL, includesFactory, includesNegotiation } from '@/lib/constants';
+import { logLookup, logPurchase, getCachedReport, cacheReport, healCachedReport } from '@/lib/db';
 import type { FactoryData, MarketValuation } from '@/lib/types';
 import WorthItReport from '@/components/report/WorthItReport';
 import ValuationUnlock from '@/components/report/ValuationUnlock';
@@ -19,11 +21,20 @@ type Search = Promise<{ paid?: string; utm_source?: string }>;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { vin } = await params;
+  const v = decodeURIComponent(vin).toUpperCase();
   return {
-    title: `Vehicle report, VIN ${decodeURIComponent(vin).toUpperCase()}`,
+    title: `Vehicle report, VIN ${v}`,
     // Never indexed. These are per-vehicle pages with no search value, they
     // would bloat the crawl budget, and a paid report should not be public.
     robots: { index: false, follow: false },
+    // Self-canonical, not the inherited one. Without this the page inherited
+    // the layout's canonical and told Google "do not index me" while also
+    // pointing at the homepage as the canonical version of itself, which are
+    // contradictory instructions about two different URLs.
+    alternates: { canonical: `${SITE_URL}/report/${encodeURIComponent(v)}` },
+    // Per-VIN pages are private. Inheriting the site-wide card meant a shared
+    // link previewed as the homepage.
+    openGraph: { title: `Vehicle report, VIN ${v}`, url: `${SITE_URL}/report/${encodeURIComponent(v)}` },
   };
 }
 
@@ -88,25 +99,53 @@ export default async function ReportPage({ params, searchParams }: { params: Par
     // Serve a previously purchased report from cache. Without this, every
     // revisit re-calls the paid APIs: a buyer who bookmarks their report and
     // checks it weekly while car shopping costs more than the report sold for.
+    // The Negotiation Bundle leans on the build record (warranty terms, sticker
+    // price, factory options), so it needs the factory call as much as the
+    // Full Report does.
+    const wantsFactory = includesFactory(paid.product);
+
     const cached = await getCachedReport<{ valuation: MarketValuation | null; factory: FactoryData | null }>(token);
-    if (cached) {
+    // A cache entry is only usable if it holds everything this tier paid for.
+    // `cwi_reports` is keyed on the session id, the anon role has INSERT only
+    // and there is no upsert, so the first write wins permanently. A row cached
+    // with `factory: null` used to brick the paid half of the report forever:
+    // the buyer paid for "what it cost new, its factory options and full
+    // standard equipment" and could never be served it, on any later visit.
+    // VIN Decode Plus misses are not rare, it returns a 200 with an empty
+    // payload for vehicles it has no record of.
+    const cacheUsable = !!cached && (!wantsFactory || cached.factory != null);
+
+    if (cached && cacheUsable) {
       valuation = cached.valuation ?? null;
       factory = cached.factory ?? null;
     } else {
-      const wantsFactory = paid.product === 'worthit';
       [valuation, factory] = await Promise.all([
         getMarketValuation(vin, paid.ctx.zip, paid.ctx.mileage),
         wantsFactory ? getFactoryData(vin) : Promise.resolve(null),
       ]);
-      // Only cache a result worth serving again. Caching a failed lookup would
-      // permanently freeze a paying customer's report as empty.
-      if (valuation) cacheReport(token, vin, paid.product, { valuation, factory });
+      // Fall back to a partial cached row rather than showing less than a
+      // previous visit did, in case this retry is the one that failed.
+      if (!valuation && cached?.valuation) valuation = cached.valuation;
+      if (!factory && cached?.factory) factory = cached.factory;
+
+      // Only write a row we would be happy to serve forever. An incomplete
+      // result is retried on the next visit instead of being frozen in.
+      const worthCaching = !!valuation && (!wantsFactory || factory != null);
+      if (worthCaching) {
+        // Heal rather than insert when a poisoned row is already there, since
+        // the session id is the primary key and anon cannot upsert.
+        if (cached) healCachedReport(token, { valuation, factory });
+        else cacheReport(token, vin, paid.product, { valuation, factory });
+      }
     }
 
     logPurchase({
       sessionId: sp.paid as string,
+      // What Stripe actually collected, not the tier's list price. The old
+      // inline ternary logged every non-worthit sale at 299, and a list price
+      // would now over-report every upgrade, which is charged as the difference.
+      amountCents: paid.amountCents,
       product: paid.product,
-      amountCents: paid.product === 'worthit' ? 699 : 299,
       email: paid.email,
       vin,
       state: h.get('x-vercel-ip-country-region'),
@@ -114,6 +153,12 @@ export default async function ReportPage({ params, searchParams }: { params: Par
   }
 
   const verdict = buildVerdict(paid?.ctx.asking ?? null, valuation);
+
+  // Built server-side, and only for a tier that paid for it.
+  const pack: NegotiationPack | null =
+    paid && includesNegotiation(paid.product) && valuation
+      ? buildNegotiationPack(free, valuation, factory, paid.ctx.asking)
+      : null;
 
   return (
     <>
@@ -127,11 +172,13 @@ export default async function ReportPage({ params, searchParams }: { params: Par
       )}
       <WorthItReport
         report={{ free, valuation, factory, verdict, askingPrice: paid?.ctx.asking ?? null }}
+        pack={pack}
         unlock={
           <ValuationUnlock
             vin={vin}
             tier={paid?.product ?? null}
             defaults={paid ? { mileage: paid.ctx.mileage, zip: paid.ctx.zip, asking: paid.ctx.asking } : undefined}
+            paidToken={paid ? (sp.paid as string) : null}
           />
         }
       />

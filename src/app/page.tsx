@@ -1,30 +1,37 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import SearchBox from '@/components/SearchBox';
 import { PRODUCTS, SITE_URL } from '@/lib/constants';
-import { organizationSchema, websiteSchema, serviceSchema, faqSchema } from '@/lib/schema';
+import { serviceSchema, faqSchema } from '@/lib/schema';
+
+// The root layout no longer pins an og:url, because every page without its own
+// openGraph inherits it wholesale. The homepage claims it here instead.
+export const metadata: Metadata = {
+  openGraph: { url: SITE_URL },
+};
 
 const price = `$${PRODUCTS.valuation.price}`;
 
 const features = [
   {
-    icon: '📍',
-    title: 'Priced where you are',
-    body: 'Valued against cars actually listed for sale near your ZIP code, not a national average.',
-  },
-  {
-    icon: '🛞',
-    title: 'At your real mileage',
-    body: 'Two identical cars 40,000 miles apart are not worth the same. We price yours, not the model.',
-  },
-  {
-    icon: '🏷️',
-    title: 'What it cost new',
-    body: 'The original window sticker for your exact VIN: MSRP, dealer invoice and the options it was built with.',
+    icon: '🎯',
+    title: 'What this car is worth',
+    body: 'This VIN, at its odometer reading, in your local market. Not a national average for the model.',
   },
   {
     icon: '⚖️',
     title: 'A straight verdict',
     body: 'Tell us the asking price and we say whether it is fair, cheap, or too much. Including when it is too much.',
+  },
+  {
+    icon: '🤝',
+    title: 'A Negotiation Bundle',
+    body: 'Your opening offer, your target and your walk-away price, with the evidence to argue for each one.',
+  },
+  {
+    icon: '🏷️',
+    title: 'What it cost new',
+    body: 'The original window sticker for this VIN: MSRP, dealer invoice and the options it was built with.',
   },
   {
     icon: '🔧',
@@ -39,9 +46,9 @@ const features = [
 ];
 
 const steps = [
-  { n: '1', title: 'Enter the VIN', body: 'Seventeen characters, on the windscreen, door jamb or the listing itself.' },
-  { n: '2', title: 'See the free report', body: 'Specs, open recalls, safety ratings and running costs load instantly. No signup.' },
-  { n: '3', title: 'Add mileage and ZIP', body: `From ${price}, see what it is worth near you and whether the price is fair.` },
+  { n: '1', title: 'Enter the VIN', body: 'Seventeen characters, on the windshield, door jamb or the listing itself.' },
+  { n: '2', title: 'See the free report', body: 'Specs, open recalls, safety ratings and running costs, instantly. No signup.' },
+  { n: '3', title: 'Add mileage and ZIP', body: `From ${price}, see what it is worth, whether the price is fair, and what to pay.` },
 ];
 
 const faqs = [
@@ -58,12 +65,20 @@ const faqs = [
     a: 'Yes. Vehicle specification, open safety recalls, NHTSA crash-test ratings and EPA running costs are free for any valid VIN, with no account and no card. You only pay if you want the valuation and the original factory record.',
   },
   {
+    q: 'What is in the Negotiation Bundle?',
+    a: `Three prices for the specific car you are looking at: where to open, what to aim to pay, and the point above which you should walk away. Each one is derived from what comparable cars are listed at near you, so you can defend it out loud. It also sets out your case for paying less, with every claim sourced, what the seller is likely to argue back, the order to say things in, and the checks to make before any money moves. It costs $${PRODUCTS.negotiation.price} and includes both other reports.`,
+  },
+  {
+    q: 'Is the valuation for my exact car, or just cars like it?',
+    a: 'For your exact car. We start from the VIN, which fixes the precise trim and the factory options it was built with, then price it at your odometer reading in the market around your ZIP code. What comparable cars are currently listed for is the evidence we price against, because that is what any valuation anywhere is measured against, but the figure you get is for your vehicle rather than an average of the model. The one thing no data feed can see is condition, so a car that has been abused or immaculately kept will sit either side of it.',
+  },
+  {
     q: 'How is this different from Kelley Blue Book?',
     a: 'KBB works from year, make, model and trim, and asks a series of questions before giving you a figure. CarWorthIt starts from the VIN, which already knows the exact trim and factory options, then prices it at your mileage against cars listed near you. We are independent and not affiliated with Kelley Blue Book.',
   },
   {
     q: 'Do you sell a vehicle history report?',
-    a: 'No. Accident and title-brand data in the United States sits behind licences we do not hold, and we would rather say so than sell a thin substitute. For title and salvage history use an NMVTIS-approved provider. CarWorthIt covers what a car is worth, what it cost new and what it costs to run.',
+    a: 'No. Accident and title-brand data in the United States sits behind licenses we do not hold, and we would rather say so than sell a thin substitute. For title and salvage history use an NMVTIS-approved provider. CarWorthIt covers what a car is worth, what it cost new and what it costs to run.',
   },
   {
     q: 'Is there a subscription?',
@@ -77,7 +92,9 @@ export default function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([organizationSchema(), websiteSchema(), serviceSchema(), faqSchema(faqs)]),
+          // Organization and WebSite are already emitted by the root layout on
+          // every page. Repeating them here shipped both twice on the homepage.
+          __html: JSON.stringify([serviceSchema(), faqSchema(faqs)]),
         }}
       />
 
@@ -87,19 +104,16 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
         <div className="container-x relative py-16 md:py-24">
           <div className="max-w-3xl">
-            <span className="mb-5 inline-block rounded-full border border-blue-400/30 bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-200">
-              Priced at your mileage, near your ZIP code
-            </span>
-            <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white md:text-5xl">
-              Price your car by VIN, and see if it&apos;s{' '}
+            <h1 className="text-5xl font-extrabold leading-[1.05] tracking-tight text-white md:text-6xl">
+              Is this car{' '}
               <span className="bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent">
-                really worth it
+                worth it
               </span>
-              .
+              ?
             </h1>
-            <p className="mt-5 text-lg leading-relaxed text-slate-300">
-              Enter a VIN for a free report: specs, open recalls, safety ratings and running costs, no signup. Add
-              your mileage and ZIP to see what it&apos;s worth against cars actually for sale near you.
+            <p className="mt-5 text-xl leading-relaxed text-slate-300">
+              Enter the VIN. We price that exact car, tell you if the asking price is fair, and give you the numbers
+              to negotiate with.
             </p>
             <div className="mt-8" id="check">
               <SearchBox dark />
@@ -128,22 +142,20 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Why local pricing */}
+      {/* The Negotiation Bundle */}
       <section className="border-y border-border bg-surface">
         <div className="container-x py-16">
           <div className="mx-auto max-w-3xl text-center">
-            <h2 className="text-3xl font-bold">Most valuations aren&apos;t about your car</h2>
+            <span className="inline-block rounded-full bg-brand/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-brand">
+              New
+            </span>
+            <h2 className="mt-4 text-3xl font-bold">Knowing the number isn&apos;t the hard part</h2>
             <p className="mt-4 leading-relaxed text-ink-2">
-              Ask a typical free tool what a car is worth and it will want the year, make, model and trim, then hand
-              you a national average. But mileage is the biggest single lever on a used car&apos;s value after age,
-              and the same car sells for different money in Staten Island than it does in rural Texas.
+              Saying it out loud is. The Negotiation Bundle gives you three prices for this specific car: where to
+              open, what to aim for, and the point at which you walk. Then it gives you the reasons behind each one,
+              every reason sourced, plus what the seller is going to say back and how the conversation should go.
             </p>
-            <p className="mt-4 leading-relaxed text-ink-2">
-              We start from the VIN, which already knows the exact trim and the factory options it left the line
-              with. Then we price it at your odometer reading, against cars listed for sale near you. That is the
-              whole difference, and it is usually worth thousands.
-            </p>
-            <div className="mt-8">
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
                 href="/sample-report"
                 className="inline-flex items-center gap-2 rounded-xl border-2 border-brand px-6 py-3 font-bold text-brand transition-colors hover:bg-brand hover:text-white"
@@ -175,7 +187,7 @@ export default function Home() {
       <section className="border-y border-border bg-surface">
         <div className="container-x py-16">
           <h2 className="text-center text-3xl font-bold">Pay once, or not at all</h2>
-          <div className="mx-auto mt-10 grid max-w-4xl gap-5 md:grid-cols-3">
+          <div className="mx-auto mt-10 grid max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
             <PriceCard name="Free VIN report" price="$0" note="Specs, recalls, safety, running costs" />
             <PriceCard
               name={PRODUCTS.valuation.name}
@@ -186,6 +198,11 @@ export default function Home() {
               name={PRODUCTS.worthit.name}
               price={`$${PRODUCTS.worthit.price}`}
               note="Adds what it cost new and its factory options"
+            />
+            <PriceCard
+              name={PRODUCTS.negotiation.name}
+              price={`$${PRODUCTS.negotiation.price}`}
+              note="Everything above, plus what to pay and how to get it"
               highlight
             />
           </div>
@@ -238,10 +255,15 @@ function PriceCard({
 }) {
   return (
     <div
-      className={`rounded-2xl border p-7 text-center ${
+      className={`relative rounded-2xl border p-7 text-center ${
         highlight ? 'border-2 border-brand bg-white shadow-lg ring-2 ring-brand/20' : 'border-border bg-white'
       }`}
     >
+      {highlight && (
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-brand px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+          Most useful
+        </span>
+      )}
       <div className="font-semibold text-ink">{name}</div>
       <div className={`mt-2 text-3xl font-extrabold ${highlight ? 'text-brand' : 'text-ink'}`}>{price}</div>
       <div className="mt-2 text-xs leading-relaxed text-ink-2">{note}</div>

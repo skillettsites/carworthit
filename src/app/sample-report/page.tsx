@@ -2,10 +2,11 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { buildFreeReport } from '@/lib/report';
 import { buildVerdict } from '@/lib/worthit-report';
+import { buildNegotiationPack } from '@/lib/negotiation';
 import WorthItReport from '@/components/report/WorthItReport';
 import { SITE_URL, PRODUCTS } from '@/lib/constants';
 import { breadcrumbSchema } from '@/lib/schema';
-import type { FactoryData, MarketValuation } from '@/lib/types';
+import type { FactoryData, FreeReport, MarketValuation } from '@/lib/types';
 
 // A worked example so buyers can see what they get before paying.
 //
@@ -22,7 +23,7 @@ import type { FactoryData, MarketValuation } from '@/lib/types';
 export const metadata: Metadata = {
   title: 'Sample report, see what you get before you pay',
   description:
-    'A real CarWorthIt report for a 2021 Toyota Corolla LE: what it is worth locally, what it cost new, its factory options, open recalls, safety ratings and running costs.',
+    'A real CarWorthIt report for a 2021 Toyota Corolla LE: what it is worth locally, what to offer and when to walk away, what it cost new, its factory options, open recalls and running costs.',
   alternates: { canonical: `${SITE_URL}/sample-report` },
 };
 
@@ -72,7 +73,7 @@ const SAMPLE_FACTORY: FactoryData = {
     { category: 'Comfort & Convenience', description: 'Cruise Control' },
     { category: 'Comfort & Convenience', description: 'Daytime Running Lights' },
     { category: 'Exterior', description: 'LED Headlights' },
-    { category: 'Exterior', description: 'Body Colour Exterior Door Handles' },
+    { category: 'Exterior', description: 'Body Color Exterior Door Handles' },
     { category: 'Interior', description: 'Driver Bucket Seat' },
     { category: 'Interior', description: 'Folding Rear Seats' },
   ],
@@ -92,17 +93,76 @@ const SAMPLE_FACTORY: FactoryData = {
   ],
 };
 
+/**
+ * Fallback free layer, captured 6 August 2026 from the same sources the live
+ * call uses: NHTSA vPIC, NHTSA recalls, NHTSA NCAP and EPA fueleconomy.gov.
+ *
+ * This page previously rendered "the sample is temporarily unavailable" the
+ * moment vPIC returned a 503, which it does regularly. The page is statically
+ * prerendered, so an outage during a build baked that message into the deployed
+ * sample until the next rebuild: the one page whose entire job is showing a
+ * buyer what they get, showing them nothing. The live call is still preferred,
+ * this only catches it when NHTSA is down.
+ */
+const SAMPLE_FREE: FreeReport = {
+  specs: {
+    vin: SAMPLE_VIN,
+    year: '2021',
+    make: 'TOYOTA',
+    model: 'Corolla',
+    trim: 'LE',
+    bodyClass: 'Sedan/Saloon',
+    engine: '4-cyl 1.8L',
+    cylinders: '4',
+    displacementL: '1.8',
+    fuelType: 'Gasoline',
+    driveType: 'FWD/Front-Wheel Drive',
+    transmission: 'Continuously Variable',
+    doors: '4',
+    plantCountry: 'UNITED STATES (USA)',
+    vehicleType: 'PASSENGER CAR',
+  },
+  runningCosts: {
+    mpgCity: 30,
+    mpgHighway: 38,
+    mpgCombined: 33,
+    annualFuelCost: 1850,
+    fuelType: 'Regular Gasoline',
+    co2: 267,
+    displ: '1.8',
+    cylinders: '4',
+    source: 'fueleconomy.gov',
+  },
+  recalls: [
+    {
+      campaign: '23V865000',
+      component: 'AIR BAGS:SENSOR:OCCUPANT CLASSIFICATION',
+      summary:
+        'Toyota Motor Engineering & Manufacturing (Toyota) is recalling certain 2020-2021 Avalon, Avalon Hybrid, Corolla, Highlander, Highlander Hybrid, RAV4, RAV4 Hybrid and Lexus ES250, ES300H, ES350, RX350, RX450H vehicles. The Occupant Classification System (OCS) sensors may have been damaged during vehicle assembly, which can prevent the front passenger air bag from deploying as intended.',
+    },
+  ],
+  safety: { overall: 5, frontal: 5, side: 5, rollover: 4, esc: true, fcw: true, ldw: true },
+  // Same shape the live estimator produces for a 2021 car on 2026 assumptions.
+  ownership: {
+    fiveYearTotal: 40250,
+    depreciation: 12250,
+    fuel: 9250,
+    insurance: 8750,
+    maintenance: 5750,
+    repairs: 4500,
+    taxesFees: 2750,
+  },
+  fetchedAt: '2026-08-06T00:00:00.000Z',
+};
+
 export default async function SampleReport() {
-  const free = await buildFreeReport(SAMPLE_VIN);
-  if (!free) {
-    return (
-      <div className="container-x py-16 max-w-2xl">
-        <p className="text-ink-2">The sample is temporarily unavailable. Try a live VIN from the homepage.</p>
-      </div>
-    );
-  }
+  // Prefer live data, fall back to the captured snapshot when NHTSA is down.
+  const free = (await buildFreeReport(SAMPLE_VIN)) ?? SAMPLE_FREE;
 
   const verdict = buildVerdict(ASKING, SAMPLE_VALUATION);
+  // Built from the same function the paid report uses, on the same fixed
+  // snapshot, so the sample cannot drift away from what buyers actually get.
+  const pack = buildNegotiationPack(free, SAMPLE_VALUATION, SAMPLE_FACTORY, ASKING);
 
   return (
     <>
@@ -118,11 +178,14 @@ export default async function SampleReport() {
         }}
       />
       <div className="border-b border-brand/30 bg-brand/10 py-3 text-center text-sm">
-        <strong className="text-brand">Sample {PRODUCTS.worthit.name}.</strong> A real 2021 Toyota Corolla LE at
+        <strong className="text-brand">Sample {PRODUCTS.negotiation.name}.</strong> A real 2021 Toyota Corolla LE at
         50,000 miles, priced {CAPTURED}, with a seller asking $18,500.{' '}
         <Link href="/" className="font-semibold text-brand hover:underline">Check your own car →</Link>
       </div>
-      <WorthItReport report={{ free, valuation: SAMPLE_VALUATION, factory: SAMPLE_FACTORY, verdict, askingPrice: ASKING }} />
+      <WorthItReport
+        report={{ free, valuation: SAMPLE_VALUATION, factory: SAMPLE_FACTORY, verdict, askingPrice: ASKING }}
+        pack={pack}
+      />
     </>
   );
 }

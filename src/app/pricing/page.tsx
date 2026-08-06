@@ -1,13 +1,12 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import SearchBox from '@/components/SearchBox';
-import { PRODUCTS, SITE_URL, SITE_NAME } from '@/lib/constants';
+import { PRODUCTS, SITE_URL, SITE_NAME, upgradePriceCents } from '@/lib/constants';
 import { faqSchema, breadcrumbSchema } from '@/lib/schema';
 
 export const metadata: Metadata = {
-  title: 'Pricing, car value reports from $2.99',
+  title: `Pricing, car value reports from $${PRODUCTS.valuation.price}`,
   description:
-    'Free VIN report for any US car. A Value Report is $2.99 and a Worth It Report is $6.99. One-off payment, no subscription and no account.',
+    `Free VIN report for any US car. Valuation $${PRODUCTS.valuation.price}, Full Report $${PRODUCTS.worthit.price}, Negotiation Bundle $${PRODUCTS.negotiation.price}. One-off payment, no subscription and no account.`,
   alternates: { canonical: `${SITE_URL}/pricing` },
 };
 
@@ -42,11 +41,10 @@ const tiers = [
   {
     name: PRODUCTS.worthit.name,
     price: `$${PRODUCTS.worthit.price}`,
-    highlight: true,
-    badge: 'Most useful',
+    highlight: false,
     blurb: PRODUCTS.worthit.blurb,
     features: [
-      'Everything in the Value Report',
+      'Everything in the Valuation',
       'What it cost new, for this exact VIN',
       'The factory options it was built with',
       'Dealer invoice price when new',
@@ -55,12 +53,31 @@ const tiers = [
       'Original factory warranty terms',
     ],
   },
+  {
+    name: PRODUCTS.negotiation.name,
+    price: `$${PRODUCTS.negotiation.price}`,
+    highlight: true,
+    badge: 'Most useful',
+    blurb: PRODUCTS.negotiation.blurb,
+    features: [
+      'Everything in the Full Report',
+      'Your opening offer, target and walk-away price',
+      'Your case for paying less, every claim sourced',
+      'What the seller will argue, and the counter',
+      'The conversation, in the order to have it',
+      'The checks to make before any money moves',
+    ],
+  },
 ];
 
 const faqs = [
   {
     q: 'How much does a car valuation cost?',
-    a: `A CarWorthIt Value Report is $${PRODUCTS.valuation.price} and a Worth It Report is $${PRODUCTS.worthit.price}. Both are one-off payments with no subscription and no account. The VIN report, covering specs, open recalls, safety ratings and running costs, is free for any valid VIN.`,
+    a: `A CarWorthIt Valuation is $${PRODUCTS.valuation.price}, a Full Report is $${PRODUCTS.worthit.price} and the Negotiation Bundle is $${PRODUCTS.negotiation.price}. All are one-off payments with no subscription and no account. The VIN report, covering specs, open recalls, safety ratings and running costs, is free for any valid VIN.`,
+  },
+  {
+    q: 'What is the Negotiation Bundle?',
+    a: `It is the top tier, at $${PRODUCTS.negotiation.price}, and it contains both other reports. On top of them it gives you three prices for the car in front of you: where to open, what to aim to pay, and the point above which you should walk away. Each is derived from what comparable cars are listed at near you, so you can say it out loud and defend it. It also sets out your case for paying less with every claim sourced, what the seller is likely to argue back, the order to say things in, and the checks to make before any money changes hands.`,
   },
   {
     q: 'Why do you need my mileage and ZIP code?',
@@ -71,8 +88,12 @@ const faqs = [
     a: 'No. You pay once for one report. There is no account to create, no recurring charge and nothing to cancel.',
   },
   {
-    q: 'What is the difference between the two paid reports?',
-    a: 'The Value Report tells you what the car is worth now and whether the asking price is fair. The Worth It Report adds the original factory record for that exact VIN: what it cost new, the options it was built with, the dealer invoice price, how much it has depreciated, and its full standard equipment.',
+    q: 'What if I buy one report and then want a higher one?',
+    a: `You pay only the difference. The tiers stack, so upgrading from the Valuation to the Negotiation Bundle costs $${(upgradePriceCents('negotiation', 'valuation') / 100).toFixed(2)}, not $${PRODUCTS.negotiation.price} again. Open your report from the link you were given after paying and the upgrade will be priced with the credit already applied.`,
+  },
+  {
+    q: 'What is the difference between the paid reports?',
+    a: 'They stack. The Valuation tells you what the car is worth now and whether the asking price is fair. The Full Report adds the original factory record for that exact VIN: what it cost new, the options it was built with, the dealer invoice price, how much it has depreciated, and its full standard equipment. The Negotiation Bundle adds everything you need to act on it: what to offer, what to settle at, when to walk, and the words to use.',
   },
   {
     q: 'What if you can’t value my car?',
@@ -101,7 +122,7 @@ export default function Pricing() {
         The VIN report is free for any car. Pay once for a valuation, no subscription and no account.
       </p>
 
-      <div className="mt-10 grid gap-5 md:grid-cols-3 max-w-5xl mx-auto">
+      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
         {tiers.map((t) => (
           <div
             key={t.name}
@@ -148,10 +169,6 @@ export default function Pricing() {
             </div>
           ))}
         </div>
-        <p className="mt-8 text-sm text-ink-2">
-          Where every figure comes from is set out on our{' '}
-          <Link href="/methodology" className="text-brand font-medium hover:underline">methodology page</Link>.
-        </p>
       </section>
     </div>
   );

@@ -30,6 +30,8 @@ export default function VinForm({ size = 'lg', dark = false }: { size?: 'lg' | '
           onChange={(e) => setVin(e.target.value.toUpperCase())}
           placeholder="Enter 17-character VIN"
           aria-label="Vehicle Identification Number"
+          aria-invalid={error ? true : undefined}
+          aria-describedby="vinform-msg"
           maxLength={17}
           className={`flex-1 rounded-xl bg-transparent px-4 font-mono tracking-wider text-ink outline-none placeholder:text-slate-400 ${
             size === 'lg' ? 'py-4 text-lg' : 'py-3'
@@ -46,10 +48,10 @@ export default function VinForm({ size = 'lg', dark = false }: { size?: 'lg' | '
         </button>
       </div>
       {error ? (
-        <p className={`mt-2 text-sm ${dark ? 'text-red-300' : 'text-bad'}`}>{error}</p>
+        <p id="vinform-msg" role="alert" className={`mt-2 text-sm ${dark ? 'text-red-300' : 'text-bad'}`}>{error}</p>
       ) : (
-        <p className={`mt-2 text-sm ${dark ? 'text-slate-300' : 'text-ink-2'}`}>
-          Free preview instantly. {valid ? '✓ Looks like a valid VIN' : 'The VIN is on the dashboard, door jamb, or title.'}
+        <p id="vinform-msg" className={`mt-2 text-sm ${dark ? 'text-slate-300' : 'text-ink-2'}`}>
+          Free report instantly. {valid ? '✓ Looks like a valid VIN' : 'The VIN is on the dashboard, door jamb, or title.'}
         </p>
       )}
     </form>

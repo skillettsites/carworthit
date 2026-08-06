@@ -1,4 +1,4 @@
-import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, PRODUCTS, ANALYST, MEDIA_EMAIL } from './constants';
+import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, PRODUCTS, TIER_ORDER, ANALYST, MEDIA_EMAIL } from './constants';
 
 // JSON-LD. Real prices and real facts only: no invented ratings, no review
 // counts we do not have. Google's structured-data policies treat fabricated
@@ -48,24 +48,17 @@ export function serviceSchema() {
     description: SITE_DESCRIPTION,
     provider: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
     areaServed: { '@type': 'Country', name: 'United States' },
-    offers: [
-      {
-        '@type': 'Offer',
-        name: PRODUCTS.valuation.name,
-        description: PRODUCTS.valuation.blurb,
-        price: String(PRODUCTS.valuation.price),
-        priceCurrency: 'USD',
-        availability: 'https://schema.org/InStock',
-      },
-      {
-        '@type': 'Offer',
-        name: PRODUCTS.worthit.name,
-        description: PRODUCTS.worthit.blurb,
-        price: String(PRODUCTS.worthit.price),
-        priceCurrency: 'USD',
-        availability: 'https://schema.org/InStock',
-      },
-    ],
+    // Generated from PRODUCTS rather than listed by hand. The hand-written
+    // version silently omitted the third tier the day it was added, which is
+    // exactly the drift this markup is supposed to prevent.
+    offers: TIER_ORDER.map((id) => ({
+      '@type': 'Offer',
+      name: PRODUCTS[id].name,
+      description: PRODUCTS[id].blurb,
+      price: String(PRODUCTS[id].price),
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+    })),
   };
 }
 
@@ -95,6 +88,9 @@ export function articleSchema(a: {
     description: a.description,
     url: `${SITE_URL}/blog/${a.slug}`,
     mainEntityOfPage: `${SITE_URL}/blog/${a.slug}`,
+    // Required for image-bearing Article rich results. Its absence was silently
+    // disqualifying all 52 articles.
+    image: [`${SITE_URL}/opengraph-image`],
     // A named author is what separates a citable source from anonymous content,
     // and every journalist platform and AI-citation heuristic looks for one.
     author: { '@type': 'Person', name: ANALYST.name, jobTitle: ANALYST.role, url: `${SITE_URL}/about` },

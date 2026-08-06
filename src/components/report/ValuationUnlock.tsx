@@ -1,6 +1,13 @@
 'use client';
 import { useState } from 'react';
-import { CHECKOUT_ENABLED, PRODUCTS, type ProductId } from '@/lib/constants';
+import {
+  CHECKOUT_ENABLED,
+  PRODUCTS,
+  TIER_ORDER,
+  tierRank,
+  upgradePriceCents,
+  type ProductId,
+} from '@/lib/constants';
 
 // Collects the three things a real valuation needs, then sends the buyer to
 // Stripe. Mileage and ZIP are mandatory because the pricing feed takes both:
@@ -16,23 +23,52 @@ export default function ValuationUnlock({
   vin,
   tier,
   defaults,
+  paidToken,
 }: {
   vin: string;
   tier: ProductId | null;
   /** What an existing purchase was priced at, so an upgrade reuses it. */
   defaults?: { mileage?: number; zip?: string; asking?: number | null };
+  /**
+   * The Stripe session id proving the current tier was paid for. Sent so the
+   * server can credit it against an upgrade. It is a claim, not proof: the
+   * checkout route re-verifies it against Stripe before allowing any credit.
+   */
+  paidToken?: string | null;
 }) {
+  // Only tiers above whatever they already hold are on offer. Listing a tier
+  // someone has already paid for is how you sell the same report twice.
+  const offered = TIER_ORDER.filter((t) => (tier === null ? true : tierRank(t) > tierRank(tier)));
+  // The Negotiation Bundle is the flagship and contains both other tiers, so it
+  // is the default selection rather than the middle one.
+  const topOffered = offered[offered.length - 1] ?? 'negotiation';
+
   const [mileage, setMileage] = useState(defaults?.mileage ? String(defaults.mileage) : '');
   const [zip, setZip] = useState(defaults?.zip ?? '');
   const [asking, setAsking] = useState(defaults?.asking ? String(defaults.asking) : '');
-  const [product, setProduct] = useState<ProductId>('worthit');
+  const [product, setProduct] = useState<ProductId>(topOffered);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Already bought the top tier, nothing left to sell.
-  if (tier === 'worthit') return null;
+  // Already on the top tier, nothing left to sell.
+  if (offered.length === 0) return null;
 
-  const upgrade = tier === 'valuation';
+  const upgrade = tier !== null;
+  // A single remaining tier needs no chooser: the button already names it.
+  const chooser = offered.length > 1;
+  const selected: ProductId = offered.includes(product) ? product : topOffered;
+
+  // On an upgrade the buyer pays only the difference, so quote the difference.
+  //
+  // Uses the SAME function the checkout API uses, so the price shown here and
+  // the price Stripe charges cannot drift apart. Gated on paidToken because
+  // that is what the server requires before it will credit anything: quoting a
+  // discount we cannot honour at checkout is the worst possible surprise.
+  const creditFrom: ProductId | null = upgrade && paidToken ? tier : null;
+  const centsOf = (id: ProductId) => upgradePriceCents(id, creditFrom);
+  const priceOf = (id: ProductId) => centsOf(id) / 100;
+  const money = (n: number) => `$${n.toFixed(2)}`;
+  const creditCents = creditFrom ? PRODUCTS[selected].cents - centsOf(selected) : 0;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -58,10 +94,11 @@ export default function ValuationUnlock({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           vin,
-          product: upgrade ? 'worthit' : product,
+          product: selected,
           mileage: miles,
           zip: zip.trim(),
           asking: askNum,
+          upgradeFrom: upgrade && paidToken ? paidToken : undefined,
         }),
       });
       const data = await res.json();
@@ -79,12 +116,12 @@ export default function ValuationUnlock({
   return (
     <section className="rounded-2xl border-2 border-brand/40 bg-brand/5 p-6 md:p-8" id="valuation">
       <h2 className="text-xl font-bold">
-        {upgrade ? 'Add what it cost new' : 'What is this car actually worth?'}
+        {upgrade ? 'Get the rest of the picture' : 'What is this car actually worth?'}
       </h2>
       <p className="mt-2 text-sm text-ink-2 leading-relaxed">
         {upgrade
-          ? 'Upgrade to see the original window sticker for this exact VIN: what it cost new, the factory options it was built with, and its full standard equipment.'
-          : 'Priced against cars actually for sale near you, at this car’s real mileage. Tell us those two things and we’ll tell you what it’s worth, and whether the asking price is fair.'}
+          ? 'Upgrade to add what it cost new, the factory options it was built with, and the Negotiation Bundle: your opening offer, your walk-away price and the evidence to argue for them.'
+          : 'Priced for this VIN at its real mileage, in your local market. Tell us the mileage and your ZIP and we’ll tell you what it’s worth, whether the asking price is fair, and what to pay.'}
       </p>
 
       <form onSubmit={submit} className="mt-6 space-y-4">
@@ -124,7 +161,12 @@ export default function ValuationUnlock({
 
         <div>
           <label htmlFor="asking" className="block text-sm font-medium mb-1">
-            Asking price <span className="font-normal text-ink-2">(optional, but it’s how you get a verdict)</span>
+            Asking price{' '}
+            <span className="font-normal text-ink-2">
+              {tierRank(selected) >= tierRank('negotiation')
+                ? '(optional, but it sharpens the verdict and your negotiation case)'
+                : '(optional, but it’s how you get a verdict)'}
+            </span>
           </label>
           <input
             id="asking"
@@ -136,17 +178,26 @@ export default function ValuationUnlock({
           />
         </div>
 
-        {!upgrade && (
-          <fieldset className="grid gap-3 sm:grid-cols-2">
+        {chooser && (
+          <fieldset className={`grid gap-3 ${offered.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
             <legend className="sr-only">Choose a report</legend>
-            {(['valuation', 'worthit'] as ProductId[]).map((id) => {
+            {offered.map((id) => {
               const p = PRODUCTS[id];
-              const on = product === id;
+              const on = selected === id;
+              const best = id === 'negotiation';
+              // focus-within surfaces the keyboard focus ring from the sr-only
+              // radio onto the visible card, and the ✓ means the selected tier
+              // is not signalled by border colour alone.
               return (
                 <label
                   key={id}
-                  className={`cursor-pointer rounded-xl border-2 bg-white p-4 transition-colors ${on ? 'border-brand' : 'border-border'}`}
+                  className={`relative cursor-pointer rounded-xl border-2 bg-white p-4 transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand ${on ? 'border-brand ring-1 ring-brand' : 'border-border'}`}
                 >
+                  {best && (
+                    <span className="absolute -top-2 right-3 rounded-full bg-brand px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                      Most useful
+                    </span>
+                  )}
                   <input
                     type="radio"
                     name="product"
@@ -155,9 +206,17 @@ export default function ValuationUnlock({
                     onChange={() => setProduct(id)}
                     className="sr-only"
                   />
-                  <div className="flex items-baseline justify-between">
-                    <span className="font-bold">{p.name}</span>
-                    <span className={`text-lg font-extrabold ${on ? 'text-brand' : 'text-ink'}`}>${p.price}</span>
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span className="font-bold">
+                      {on && <span aria-hidden="true" className="mr-1 text-brand">✓</span>}
+                      {p.name}
+                    </span>
+                    <span className={`text-lg font-extrabold ${on ? 'text-brand' : 'text-ink'}`}>
+                      {centsOf(id) < p.cents && (
+                        <span className="mr-1 text-sm font-semibold text-ink-2 line-through">${p.price}</span>
+                      )}
+                      {money(priceOf(id))}
+                    </span>
                   </div>
                   <p className="mt-1 text-xs text-ink-2 leading-relaxed">{p.blurb}</p>
                 </label>
@@ -166,7 +225,12 @@ export default function ValuationUnlock({
           </fieldset>
         )}
 
-        {error && <p className="text-sm font-medium text-bad">{error}</p>}
+        {/* role="alert" so a screen reader is told the form rejected the input.
+            Without it the error appears silently and the user just sees the
+            button do nothing. */}
+        <p role="alert" aria-live="polite" className="text-sm font-medium text-bad empty:hidden">
+          {error}
+        </p>
 
         {CHECKOUT_ENABLED ? (
           <button
@@ -176,7 +240,7 @@ export default function ValuationUnlock({
           >
             {loading
               ? 'Taking you to checkout…'
-              : `Get the ${PRODUCTS[upgrade ? 'worthit' : product].name}, $${PRODUCTS[upgrade ? 'worthit' : product].price}`}
+              : `Get the ${PRODUCTS[selected].name}, ${money(priceOf(selected))}`}
           </button>
         ) : (
           <div className="rounded-xl border border-border bg-white px-6 py-4 text-center text-sm font-semibold text-ink-2">
@@ -185,7 +249,9 @@ export default function ValuationUnlock({
         )}
 
         <p className="text-center text-xs text-ink-2">
-          One-off payment, no account and no subscription. We only look your car up after you pay.
+          {creditCents > 0
+            ? `The $${(creditCents / 100).toFixed(2)} you already paid is credited, so you only pay the difference. No account and no subscription.`
+            : 'One-off payment, no account and no subscription. We only look your car up after you pay.'}
         </p>
       </form>
     </section>

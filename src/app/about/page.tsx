@@ -65,7 +65,7 @@ export default function About() {
           <strong className="text-ink">{ANALYST.name}</strong>, {ANALYST.role}. {ANALYST.bio}
         </p>
         <p className="mt-3 text-ink-2 leading-relaxed">
-          Press and data enquiries:{' '}
+          Press and data inquiries:{' '}
           <a href={`mailto:${MEDIA_EMAIL}`} className="text-brand font-medium hover:underline">{MEDIA_EMAIL}</a>. See
           our <Link href="/methodology" className="text-brand font-medium hover:underline">methodology</Link> for
           exactly which dataset produces which number.
@@ -87,23 +87,25 @@ export default function About() {
         <ul className="mt-3 space-y-2 text-ink-2 leading-relaxed list-disc pl-5">
           <li>We do not quote competitors&apos; prices. They change them without notice and a stale figure is worse than none, so we rank them instead and tell you to check their site.</li>
           <li>We never invent a number. If a dataset does not cover your car, the report says so rather than estimating and presenting it as fact.</li>
-          <li>Estimates are labelled as estimates, with the assumptions stated on the <Link href="/methodology" className="text-brand font-medium hover:underline">methodology</Link> page.</li>
+          <li>Estimates are labeled as estimates, with the assumptions stated on the <Link href="/methodology" className="text-brand font-medium hover:underline">methodology</Link> page.</li>
           <li>If we cannot value your car, we refund you.</li>
           <li>We correct errors on the page rather than quietly deleting them. Found one? Email <a href={`mailto:${MEDIA_EMAIL}`} className="text-brand font-medium hover:underline">{MEDIA_EMAIL}</a>.</li>
-          <li>Any paid link is labelled a paid link, in the text, not behind a tooltip.</li>
+          <li>Any paid link is labeled a paid link, in the text, not behind a tooltip.</li>
         </ul>
       </section>
 
       <section className="mt-12">
         <h2 className="text-2xl font-bold">What we are honest about</h2>
         <p className="mt-3 text-ink-2 leading-relaxed">
-          A valuation is an estimate of what similar cars are selling for. It is not an appraisal of your specific
-          car. Condition, service history, accident damage and local demand can all move a real sale price either
-          side of our figure, and no data feed can see the state of a clutch or the quality of a past repair.
+          We value the specific car you asked about, at its mileage in its local market, and we measure it against
+          what comparable cars are currently listed for because that is the only evidence a valuation can be built
+          on. It is still a statistical estimate rather than an appraisal. Condition, service history, accident
+          damage and local demand can all move a real sale price either side of our figure, and no data feed can see
+          the state of a clutch or the quality of a past repair.
         </p>
         <p className="mt-3 text-ink-2 leading-relaxed">
           We do not sell a vehicle history report. Accident and title-brand data in the United States sits behind
-          licences we do not hold, and we would rather tell you that than sell you a thin substitute. For that,
+          licenses we do not hold, and we would rather tell you that than sell you a thin substitute. For that,
           use an approved provider. Always pair any report with a test drive and, for anything expensive, an
           inspection by an independent mechanic.
         </p>

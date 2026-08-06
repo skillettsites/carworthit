@@ -46,7 +46,7 @@ export default function Press() {
           </a>
           <br />
           We aim to reply the same working day. If you are on deadline, say so in the subject line and we will
-          prioritise it.
+          prioritize it.
         </p>
       </section>
 

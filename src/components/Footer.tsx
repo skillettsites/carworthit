@@ -20,7 +20,6 @@ export default function Footer() {
             <li><Link href="/how-it-works" className="hover:text-ink">How it works</Link></li>
             <li><Link href="/sample-report" className="hover:text-ink">Sample report</Link></li>
             <li><Link href="/pricing" className="hover:text-ink">Pricing</Link></li>
-            <li><Link href="/methodology" className="hover:text-ink">Methodology</Link></li>
             <li><Link href="/about" className="hover:text-ink">About</Link></li>
             <li><Link href="/press" className="hover:text-ink">Press</Link></li>
           </ul>
@@ -55,11 +54,14 @@ export default function Footer() {
       </div>
       <div className="border-t border-border">
         <div className="container-x py-6 text-xs leading-relaxed text-ink-2">
+          {/* Trimmed to the two things that actually have to be here: values
+              are estimates, and we are nobody else's brand. The old version
+              also narrated where the data came from, which belongs on
+              /methodology for editors rather than under every customer page. */}
           <p className="mb-2">
-            © {year} {SITE_NAME}. Market values are supplied by a licensed US vehicle-pricing provider and are
-            estimates based on comparable vehicles currently listed for sale, not appraisals. {SITE_NAME} does not
-            provide vehicle history reports, is not an approved NMVTIS data provider, and is not affiliated with
-            Carfax, AutoCheck, Experian or Kelley Blue Book.
+            © {year} {SITE_NAME}. Market values are estimates, not appraisals. {SITE_NAME} does not provide vehicle
+            history reports, is not an approved NMVTIS data provider, and is not affiliated with Carfax, AutoCheck,
+            Experian or Kelley Blue Book.
           </p>
         </div>
       </div>

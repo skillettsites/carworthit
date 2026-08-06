@@ -13,15 +13,17 @@ export default function Page() {
     <Article title="Data sources and disclaimer">
       <h2>Market values</h2>
       <p>
-        Valuations are supplied by a <strong>licensed US vehicle-pricing provider</strong> and are calculated from
-        comparable vehicles currently listed for sale near the ZIP code you give us, at the mileage you give us. We
-        show the average, the lowest and the highest local asking prices.
+        Valuations are supplied by a <strong>licensed US vehicle-pricing provider</strong>. The figure is for the
+        specific vehicle you asked about: the VIN fixes its trim and the options it was built with, and we price it at
+        the mileage you give us, in the market around the ZIP code you give us. The evidence it is measured against is
+        what comparable vehicles are currently listed for locally, and we show the average, the lowest and the highest
+        of those asking prices.
       </p>
       <p>
-        A valuation is an estimate of what similar cars are being advertised for. <strong>It is not an appraisal of
-        your specific vehicle.</strong> Condition, service history, accident damage, options and local demand can all
-        move a real sale price either side of our figure. Asking prices are also not sale prices: cars frequently sell
-        for less than they are listed at.
+        It remains a statistical estimate rather than an appraisal.{' '}
+        <strong>Nobody has inspected the car.</strong> Condition, service history, accident damage and local demand
+        can all move a real sale price either side of our figure. Asking prices are also not sale prices: cars
+        frequently sell for less than they are listed at.
       </p>
 
       <h2>Original factory data</h2>
@@ -58,7 +60,7 @@ export default function Page() {
           {SITE_NAME} does not provide title history, salvage or theft records, and is not an approved NMVTIS data
           provider.
         </strong>{' '}
-        Accident and title-brand data in the United States sits behind licences we do not hold. If you want an
+        Accident and title-brand data in the United States sits behind licenses we do not hold. If you want an
         official National Motor Vehicle Title Information System report, buy one from an approved provider listed by
         the U.S. Department of Justice at{' '}
         <a href="https://vehiclehistory.bja.ojp.gov/" target="_blank" rel="noopener noreferrer">
