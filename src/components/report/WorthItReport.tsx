@@ -74,7 +74,7 @@ export default function WorthItReport({
   /** Other vehicles bought in the same order, for the switcher. */
   siblings?: { vins: string[]; index: number; token: string };
 }) {
-  const { free, valuation, factory, askingPrice } = report;
+  const { free, valuation, factory, recalls, askingPrice } = report;
   const specs = free.specs;
   const verdict = report.verdict ?? buildVerdict(askingPrice, valuation);
   const dep = depreciation(factory, valuation);
@@ -328,7 +328,58 @@ export default function WorthItReport({
         )}
 
         {/* RECALLS + SAFETY */}
-        <Section title="Safety and open recalls" sub="From NHTSA. Recalls are matched by year, make and model, so confirm any that apply with a dealer.">
+        <Section
+          title="Safety and open recalls"
+          sub={
+            recalls
+              ? 'Checked against this exact VIN, so it reflects whether the work has actually been done, and includes manufacturer campaigns never reported to NHTSA.'
+              : 'From NHTSA. Recalls are matched by year, make and model, so confirm any that apply with a dealer.'
+          }
+        >
+          {/* The paid VIN-level check answers the question the free NHTSA feed
+              cannot: is there work still outstanding on THIS car. When we have
+              it, it replaces the model-level list rather than sitting beside
+              it, because showing both invites the reader to reconcile two
+              different things. */}
+          {recalls && (
+            <div className="mb-5">
+              {recalls.outstanding ? (
+                <div className="rounded-xl border border-bad/40 bg-bad/5 p-4">
+                  <div className="text-sm font-bold text-bad">
+                    {recalls.total} outstanding recall {recalls.total === 1 ? 'campaign' : 'campaigns'} on this VIN
+                  </div>
+                  <p className="mt-1 text-xs text-ink-2">
+                    This work has not been recorded as completed. It is free to have done at a franchised dealer.
+                  </p>
+                </div>
+              ) : (
+                <div className="rounded-xl border border-good/40 bg-good/5 p-4">
+                  <div className="text-sm font-bold text-good">✓ No outstanding recalls on this VIN</div>
+                  <p className="mt-1 text-xs text-ink-2">
+                    Checked against the manufacturer&apos;s record for this exact vehicle, including voluntary service
+                    campaigns that are never reported to NHTSA.
+                  </p>
+                </div>
+              )}
+              {recalls.items.length > 0 && (
+                <div className="mt-3 space-y-3">
+                  {recalls.items.slice(0, 8).map((r, i) => (
+                    <div key={`${r.campaign || i}`} className="rounded-xl border border-border p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="text-sm font-semibold">{r.component || 'Recall campaign'}</div>
+                        <span className="shrink-0 rounded-full bg-surface px-2 py-0.5 text-[11px] text-ink-2">
+                          {r.source}
+                        </span>
+                      </div>
+                      {r.campaign && <div className="mt-1 text-xs text-ink-2">Campaign {r.campaign}</div>}
+                      {r.summary && <p className="mt-2 text-sm leading-relaxed text-ink-2">{r.summary}</p>}
+                      {r.remedy && <p className="mt-2 text-sm leading-relaxed text-ink-2"><strong>Remedy:</strong> {r.remedy}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
           {free.safety && (
             <div className="grid gap-4 sm:grid-cols-4 mb-5">
               {[
@@ -359,7 +410,7 @@ export default function WorthItReport({
               })}
             </div>
           )}
-          {free.recalls === null ? (
+          {recalls ? null : free.recalls === null ? (
             /* NHTSA unreachable. Saying "no recalls found" here would tell a
                buyer a car with an open airbag campaign is clear. */
             <div className="rounded-xl border border-border bg-surface p-4 text-sm text-ink-2">

@@ -6,7 +6,7 @@ import { buildNegotiationPack } from '@/lib/negotiation';
 import WorthItReport from '@/components/report/WorthItReport';
 import { SITE_URL, PRODUCTS } from '@/lib/constants';
 import { breadcrumbSchema } from '@/lib/schema';
-import type { FactoryData, FreeReport, MarketValuation } from '@/lib/types';
+import type { FactoryData, FreeReport, MarketValuation, RecallReport } from '@/lib/types';
 
 // A worked example so buyers can see what they get before paying.
 //
@@ -155,6 +155,18 @@ const SAMPLE_FREE: FreeReport = {
   fetchedAt: '2026-08-06T00:00:00.000Z',
 };
 
+// The real VIN-level recall response for this exact Corolla, as returned by
+// OneAuto on 6 Aug 2026: no outstanding NHTSA campaigns and no manufacturer
+// service campaigns. Not invented.
+const SAMPLE_RECALLS: RecallReport = {
+  checkedAt: '2026-08-06 15:56:13',
+  outstanding: false,
+  total: 0,
+  nhtsaCount: 0,
+  manufacturerCount: 0,
+  items: [],
+};
+
 export default async function SampleReport() {
   // Prefer live data, fall back to the captured snapshot when NHTSA is down.
   const free = (await buildFreeReport(SAMPLE_VIN)) ?? SAMPLE_FREE;
@@ -183,7 +195,7 @@ export default async function SampleReport() {
         <Link href="/" className="font-semibold text-brand hover:underline">Check your own car →</Link>
       </div>
       <WorthItReport
-        report={{ free, valuation: SAMPLE_VALUATION, factory: SAMPLE_FACTORY, verdict, askingPrice: ASKING }}
+        report={{ free, valuation: SAMPLE_VALUATION, factory: SAMPLE_FACTORY, recalls: SAMPLE_RECALLS, verdict, askingPrice: ASKING }}
         pack={pack}
       />
     </>

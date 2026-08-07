@@ -10,6 +10,7 @@ import type {
   FactoryData,
   FreeReport,
   MarketValuation,
+  RecallReport,
   WorthItVerdict,
 } from './types';
 
@@ -17,6 +18,8 @@ export interface WorthItReport {
   free: FreeReport;
   valuation: MarketValuation | null;
   factory: FactoryData | null;
+  /** VIN-level recall status. Top tier only; null means we did not buy it. */
+  recalls: RecallReport | null;
   verdict: WorthItVerdict | null;
   /** What the buyer is being asked to pay, if they told us. */
   askingPrice: number | null;

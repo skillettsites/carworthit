@@ -95,6 +95,14 @@ export function upgradePriceCents(to: ProductId, from: ProductId | null): number
 }
 /** Does this tier include the factory build record (MSRP, options, warranty)? */
 export const includesFactory = (p: ProductId) => tierRank(p) >= tierRank('worthit');
+/**
+ * Does this tier include the VIN-level recall check?
+ *
+ * Paid, ~12p a call. Deliberately not on the $2.99 tier: 12p is a fifth of
+ * that tier's margin for a section it does not promise. The free NHTSA feed
+ * still runs on every tier, it just cannot say whether the work was done.
+ */
+export const includesRecallCheck = (p: ProductId) => tierRank(p) >= tierRank('worthit');
 /** Does this tier include the negotiation pack? */
 export const includesNegotiation = (p: ProductId) => tierRank(p) >= tierRank('negotiation');
 

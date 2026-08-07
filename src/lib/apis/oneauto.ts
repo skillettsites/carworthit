@@ -7,7 +7,7 @@
 // is a segment AFTER the service name, then the version. Carketa is the
 // exception and has neither. These paths are not in any published swagger; they
 // come from the raw HTML of the public service pages.
-import type { FactoryData, MarketValuation } from '../types';
+import type { FactoryData, MarketValuation, RecallReport } from '../types';
 
 const BASE_URL = 'https://api.oneautoapi.com';
 
@@ -174,5 +174,52 @@ export function parseFactoryData(body: Record<string, unknown> | null): FactoryD
         miles: n(w.warranty_miles) ?? null,
       }))
       .filter((w) => w.type),
+  };
+}
+
+/**
+ * VIN-level recall status. Paid, ~12p, so it is reserved for the top tier.
+ *
+ * The free NHTSA feed only lists campaigns ever issued for a year/make/model,
+ * which forces the report to say "confirm with a dealer". This answers the
+ * question the buyer actually has: is there outstanding work on THIS car. It
+ * also surfaces manufacturer service campaigns that never reach NHTSA.
+ */
+export async function getRecallReport(vin: string): Promise<RecallReport | null> {
+  const body = await call('/oneauto/recallreportfromvin/v2', {
+    vehicle_identification_number: vin.trim().toUpperCase(),
+  });
+  return parseRecallReport(body);
+}
+
+/** Split from the fetch so fixtures and tests exercise the same parser. */
+export function parseRecallReport(body: Record<string, unknown> | null): RecallReport | null {
+  const r = body?.result as Record<string, unknown> | undefined;
+  if (!r) return null;
+  // A response with no VIN echoed back is not a real answer, and treating it
+  // as "no recalls" would repeat the NHTSA-outage mistake with a paid feed.
+  if (!s(r.vehicle_identification_number) && !s(r.recall_status_checked_datetime)) return null;
+
+  const list = (key: string, source: 'NHTSA' | 'Manufacturer') =>
+    (Array.isArray(r[key]) ? (r[key] as Record<string, unknown>[]) : []).map((x) => ({
+      source,
+      campaign: s(x.campaign_id) || s(x.recall_no) || s(x.nhtsa_campaign_number),
+      component: s(x.component_affected) || s(x.component_desc) || s(x.component),
+      summary: s(x.summary) || s(x.description) || s(x.recall_desc),
+      remedy: s(x.remedy) || s(x.remedy_desc),
+    }));
+
+  const items = [...list('nhtsa_recalls', 'NHTSA'), ...list('manufacturer_recalls', 'Manufacturer')];
+  const nhtsaCount = n(r.nhtsa_recall_qty) ?? items.filter((i) => i.source === 'NHTSA').length;
+  const manufacturerCount = n(r.manufacturer_recall_qty) ?? items.filter((i) => i.source === 'Manufacturer').length;
+  const total = n(r.recall_qty) ?? items.length;
+
+  return {
+    checkedAt: s(r.recall_status_checked_datetime) || new Date().toISOString(),
+    outstanding: r.is_recall_outstanding === true || total > 0,
+    total,
+    nhtsaCount,
+    manufacturerCount,
+    items,
   };
 }

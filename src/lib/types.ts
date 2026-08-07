@@ -88,6 +88,24 @@ export interface FactoryData {
   warranty: { type: string; months: number | null; miles: number | null }[];
 }
 
+/**
+ * VIN-level recall status, from OneAuto's paid US Recall Report.
+ *
+ * Materially better than the free NHTSA feed, which only lists campaigns ever
+ * ISSUED for a year/make/model. This says whether the work is still
+ * OUTSTANDING on this specific car, and includes manufacturer service
+ * campaigns that are never reported to NHTSA at all. It turns "there were
+ * recalls for this model, go ask a dealer" into an actual answer.
+ */
+export interface RecallReport {
+  checkedAt: string;
+  outstanding: boolean;
+  total: number;
+  nhtsaCount: number;
+  manufacturerCount: number;
+  items: { source: 'NHTSA' | 'Manufacturer'; campaign?: string; component?: string; summary?: string; remedy?: string }[];
+}
+
 /** The verdict the whole brand rests on: is this car worth it. */
 export interface WorthItVerdict {
   /** Where the asking price sits against the local market range. */

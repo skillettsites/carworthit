@@ -5,7 +5,7 @@ import { buildFreeReport } from '@/lib/report';
 import { parseFactoryData } from '@/lib/apis/oneauto';
 import { buildVerdict } from '@/lib/worthit-report';
 import WorthItReport from '@/components/report/WorthItReport';
-import type { MarketValuation } from '@/lib/types';
+import type { MarketValuation, RecallReport } from '@/lib/types';
 
 // DEV ONLY. Renders the real Worth-It report from cached API responses so the
 // layout can be worked on without spending a credit per reload.
@@ -28,6 +28,18 @@ function fixture(name: string): Record<string, unknown> | null {
     return null;
   }
 }
+
+// The real VIN-level recall response for this exact Corolla, as returned by
+// OneAuto on 6 Aug 2026: no outstanding NHTSA campaigns and no manufacturer
+// service campaigns. Not invented.
+const SAMPLE_RECALLS: RecallReport = {
+  checkedAt: '2026-08-06 15:56:13',
+  outstanding: false,
+  total: 0,
+  nhtsaCount: 0,
+  manufacturerCount: 0,
+  items: [],
+};
 
 export default async function DevReportPreview({
   searchParams,
@@ -70,5 +82,5 @@ export default async function DevReportPreview({
   const factory = parseFactoryData(decode);
   const verdict = buildVerdict(asking, valuation);
 
-  return <WorthItReport report={{ free, valuation, factory, verdict, askingPrice: asking }} />;
+  return <WorthItReport report={{ free, valuation, factory, recalls: SAMPLE_RECALLS, verdict, askingPrice: asking }} />;
 }

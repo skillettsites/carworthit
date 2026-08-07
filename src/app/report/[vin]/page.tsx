@@ -3,13 +3,13 @@ import { headers } from 'next/headers';
 import type { Metadata } from 'next';
 import { isValidVin } from '@/lib/nhtsa';
 import { buildFreeReport } from '@/lib/report';
-import { getMarketValuation, getFactoryData } from '@/lib/apis/oneauto';
+import { getMarketValuation, getFactoryData, getRecallReport } from '@/lib/apis/oneauto';
 import { getPaidSession } from '@/lib/stripe';
 import { buildVerdict } from '@/lib/worthit-report';
 import { buildNegotiationPack, type NegotiationPack } from '@/lib/negotiation';
-import { SITE_URL, includesFactory, includesNegotiation } from '@/lib/constants';
+import { SITE_URL, includesFactory, includesNegotiation, includesRecallCheck } from '@/lib/constants';
 import { logLookup, logPurchase, getCachedReport, cacheReport, healCachedReport } from '@/lib/db';
-import type { FactoryData, MarketValuation } from '@/lib/types';
+import type { FactoryData, MarketValuation, RecallReport } from '@/lib/types';
 import WorthItReport from '@/components/report/WorthItReport';
 import BuyCards from '@/components/report/BuyCards';
 import SearchBox from '@/components/SearchBox';
@@ -140,6 +140,7 @@ export default async function ReportPage({ params, searchParams }: { params: Par
 
   let valuation: MarketValuation | null = null;
   let factory: FactoryData | null = null;
+  let recalls: RecallReport | null = null;
   if (paid) {
     // The cache key, NOT the raw session id. One payment can cover five
     // vehicles, and `cwi_reports` is keyed on this value, so sharing the raw
@@ -153,8 +154,13 @@ export default async function ReportPage({ params, searchParams }: { params: Par
     // price, factory options), so it needs the factory call as much as the
     // Full Report does.
     const wantsFactory = includesFactory(paid.product);
+    const wantsRecalls = includesRecallCheck(paid.product);
 
-    const cached = await getCachedReport<{ valuation: MarketValuation | null; factory: FactoryData | null }>(token);
+    const cached = await getCachedReport<{
+      valuation: MarketValuation | null;
+      factory: FactoryData | null;
+      recalls?: RecallReport | null;
+    }>(token);
     // A cache entry is only usable if it holds everything this tier paid for.
     // `cwi_reports` is keyed on the session id, the anon role has INSERT only
     // and there is no upsert, so the first write wins permanently. A row cached
@@ -163,29 +169,37 @@ export default async function ReportPage({ params, searchParams }: { params: Par
     // standard equipment" and could never be served it, on any later visit.
     // VIN Decode Plus misses are not rare, it returns a 200 with an empty
     // payload for vehicles it has no record of.
-    const cacheUsable = !!cached && (!wantsFactory || cached.factory != null);
+    // Same reasoning extends to the recall check: a row cached before this
+    // tier included it would otherwise permanently withhold a section the
+    // buyer paid for.
+    const cacheUsable =
+      !!cached && (!wantsFactory || cached.factory != null) && (!wantsRecalls || cached.recalls != null);
 
     if (cached && cacheUsable) {
       valuation = cached.valuation ?? null;
       factory = cached.factory ?? null;
+      recalls = cached.recalls ?? null;
     } else {
-      [valuation, factory] = await Promise.all([
+      [valuation, factory, recalls] = await Promise.all([
         getMarketValuation(vin, paid.ctx.zip, paid.ctx.mileage),
         wantsFactory ? getFactoryData(vin) : Promise.resolve(null),
+        wantsRecalls ? getRecallReport(vin) : Promise.resolve(null),
       ]);
       // Fall back to a partial cached row rather than showing less than a
       // previous visit did, in case this retry is the one that failed.
       if (!valuation && cached?.valuation) valuation = cached.valuation;
       if (!factory && cached?.factory) factory = cached.factory;
+      if (!recalls && cached?.recalls) recalls = cached.recalls;
 
       // Only write a row we would be happy to serve forever. An incomplete
       // result is retried on the next visit instead of being frozen in.
-      const worthCaching = !!valuation && (!wantsFactory || factory != null);
+      const worthCaching =
+        !!valuation && (!wantsFactory || factory != null) && (!wantsRecalls || recalls != null);
       if (worthCaching) {
         // Heal rather than insert when a poisoned row is already there, since
         // the session id is the primary key and anon cannot upsert.
-        if (cached) healCachedReport(token, { valuation, factory });
-        else cacheReport(token, vin, paid.product, { valuation, factory });
+        if (cached) healCachedReport(token, { valuation, factory, recalls });
+        else cacheReport(token, vin, paid.product, { valuation, factory, recalls });
       }
     }
 
@@ -227,7 +241,7 @@ export default async function ReportPage({ params, searchParams }: { params: Par
         </div>
       )}
       <WorthItReport
-        report={{ free, valuation, factory, verdict, askingPrice: paid?.ctx.asking ?? null }}
+        report={{ free, valuation, factory, recalls, verdict, askingPrice: paid?.ctx.asking ?? null }}
         pack={pack}
         siblings={
           paid && paid.vins.length > 1
