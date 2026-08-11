@@ -12,6 +12,7 @@ import { logLookup, logPurchase, getCachedReport, cacheReport, healCachedReport 
 import type { FactoryData, MarketValuation, RecallReport } from '@/lib/types';
 import WorthItReport from '@/components/report/WorthItReport';
 import BuyCards from '@/components/report/BuyCards';
+import EmailCapture from '@/components/EmailCapture';
 import SearchBox from '@/components/SearchBox';
 
 export const dynamic = 'force-dynamic';
@@ -260,6 +261,11 @@ export default async function ReportPage({ params, searchParams }: { params: Par
             paidToken={paid ? (sp.paid as string) : null}
           />
         }
+        // Offered to everyone, paid or not. A free visitor leaving an address is
+        // the only thing this site currently gets from the ~99% who do not buy
+        // today, and a buyer still wants to know if the price moves before they
+        // commit.
+        footer={<EmailCapture vin={vin} product={paid?.product} />}
       />
     </>
   );

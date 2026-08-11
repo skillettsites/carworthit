@@ -6,7 +6,20 @@ import { serviceSchema, faqSchema } from '@/lib/schema';
 
 // The root layout no longer pins an og:url, because every page without its own
 // openGraph inherits it wholesale. The homepage claims it here instead.
+//
+// Title and H1 used to point at different audiences: the title sold "price my
+// car by VIN" (a seller valuing their own car) while the H1 asked "is this car
+// worth it" (a buyer judging someone else's). Google Keyword Planner, United
+// States, puts real volume on the valuation phrasing — "what is my car worth"
+// 27,100/mo, "car value by vin"/"car worth by vin"/"price my car by vin" 14,800/mo
+// — so the page now leads on that and keeps the verdict as the differentiator
+// rather than the headline. The generic valuation terms are the ones Kelley Blue
+// Book answers for free; the VIN-exact ones are the only ones we can win.
 export const metadata: Metadata = {
+  title: 'What Is My Car Worth? Car Value by VIN',
+  description:
+    'Find out what a car is worth from its VIN, at its real mileage, against cars for sale in your ZIP code. Free VIN report with specs, open recalls, safety ratings and running costs. No signup.',
+  alternates: { canonical: SITE_URL },
   openGraph: { url: SITE_URL },
 };
 
@@ -104,16 +117,32 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
         <div className="container-x relative py-16 md:py-24">
           <div className="max-w-3xl">
+            {/* Both target phrases live in the H1 rather than one of them. The
+                generic "what is my car worth" has the volume (27,100/mo) but
+                page one is Kelley Blue Book, Edmunds and CarGurus answering it
+                free; "by VIN" (14,800/mo) is the half where pricing the actual
+                car beats a trim average. Leading on the generic alone forfeits
+                the only phrase we can win. */}
             <h1 className="text-5xl font-extrabold leading-[1.05] tracking-tight text-white md:text-6xl">
-              Is this car{' '}
+              What is this car{' '}
               <span className="bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent">
-                worth it
+                worth
               </span>
               ?
+              <span className="mt-3 block text-2xl font-bold text-slate-300 md:text-3xl">
+                Check any car&apos;s value by VIN
+              </span>
             </h1>
             <p className="mt-5 text-xl leading-relaxed text-slate-300">
-              Enter the VIN. We price that exact car, tell you if the asking price is fair, and give you the numbers
-              to negotiate with.
+              Enter the VIN. We price that exact car at its real mileage, against cars for sale near you, then tell
+              you whether the asking price is fair and what to pay.
+            </p>
+            {/* The one line that separates us from the free valuations. Kelley
+                Blue Book prices a trim at an assumed mileage; this prices the
+                car in front of you. Said here because it is the reason to
+                choose us, not a footnote. */}
+            <p className="mt-3 text-base text-slate-400">
+              Kelley Blue Book prices a trim. We price the VIN, your odometer reading and your ZIP code.
             </p>
             <div className="mt-8" id="check">
               <SearchBox dark />

@@ -118,6 +118,55 @@ export function logLead(email: string, opts: { vin?: string; product?: string; p
 }
 
 /**
+ * Save a lead and report whether it actually saved.
+ *
+ * Everything else in this file is fire-and-forget on purpose: a dropped
+ * analytics row must never break a page. A person typing their email is the
+ * opposite case. If we cannot store it we have to say so, or we show "Saved"
+ * to someone whose address went nowhere — which is exactly how a sister site
+ * silently binned every enquiry for five months.
+ *
+ * `cwi_leads_email_idx` is UNIQUE on lower(email), so the second time a person
+ * submits the same address PostgREST returns 409. That is not a failure from
+ * their side: they are on the list. It is reported as saved.
+ */
+export async function saveLead(
+  email: string,
+  opts: { vin?: string; product?: string; path?: string } = {},
+): Promise<{ ok: boolean; duplicate: boolean }> {
+  if (!HAS_DB) return { ok: false, duplicate: false };
+  try {
+    const res = await fetch(`${URL_BASE}/rest/v1/cwi_leads`, {
+      method: 'POST',
+      headers: {
+        apikey: ANON_KEY,
+        Authorization: `Bearer ${ANON_KEY}`,
+        'Content-Type': 'application/json',
+        // See insert() above: never resolution=ignore-duplicates here, anon
+        // holds INSERT only and the upsert it implies needs UPDATE too.
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify({
+        email: email.trim().toLowerCase(),
+        vin_hash: opts.vin ? hashVin(opts.vin) : null,
+        product_interest: opts.product || null,
+        source_path: opts.path || null,
+      }),
+      cache: 'no-store',
+    });
+    if (res.status === 409) return { ok: true, duplicate: true };
+    if (!res.ok) {
+      console.error('[cwi] saveLead failed', res.status, (await res.text()).slice(0, 200));
+      return { ok: false, duplicate: false };
+    }
+    return { ok: true, duplicate: false };
+  } catch (err) {
+    console.error('[cwi] saveLead threw', err instanceof Error ? err.message : String(err));
+    return { ok: false, duplicate: false };
+  }
+}
+
+/**
  * Cache of a purchased report, so revisiting it never re-charges the data APIs.
  *
  * Reads go through a SECURITY DEFINER function rather than a SELECT policy:

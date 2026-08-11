@@ -65,6 +65,7 @@ export default function WorthItReport({
   buy,
   pack,
   siblings,
+  footer,
 }: {
   report: Report;
   /** The buy cards. Rendered at the TOP, the way CarCostCheck does it. */
@@ -73,6 +74,12 @@ export default function WorthItReport({
   pack?: Pack | null;
   /** Other vehicles bought in the same order, for the switcher. */
   siblings?: { vins: string[]; index: number; token: string };
+  /**
+   * Rendered after the report body. A slot rather than a hardcoded block so
+   * the page decides what belongs at the end, and so this component stays
+   * about presenting a report.
+   */
+  footer?: React.ReactNode;
 }) {
   const { free, valuation, factory, recalls, askingPrice } = report;
   const specs = free.specs;
@@ -502,6 +509,8 @@ export default function WorthItReport({
             provider.
           </p>
         </section>
+
+        {footer}
       </div>
     </div>
   );

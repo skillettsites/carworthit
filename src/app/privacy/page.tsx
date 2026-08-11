@@ -62,7 +62,15 @@ export default function Page() {
           <strong>Stripe collects your email address at checkout, and we store it.</strong> It is saved alongside the
           Stripe session id, the product you bought, the amount, the hashed VIN and your state. We use it to identify
           you if you contact support, to process a refund, and to reconcile payments against our own records. We do not
-          add it to a mailing list and we do not send you marketing.
+          add it to a mailing list and we do not send you marketing. Buying something never signs you up to anything.
+        </li>
+        <li>
+          <strong>If you type your email into the guides sign-up form, we store that separately.</strong> That form is
+          the only place we ask for an address for marketing, it is never pre-filled or ticked for you, and it is
+          entirely optional: nothing on this site is withheld if you skip it. We store the address, the page you
+          submitted it from, and a hashed VIN if you were looking at a report at the time. We use it to send occasional
+          guides about buying a used car, nothing else, and you can unsubscribe from any of them or email{' '}
+          <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> to be removed. We do not sell or share it.
         </li>
         <li>
           <strong>We store your finished report.</strong> It is saved against your Stripe session id so that revisiting
