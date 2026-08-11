@@ -9,7 +9,7 @@ import { saveLead } from '@/lib/db';
  * the cheapest thing we were throwing away.
  *
  * Costs nothing to serve: it writes one row through the anon key and calls no
- * paid vehicle API. Nothing here may ever trigger a priced lookup — the whole
+ * paid vehicle API. Nothing here may ever trigger a priced lookup. The whole
  * point is that a free visitor never costs money.
  */
 

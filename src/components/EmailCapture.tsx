@@ -7,7 +7,7 @@ import { useState } from 'react';
  *
  * The copy here promises ONLY what the product can actually do today.
  *
- * The obvious offer — "we'll email you if this car's price moves" — was
+ * The obvious offer, "we'll email you if this car's price moves", was
  * deliberately rejected twice over. Nothing in this codebase reads cwi_leads or
  * sends mail, so it would be a promise with no implementation. And re-pricing a
  * car costs a paid Carketa call (~20p) every time, per car, for someone who has

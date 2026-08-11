@@ -10,16 +10,24 @@ import { serviceSchema, faqSchema } from '@/lib/schema';
 // Title and H1 used to point at different audiences: the title sold "price my
 // car by VIN" (a seller valuing their own car) while the H1 asked "is this car
 // worth it" (a buyer judging someone else's). Google Keyword Planner, United
-// States, puts real volume on the valuation phrasing — "what is my car worth"
-// 27,100/mo, "car value by vin"/"car worth by vin"/"price my car by vin" 14,800/mo
-// — so the page now leads on that and keeps the verdict as the differentiator
-// rather than the headline. The generic valuation terms are the ones Kelley Blue
-// Book answers for free; the VIN-exact ones are the only ones we can win.
+// States, puts 27,100/mo on "what is my car worth" and 14,800/mo on the VIN
+// phrasings ("car value by vin", "car worth by vin", "price my car by vin").
+//
+// The title leads on the VIN cluster despite it being the smaller number. The
+// generic term is answered free by Kelley Blue Book, Edmunds, CarGurus and
+// Carvana, who are paid for the lead and hold page one; "by VIN" is the half
+// where pricing the actual car at its actual mileage beats a trim average, so
+// it is the only half worth competing for. Both phrasings still appear, and
+// both now say "this car" rather than one saying "my car": the product judges
+// a car you are looking at, and a seller sent here by a seller-intent title
+// would bounce.
+//
+// The description is kept under 160 characters so Google does not truncate
+// "No signup", which is the sharpest contrast with KBB's question wizard.
 export const metadata: Metadata = {
-  title: 'What Is My Car Worth? Car Value by VIN',
+  title: 'Car Value by VIN: What Is This Car Worth?',
   description:
-    'Find out what a car is worth from its VIN, at its real mileage, against cars for sale in your ZIP code. Free VIN report with specs, open recalls, safety ratings and running costs. No signup.',
-  alternates: { canonical: SITE_URL },
+    'Price any car by its VIN, at its real mileage, against cars for sale near you. Free VIN report with recalls, safety and running costs. No signup.',
   openGraph: { url: SITE_URL },
 };
 
