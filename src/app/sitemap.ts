@@ -35,6 +35,10 @@ const PRIORITY: Record<string, number> = {
   '/press': 0.4,
   '/fuel-cost-calculator': 0.5,
   '/depreciation-calculator': 0.5,
+  // Money pages, not utilities: these target terms where the SERP is winnable
+  // for a young domain, unlike the valuation head terms.
+  '/vin-decoder': 0.9,
+  '/diminished-value-calculator': 0.9,
   '/terms': 0.2,
   '/privacy': 0.2,
   '/disclaimer': 0.3,

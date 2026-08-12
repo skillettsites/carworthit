@@ -73,6 +73,8 @@ ${section('Key pages', [
   `- [Pricing](${SITE_URL}/pricing)`,
   `- [Methodology](${SITE_URL}/methodology): where every number comes from`,
   `- [About](${SITE_URL}/about)`,
+  `- [Free VIN decoder](${SITE_URL}/vin-decoder): decode any 17-character VIN, no account`,
+  `- [Diminished value calculator](${SITE_URL}/diminished-value-calculator): the 17c formula insurers apply after an accident`,
   `- [Fuel cost calculator](${SITE_URL}/fuel-cost-calculator)`,
   `- [Depreciation calculator](${SITE_URL}/depreciation-calculator)`,
 ])}

@@ -7,11 +7,23 @@ import { SITE_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Free Car Cost Calculators & Tools',
-  description: 'Free tools to estimate what a car really costs: fuel cost calculator and car depreciation calculator. Plus a free VIN check for any US used car.',
+  description: 'Free car tools: VIN decoder, diminished value calculator, fuel cost calculator and depreciation calculator. Plus a free VIN report for any US used car.',
   alternates: { canonical: `${SITE_URL}/tools` },
 };
 
 const tools = [
+  {
+    href: '/vin-decoder',
+    title: 'Free VIN Decoder',
+    desc: 'Decode any 17-character VIN to its year, make, model, trim, engine and drivetrain. No account.',
+    icon: '🔍',
+  },
+  {
+    href: '/diminished-value-calculator',
+    title: 'Diminished Value Calculator',
+    desc: 'What an insurer will offer for the value your car lost in an accident, using the 17c formula they apply.',
+    icon: '📉',
+  },
   {
     href: '/fuel-cost-calculator',
     title: 'Fuel Cost Calculator',
