@@ -27,6 +27,8 @@ export async function POST(req: NextRequest) {
 
   // Validate before charging. Taking money and then discovering we cannot look
   // the car up is the worst possible order to find out.
+  // VIN first, including the check digit: a fake like 17× A must never fall
+  // through to "Unknown product" just because the client omitted a tier.
   if (!isValidVin(vin)) return NextResponse.json({ error: 'That VIN doesn’t look right.' }, { status: 400 });
   if (!isProductId(product)) return NextResponse.json({ error: 'Unknown product' }, { status: 400 });
   if (!Number.isFinite(mileage) || mileage <= 0 || mileage > 999999) {
