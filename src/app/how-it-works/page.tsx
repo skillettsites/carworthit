@@ -6,9 +6,9 @@ import { howToSchema, breadcrumbSchema } from '@/lib/schema';
 const price = `$${PRODUCTS.valuation.price}`;
 
 export const metadata: Metadata = {
-  title: 'How to value a car by VIN, step by step',
+  title: 'How to Value a Car by VIN from $2.99',
   description:
-    'How to find out what a used car is worth using its VIN, your mileage and your ZIP code, and how to tell whether the asking price is fair.',
+    'Find what a used car is worth from its VIN, mileage and ZIP. Free report first, valuation from $2.99. Not a vehicle history report.',
   alternates: { canonical: `${SITE_URL}/how-it-works` },
 };
 

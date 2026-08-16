@@ -25,9 +25,9 @@ import { serviceSchema, faqSchema } from '@/lib/schema';
 // The description is kept under 160 characters so Google does not truncate
 // "No signup", which is the sharpest contrast with KBB's question wizard.
 export const metadata: Metadata = {
-  title: 'Car Value by VIN: What Is This Car Worth?',
+  title: 'Car Value by VIN from $2.99: What Is This Car Worth?',
   description:
-    'Price any car by its VIN, at its real mileage, against cars for sale near you. Free VIN report with recalls, safety and running costs. No signup.',
+    'Price any car by its VIN, at its real mileage, against cars for sale near you. Free VIN report first. Valuation from $2.99. No signup.',
   openGraph: { url: SITE_URL },
 };
 
