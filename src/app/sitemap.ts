@@ -39,6 +39,8 @@ const PRIORITY: Record<string, number> = {
   // for a young domain, unlike the valuation head terms.
   '/vin-decoder': 0.9,
   '/diminished-value-calculator': 0.9,
+  '/how-much-is-my-car-worth': 0.9,
+  '/check-car-value': 0.9,
   '/terms': 0.2,
   '/privacy': 0.2,
   '/disclaimer': 0.3,

@@ -7,9 +7,9 @@ import { faqSchema, breadcrumbSchema } from '@/lib/schema';
 import { SITE_URL, PRODUCTS } from '@/lib/constants';
 
 export const metadata: Metadata = {
-  title: 'Free VIN Decoder: Decode Any VIN Number Instantly',
+  title: 'Free VIN Decoder, Then Value the Car from $2.99',
   description:
-    'Free VIN decoder. Enter any 17-character VIN to decode the year, make, model, trim, engine and drivetrain from the NHTSA database. No account, no card.',
+    'Free VIN decoder for any 17-character VIN. Then a local-market valuation from $2.99. Specs, recalls and running costs with no account. Not a history report.',
   alternates: { canonical: `${SITE_URL}/vin-decoder` },
 };
 

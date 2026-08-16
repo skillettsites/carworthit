@@ -73,6 +73,8 @@ ${section('Key pages', [
   `- [Pricing](${SITE_URL}/pricing)`,
   `- [Methodology](${SITE_URL}/methodology): where every number comes from`,
   `- [About](${SITE_URL}/about)`,
+  `- [How much is my car worth](${SITE_URL}/how-much-is-my-car-worth): VIN valuation from $${PRODUCTS.valuation.price}`,
+  `- [Check car value](${SITE_URL}/check-car-value): check a used car by VIN from $${PRODUCTS.valuation.price}`,
   `- [Free VIN decoder](${SITE_URL}/vin-decoder): decode any 17-character VIN, no account`,
   `- [Diminished value calculator](${SITE_URL}/diminished-value-calculator): the 17c formula insurers apply after an accident`,
   `- [Fuel cost calculator](${SITE_URL}/fuel-cost-calculator)`,
