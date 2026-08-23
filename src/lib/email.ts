@@ -156,8 +156,6 @@ export function buildReportEmailText({ product, vehicles, compareUrl }: BodyArgs
   lines.push(`Keep this email. The ${many ? 'links do' : 'link does'} not expire and ${many ? 'need' : 'needs'} no login,`);
   lines.push(`so you can open your ${many ? 'reports' : 'report'} on any device whenever you need ${many ? 'them' : 'it'}.`);
   lines.push('');
-  lines.push(`Questions, or a car we could not value? Reply here or email ${SUPPORT_EMAIL}.`);
-  lines.push('');
   lines.push(`${SITE_NAME} - ${SITE_URL}`);
   lines.push('Market values are estimates, not appraisals, and this is not a');
   lines.push('mechanical inspection. Always verify before you buy.');
@@ -235,12 +233,6 @@ export function buildReportEmailHtml({ product, vehicles, compareUrl }: BodyArgs
 
       <p style="text-align:center;font-size:11px;color:#6b7280;margin:0;line-height:1.5;">
         Keep this email. Your ${multi ? 'reports live' : 'report lives'} online at the ${multi ? 'links' : 'link'} above, so ${multi ? 'they' : 'it'} always ${multi ? 'show' : 'shows'} the latest data including anything we correct after delivery. ${multi ? 'They do' : 'It does'} not expire and ${multi ? 'need' : 'needs'} no login.
-      </p>
-
-      <p style="text-align:center;font-size:11px;color:#6b7280;margin:14px 0 0;line-height:1.5;">
-        Something wrong, or a car we could not value? Just reply, or email
-        <a href="mailto:${SUPPORT_EMAIL}" style="color:#0074d4;text-decoration:none;">${SUPPORT_EMAIL}</a>.
-        We refund any vehicle we cannot price.
       </p>
     </div>
 
