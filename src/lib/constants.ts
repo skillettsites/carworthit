@@ -43,7 +43,13 @@ export const PRODUCTS = {
     price: 2.99,
     cents: 299,
     strike: null,
-    blurb: 'What it’s worth near you, a verdict on the asking price, plus recalls, safety and running costs.',
+    // Describes ONLY what the $2.99 adds. Recalls, safety ratings, running
+    // costs and specs are on the free report for any valid VIN, and this
+    // blurb renders both on /pricing and as the Stripe checkout line-item
+    // description, so listing them here sold free content as part of the
+    // purchase, on the last screen a buyer reads before paying. The same
+    // page's own FAQ says those four are free, so it contradicted itself.
+    blurb: 'What it’s worth near you at its mileage, and a verdict on whether the asking price is fair.',
   },
   worthit: {
     id: 'worthit',
