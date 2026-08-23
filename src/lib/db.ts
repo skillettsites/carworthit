@@ -13,14 +13,39 @@
 //      cwi_* tables (see migration 002) and can reach nothing else.
 //   2. It can never break or slow a page. Every call swallows its own errors
 //      and is not awaited by the render path. A logging outage must not take
-//      the report down.
+//      the report down. Writes go through `scheduleWrite` rather than a bare
+//      `void fetch`, so they stay off the response path without being killed
+//      when the serverless invocation freezes. See scheduleWrite below.
 import { createHash } from 'crypto';
+import { after } from 'next/server';
 
 const URL_BASE = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const VIN_SALT = process.env.CWI_VIN_SALT || '';
 
 export const HAS_DB = !!(URL_BASE && ANON_KEY);
+
+/**
+ * Run a write that must not block the response but must still actually happen.
+ *
+ * `void fetch(...)` is not enough on Vercel. Once the response is sent the
+ * function can be frozen, and any promise still in flight dies with it. That
+ * is not theoretical here: the free report view on 22 Aug 2026 at 23:57 that
+ * produced this site's first sale never reached `cwi_lookups`, while the
+ * slower paid render four minutes later did. The row was simply lost.
+ *
+ * `after` hands the work to the platform, which keeps the invocation alive
+ * until it finishes. It is only callable inside a request scope, so the
+ * fallback preserves the old behaviour anywhere it is not (a script, a test),
+ * where losing an analytics row does not matter.
+ */
+function scheduleWrite(work: () => Promise<void>): void {
+  try {
+    after(work);
+  } catch {
+    void work();
+  }
+}
 
 /**
  * Salted SHA-256 of the VIN. We never store the VIN itself.
@@ -90,31 +115,35 @@ export function logLookup(row: LookupRow): void {
   const vin_hash = hashVin(row.vin);
   if (!vin_hash) return; // no salt configured, see hashVin
   const year = row.year != null && row.year !== '' ? Number(row.year) : null;
-  void insert('cwi_lookups', {
-    vin_hash,
-    year: Number.isFinite(year) ? year : null,
-    make: row.make || null,
-    model: row.model || null,
-    trim: row.trim || null,
-    body_class: row.bodyClass || null,
-    fuel_type: row.fuelType || null,
-    state: row.state || null,
-    country: row.country || null,
-    mileage: row.mileage ?? null,
-    referrer: row.referrer || null,
-    utm_source: row.utmSource || null,
-    is_bot: row.isBot ?? false,
-  });
+  scheduleWrite(() =>
+    insert('cwi_lookups', {
+      vin_hash,
+      year: Number.isFinite(year) ? year : null,
+      make: row.make || null,
+      model: row.model || null,
+      trim: row.trim || null,
+      body_class: row.bodyClass || null,
+      fuel_type: row.fuelType || null,
+      state: row.state || null,
+      country: row.country || null,
+      mileage: row.mileage ?? null,
+      referrer: row.referrer || null,
+      utm_source: row.utmSource || null,
+      is_bot: row.isBot ?? false,
+    }),
+  );
 }
 
 export function logLead(email: string, opts: { vin?: string; product?: string; path?: string } = {}): void {
   if (!email) return;
-  void insert('cwi_leads', {
-    email: email.trim().toLowerCase(),
-    vin_hash: opts.vin ? hashVin(opts.vin) : null,
-    product_interest: opts.product || null,
-    source_path: opts.path || null,
-  });
+  scheduleWrite(() =>
+    insert('cwi_leads', {
+      email: email.trim().toLowerCase(),
+      vin_hash: opts.vin ? hashVin(opts.vin) : null,
+      product_interest: opts.product || null,
+      source_path: opts.path || null,
+    }),
+  );
 }
 
 /**
@@ -196,12 +225,14 @@ export async function getCachedReport<T>(sessionId: string): Promise<T | null> {
 
 export function cacheReport(sessionId: string, vin: string, product: string, payload: unknown): void {
   if (!sessionId) return;
-  void insert('cwi_reports', {
-    stripe_session_id: sessionId,
-    vin,
-    product,
-    payload,
-  });
+  scheduleWrite(() =>
+    insert('cwi_reports', {
+      stripe_session_id: sessionId,
+      vin,
+      product,
+      payload,
+    }),
+  );
 }
 
 /**
@@ -216,16 +247,18 @@ export function cacheReport(sessionId: string, vin: string, product: string, pay
  */
 export function healCachedReport(sessionId: string, payload: unknown): void {
   if (!HAS_DB || !sessionId) return;
-  void fetch(`${URL_BASE}/rest/v1/rpc/heal_cwi_report`, {
-    method: 'POST',
-    headers: {
-      apikey: ANON_KEY,
-      Authorization: `Bearer ${ANON_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ p_session_id: sessionId, p_payload: payload }),
-    cache: 'no-store',
-  }).catch(() => {});
+  scheduleWrite(async () => {
+    await fetch(`${URL_BASE}/rest/v1/rpc/heal_cwi_report`, {
+      method: 'POST',
+      headers: {
+        apikey: ANON_KEY,
+        Authorization: `Bearer ${ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ p_session_id: sessionId, p_payload: payload }),
+      cache: 'no-store',
+    }).catch(() => {});
+  });
 }
 
 export function logPurchase(row: {
@@ -237,13 +270,118 @@ export function logPurchase(row: {
   vin?: string | null;
   state?: string | null;
 }): void {
-  void insert('cwi_purchases', {
-    stripe_session_id: row.sessionId,
-    product: row.product,
-    amount_cents: row.amountCents,
-    currency: row.currency || 'usd',
-    email: row.email || null,
-    vin_hash: row.vin ? hashVin(row.vin) : null,
-    state: row.state || null,
-  });
+  scheduleWrite(() =>
+    insert('cwi_purchases', {
+      stripe_session_id: row.sessionId,
+      product: row.product,
+      amount_cents: row.amountCents,
+      currency: row.currency || 'usd',
+      email: row.email || null,
+      vin_hash: row.vin ? hashVin(row.vin) : null,
+      state: row.state || null,
+    }),
+  );
+}
+
+/**
+ * Await the purchase row instead of firing and forgetting.
+ *
+ * The webhook needs the row to exist before it can stamp the email columns on
+ * it, and it is the only writer guaranteed to run: the report-page path only
+ * happens if the buyer comes back. `logPurchase` stays as it is for that page,
+ * where nothing downstream depends on the write landing.
+ *
+ * A duplicate is expected and fine. `cwi_purchases` is unique on the session
+ * id, so whichever writer arrives second gets a 409 and we carry on.
+ */
+export async function logPurchaseAwaited(row: {
+  sessionId: string;
+  product: string;
+  amountCents: number;
+  currency?: string;
+  email?: string | null;
+  vin?: string | null;
+  state?: string | null;
+}): Promise<void> {
+  if (!HAS_DB) return;
+  try {
+    const res = await fetch(`${URL_BASE}/rest/v1/cwi_purchases`, {
+      method: 'POST',
+      headers: {
+        apikey: ANON_KEY,
+        Authorization: `Bearer ${ANON_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify({
+        stripe_session_id: row.sessionId,
+        product: row.product,
+        amount_cents: row.amountCents,
+        currency: row.currency || 'usd',
+        email: row.email || null,
+        vin_hash: row.vin ? hashVin(row.vin) : null,
+        state: row.state || null,
+      }),
+      cache: 'no-store',
+    });
+    if (!res.ok && res.status !== 409) {
+      console.error('[cwi] logPurchaseAwaited failed', res.status, (await res.text()).slice(0, 200));
+    }
+  } catch (err) {
+    console.error('[cwi] logPurchaseAwaited threw', err instanceof Error ? err.message : String(err));
+  }
+}
+
+/**
+ * Record what happened when we tried to email the report.
+ *
+ * Anon holds INSERT only on cwi_purchases, so this goes through the
+ * `mark_cwi_email` SECURITY DEFINER function from migration 005. Awaited,
+ * because the answer to "did they get it" is worth one round trip.
+ */
+export async function markEmailSent(sessionId: string, status: string): Promise<void> {
+  if (!HAS_DB || !sessionId) return;
+  try {
+    const res = await fetch(`${URL_BASE}/rest/v1/rpc/mark_cwi_email`, {
+      method: 'POST',
+      headers: {
+        apikey: ANON_KEY,
+        Authorization: `Bearer ${ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ p_session_id: sessionId, p_status: status }),
+      cache: 'no-store',
+    });
+    if (!res.ok) console.error('[cwi] markEmailSent failed', res.status);
+  } catch (err) {
+    console.error('[cwi] markEmailSent threw', err instanceof Error ? err.message : String(err));
+  }
+}
+
+/**
+ * Turn a /r/<token> handle back into the Stripe session id it came from.
+ *
+ * Goes through `get_cwi_session_by_token` (migration 005) for the same reason
+ * getCachedReport uses a function: the anon key is public and cwi_purchases
+ * holds customer email addresses, so the table itself stays unreadable.
+ */
+export async function getSessionIdByToken(token: string): Promise<string | null> {
+  if (!HAS_DB || !token) return null;
+  try {
+    const res = await fetch(`${URL_BASE}/rest/v1/rpc/get_cwi_session_by_token`, {
+      method: 'POST',
+      headers: {
+        apikey: ANON_KEY,
+        Authorization: `Bearer ${ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ p_token: token }),
+      cache: 'no-store',
+    });
+    if (!res.ok) return null;
+    const id = await res.json();
+    return typeof id === 'string' && id ? id : null;
+  } catch {
+    return null;
+  }
 }

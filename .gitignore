@@ -46,3 +46,9 @@ next-env.d.ts
 # Carketa payload contains comparable listings we are licensed to use but
 # not to redistribute.
 fixtures/
+
+# Local QA output. These render real paid-report links (a live Stripe
+# session token) and this repo is public, so they must never be committed.
+scratchpad/email-*.html
+scratchpad/email-*.txt
+scratchpad/email-qa.ts
