@@ -17,6 +17,31 @@ export interface VehicleSpecs {
   plantCountry?: string;
   vehicleType?: string;
   gvwr?: string;
+  // Additional vPIC fields for the VIN tool pages (transmission, engine, plant,
+  // trailer and motorcycle decoders). All optional: a blank means the
+  // manufacturer did not file that attribute with NHTSA, and the pages say so.
+  manufacturer?: string;
+  series?: string;
+  transmissionSpeeds?: string;
+  engineModel?: string;
+  engineHP?: string;
+  engineConfiguration?: string;
+  engineManufacturer?: string;
+  turbo?: string;
+  otherEngineInfo?: string;
+  electrificationLevel?: string;
+  plantCity?: string;
+  plantState?: string;
+  plantCompany?: string;
+  trailerType?: string;
+  trailerBodyType?: string;
+  trailerLength?: string;
+  axles?: string;
+  motorcycleChassisType?: string;
+  motorcycleSuspensionType?: string;
+  /** vPIC ErrorCode, "0" when the VIN decoded clean. */
+  errorCode?: string;
+  errorText?: string;
 }
 
 export interface RunningCosts {

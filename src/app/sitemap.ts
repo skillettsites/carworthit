@@ -3,6 +3,9 @@ import { SITE_URL } from '@/lib/constants';
 import { guides } from '@/app/guides/page';
 import articles from '@/content/articles.json';
 import { STATES, META } from '@/lib/state-fees';
+import { MAKES } from '@/lib/vin-tools/makes';
+import { VEHICLE_TYPES } from '@/lib/vin-tools/vehicle-types';
+import { STICKER_OEMS } from '@/lib/vin-tools/window-sticker';
 
 // Priorities are relative and only meaningful against each other. The point is
 // to tell a crawler which pages are the hubs, so the money pages and the
@@ -61,7 +64,26 @@ const PRIORITY: Record<string, number> = {
   '/terms': 0.2,
   '/privacy': 0.2,
   '/disclaimer': 0.3,
+  // VIN tool pages (September 15, 2026). Tool hubs at 0.7; the per-make and
+  // per-type children are added below at 0.5.
+  '/title-check': 0.7,
+  '/lien-check': 0.7,
+  '/odometer-check': 0.7,
+  '/stolen-vehicle-check': 0.7,
+  '/window-sticker': 0.7,
+  '/transmission-by-vin': 0.7,
+  '/engine-by-vin': 0.7,
+  '/vin-year-chart': 0.7,
+  '/paint-code-by-vin': 0.7,
+  '/check-warranty-by-vin': 0.7,
+  '/classic-car-vin-decoder': 0.7,
 };
+
+const VIN_TOOL_CHILDREN = [
+  ...MAKES.map((m) => `/vin-decoder/${m.slug}`),
+  ...VEHICLE_TYPES.map((t) => `/${t.slug}`),
+  ...STICKER_OEMS.map((o) => `/window-sticker/${o.slug}`),
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -90,6 +112,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.5,
   }));
 
+  const vinToolRoutes = VIN_TOOL_CHILDREN.map((p) => ({
+    url: `${SITE_URL}${p}`,
+    lastModified: new Date('2026-09-15T00:00:00Z'),
+    changeFrequency: 'monthly' as const,
+    priority: 0.5,
+  }));
+
   const guideRoutes = guides.map((g) => ({
     url: `${SITE_URL}/guides/${g.slug}`,
     lastModified: now,
@@ -106,5 +135,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: HUB_ARTICLES.has(a.slug) ? 0.8 : 0.5,
   }));
 
-  return [...routes, ...stateRoutes, ...guideRoutes, ...blogRoutes];
+  return [...routes, ...stateRoutes, ...vinToolRoutes, ...guideRoutes, ...blogRoutes];
 }

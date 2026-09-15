@@ -1,0 +1,2081 @@
+{
+ "ford": {
+  "fetched": "2026-09-15",
+  "method": "vPIC GetWMIsForManufacturer for the manufacturer-name searches below, then vPIC DecodeWMI on every candidate; a WMI is kept only when DecodeWMI names this make.",
+  "searches": [
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/ford?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/detroit%20chassis?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/auto%20alliance?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/autoalliance?format=json"
+  ],
+  "decodeWmiEndpoint": "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeWMI/{wmi}?format=json",
+  "wmis": [
+   {
+    "wmi": "1F1",
+    "type": "SUV / MPV",
+    "manufacturer": "Ford Motor Company",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1F6",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "Detroit Chassis LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1F7",
+    "type": "Passenger car",
+    "manufacturer": "Ford Motor Company",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1FA",
+    "type": "Passenger car",
+    "manufacturer": "Ford Motor Company",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1FB",
+    "type": "Bus",
+    "manufacturer": "Ford Motor Company",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1FC",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "Ford Motor Company",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1FD",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "Ford Motor Company",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1FM",
+    "type": "SUV / MPV",
+    "manufacturer": "Ford Motor Company",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1FT",
+    "type": "Truck",
+    "manufacturer": "Ford Motor Company",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1ZV",
+    "type": "Passenger car",
+    "manufacturer": "Auto Alliance International, USA",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2FA",
+    "type": "Passenger car",
+    "manufacturer": "Ford Motor Company of Canada, Ltd.",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2FB",
+    "type": "Bus",
+    "manufacturer": "Ford Motor Company of Canada, Ltd.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2FC",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "Ford Motor Company of Canada, Ltd.",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2015-08-07"
+   },
+   {
+    "wmi": "2FD",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "Ford Motor Company of Canada, Ltd.",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2FM",
+    "type": "SUV / MPV",
+    "manufacturer": "Ford Motor Company of Canada, Ltd.",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2FT",
+    "type": "Truck",
+    "manufacturer": "Ford Motor Company of Canada, Ltd.",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3FA",
+    "type": "Passenger car",
+    "manufacturer": "Ford Motor Company, Mexico",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3FB",
+    "type": "Bus",
+    "manufacturer": "Ford Motor Company, Mexico",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3FC",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "Ford Motor Company, Mexico",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-08-07"
+   },
+   {
+    "wmi": "3FD",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "Ford Motor Company, Mexico",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3FE",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "Ford Motor Company, Mexico",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3FM",
+    "type": "SUV / MPV",
+    "manufacturer": "Ford Motor Company, Mexico",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3FT",
+    "type": "Truck",
+    "manufacturer": "Ford Motor Company, Mexico",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "5LD",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "Ford Motor Company",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "9BF",
+    "type": "Truck",
+    "manufacturer": "Ford Motor Company Brasil Ltda.",
+    "country": "Brazil",
+    "sharedWith": [],
+    "since": "2017-02-14"
+   },
+   {
+    "wmi": "KNJ",
+    "type": "Passenger car",
+    "manufacturer": "Kia Motors (Ford Imports)",
+    "country": "South Korea",
+    "sharedWith": [],
+    "since": "2015-08-06"
+   },
+   {
+    "wmi": "MAJ",
+    "type": "SUV / MPV",
+    "manufacturer": "Ford India Ltd",
+    "country": "India",
+    "sharedWith": [],
+    "since": "2017-06-09"
+   },
+   {
+    "wmi": "NM0",
+    "type": "Truck",
+    "manufacturer": "Ford Otomotiv Sanayi A.S., Turkey",
+    "country": "Turkey",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "WF0",
+    "type": "Passenger car",
+    "manufacturer": "Ford Werke AG",
+    "country": "Germany",
+    "sharedWith": [],
+    "since": "2016-02-26"
+   }
+  ]
+ },
+ "toyota": {
+  "fetched": "2026-09-15",
+  "method": "vPIC GetWMIsForManufacturer for the manufacturer-name searches below, then vPIC DecodeWMI on every candidate; a WMI is kept only when DecodeWMI names this make.",
+  "searches": [
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/toyota?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/new%20united%20motor?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/mazda%20toyota?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/subaru%20of%20indiana?format=json"
+  ],
+  "decodeWmiEndpoint": "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeWMI/{wmi}?format=json",
+  "wmis": [
+   {
+    "wmi": "1NX",
+    "type": "Passenger car",
+    "manufacturer": "New United Motor Manufacturing, Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2T1",
+    "type": "Passenger car",
+    "manufacturer": "Toyota Motor Manufacturing Canada",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2T3",
+    "type": "SUV / MPV",
+    "manufacturer": "Toyota Motor Manufacturing Canada",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3TM",
+    "type": "Truck",
+    "manufacturer": "Toyota Motor Mfg de Baja California S de Rl de Cv",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3TY",
+    "type": "Truck",
+    "manufacturer": "Toyota Motor Manufacturing de Guanajuato",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2019-11-01"
+   },
+   {
+    "wmi": "4T1",
+    "type": "Passenger car",
+    "manufacturer": "Toyota Motor Manufacturing, Kentucky, Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "4T3",
+    "type": "SUV / MPV",
+    "manufacturer": "Toyota Motor Manufacturing, Kentucky, Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "4T4",
+    "type": "Passenger car",
+    "manufacturer": "Toyota Motor Manufacturing, Northern Kentucky, Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "5TB",
+    "type": "Truck",
+    "manufacturer": "Toyota Motor Manufacturing, Indiana, Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "5TD",
+    "type": "SUV / MPV",
+    "manufacturer": "Toyota Motor Manufacturing, Indiana, Inc.",
+    "country": "United States",
+    "sharedWith": [
+     "Lexus"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "5TE",
+    "type": "Truck",
+    "manufacturer": "Toyota Motor Manufacturing, California, Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "5TF",
+    "type": "Truck",
+    "manufacturer": "Toyota Motor Manufacturing, Texas, Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "5YF",
+    "type": "Passenger car",
+    "manufacturer": "Toyota Motor Manufacturing, Mississippi, Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "7MM",
+    "type": "SUV / MPV",
+    "manufacturer": "Mazda Toyota Manufacturing, USA, Inc.",
+    "country": "United States",
+    "sharedWith": [
+     "Mazda"
+    ],
+    "since": "2022-04-18"
+   },
+   {
+    "wmi": "7MU",
+    "type": "SUV / MPV",
+    "manufacturer": "Mazda Toyota Manufacturing, USA, Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2021-09-28"
+   },
+   {
+    "wmi": "7SV",
+    "type": "SUV / MPV",
+    "manufacturer": "Toyota Motor Manufacturing, Texas, Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2022-09-02"
+   },
+   {
+    "wmi": "JT2",
+    "type": "Passenger car",
+    "manufacturer": "Toyota Motor Corporation",
+    "country": "Japan",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JT3",
+    "type": "SUV / MPV",
+    "manufacturer": "Toyota Motor Corporation",
+    "country": "Japan",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JT4",
+    "type": "Truck",
+    "manufacturer": "Toyota Motor Corporation",
+    "country": "Japan",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JT5",
+    "type": "Passenger car",
+    "manufacturer": "Toyota Motor Corporation",
+    "country": "Japan",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JTD",
+    "type": "Passenger car",
+    "manufacturer": "Toyota Motor Corporation",
+    "country": "Japan",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JTE",
+    "type": "SUV / MPV",
+    "manufacturer": "Toyota Motor Corporation",
+    "country": "Japan",
+    "sharedWith": [
+     "Lexus",
+     "Subaru"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JTK",
+    "type": "Passenger car",
+    "manufacturer": "Toyota Motor North America, Inc",
+    "country": "Japan",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JTL",
+    "type": "SUV / MPV",
+    "manufacturer": "Toyota Motor Corporation",
+    "country": "Japan",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JTM",
+    "type": "SUV / MPV",
+    "manufacturer": "Toyota Motor Corporation",
+    "country": "Japan",
+    "sharedWith": [
+     "Subaru"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JTN",
+    "type": "Passenger car",
+    "manufacturer": "Toyota Motor Corporation",
+    "country": "Japan",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "NMT",
+    "type": "Passenger car",
+    "manufacturer": "Toyota Motor Manufacturing,Turkey,Inc.",
+    "country": "Turkey",
+    "sharedWith": [],
+    "since": "2017-04-10"
+   },
+   {
+    "wmi": "SB1",
+    "type": "Passenger car",
+    "manufacturer": "Toyota Motor Corporation",
+    "country": "United Kingdom",
+    "sharedWith": [],
+    "since": "2025-11-13"
+   },
+   {
+    "wmi": "VNK",
+    "type": "Passenger car",
+    "manufacturer": "Toyota Motor Manufacturing, France, S.a.s.",
+    "country": "France",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   }
+  ]
+ },
+ "honda": {
+  "fetched": "2026-09-15",
+  "method": "vPIC GetWMIsForManufacturer for the manufacturer-name searches below, then vPIC DecodeWMI on every candidate; a WMI is kept only when DecodeWMI names this make.",
+  "searches": [
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/honda?format=json"
+  ],
+  "decodeWmiEndpoint": "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeWMI/{wmi}?format=json",
+  "wmis": [
+   {
+    "wmi": "19X",
+    "type": "Passenger car",
+    "manufacturer": "American Honda Motor Co., Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1HF",
+    "type": "Motorcycle",
+    "manufacturer": "American Honda Motor Co., Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1HG",
+    "type": "Passenger car",
+    "manufacturer": "American Honda Motor Co., Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2HG",
+    "type": "Passenger car",
+    "manufacturer": "Honda of Canada Mfg., a Division of Honda Canada Inc.",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2HJ",
+    "type": "Truck",
+    "manufacturer": "Honda of Canada Mfg., a Division of Honda Canada Inc.",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2HK",
+    "type": "SUV / MPV",
+    "manufacturer": "Honda of Canada Mfg., a Division of Honda Canada Inc.",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3CZ",
+    "type": "SUV / MPV",
+    "manufacturer": "Honda de Mexico, S.A. de C.V.",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3DH",
+    "type": "SUV / MPV",
+    "manufacturer": "Honda de Mexico, S.A. de C.V.",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2024-06-12"
+   },
+   {
+    "wmi": "3H1",
+    "type": "Motorcycle",
+    "manufacturer": "Honda de Mexico, S.A. de C.V.",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3HD",
+    "type": "SUV / MPV",
+    "manufacturer": "Honda de Mexico, S.A. de C.V.",
+    "country": "Mexico",
+    "sharedWith": [
+     "Acura"
+    ],
+    "since": "2024-06-12"
+   },
+   {
+    "wmi": "3HG",
+    "type": "Passenger car",
+    "manufacturer": "Honda de Mexico, S.A. de C.V.",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "478",
+    "type": "Motorcycle",
+    "manufacturer": "American Honda Motor Co., Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2016-06-08"
+   },
+   {
+    "wmi": "5FN",
+    "type": "SUV / MPV",
+    "manufacturer": "American Honda Motor Co., Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "5FP",
+    "type": "Truck",
+    "manufacturer": "American Honda Motor Co., Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "5J6",
+    "type": "SUV / MPV",
+    "manufacturer": "American Honda Motor Co., Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "5J7",
+    "type": "Truck",
+    "manufacturer": "American Honda Motor Co., Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "5KB",
+    "type": "Passenger car",
+    "manufacturer": "American Honda Motor Co., Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "7FA",
+    "type": "SUV / MPV",
+    "manufacturer": "American Honda Motor Co., Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2017-03-09"
+   },
+   {
+    "wmi": "9C2",
+    "type": "Motorcycle",
+    "manufacturer": "Moto Honda da Amazonia Ltda.",
+    "country": "Brazil",
+    "sharedWith": [],
+    "since": "1988-12-30"
+   },
+   {
+    "wmi": "JH1",
+    "type": "Truck",
+    "manufacturer": "Honda Motor Co., Ltd.",
+    "country": "",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JH2",
+    "type": "Motorcycle",
+    "manufacturer": "Honda Motor Co., Ltd.",
+    "country": "Japan",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JH3",
+    "type": "Motorcycle",
+    "manufacturer": "Honda Motor Co., Ltd.",
+    "country": "Japan",
+    "sharedWith": [],
+    "since": "2016-06-08"
+   },
+   {
+    "wmi": "JHL",
+    "type": "SUV / MPV",
+    "manufacturer": "Honda Motor Co., Ltd.",
+    "country": "",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JHM",
+    "type": "Passenger car",
+    "manufacturer": "Honda Motor Co., Ltd.",
+    "country": "",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "LAL",
+    "type": "Motorcycle",
+    "manufacturer": "Sundiro Honda Motorcycle Co., Ltd.",
+    "country": "China",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "LWB",
+    "type": "Motorcycle",
+    "manufacturer": "American Honda Motor Co., Inc.",
+    "country": "China",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "MLH",
+    "type": "Motorcycle",
+    "manufacturer": "Thai Honda Co., Ltd.",
+    "country": "Thailand",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "RLH",
+    "type": "Motorcycle",
+    "manufacturer": "Honda Vietnam Co., Ltd.",
+    "country": "Vietnam",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "SHH",
+    "type": "Passenger car",
+    "manufacturer": "Honda of The U.K. Mfg., Ltd.",
+    "country": "United Kingdom",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "SHS",
+    "type": "SUV / MPV",
+    "manufacturer": "Honda of The U.K. Mfg., Ltd.",
+    "country": "United Kingdom",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "VTD",
+    "type": "Motorcycle",
+    "manufacturer": "Montesa Honda SA",
+    "country": "Spain",
+    "sharedWith": [],
+    "since": "2016-06-17"
+   },
+   {
+    "wmi": "VTM",
+    "type": "Motorcycle",
+    "manufacturer": "Montesa Honda SA",
+    "country": "Spain",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "YC1",
+    "type": "Motorcycle",
+    "manufacturer": "American Honda Motor Co., Inc.",
+    "country": "Belgium",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "ZDC",
+    "type": "Motorcycle",
+    "manufacturer": "American Honda Motor Co., Inc.",
+    "country": "Italy",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   }
+  ]
+ },
+ "chevrolet": {
+  "fetched": "2026-09-15",
+  "method": "vPIC GetWMIsForManufacturer for the manufacturer-name searches below, then vPIC DecodeWMI on every candidate; a WMI is kept only when DecodeWMI names this make.",
+  "searches": [
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/general%20motors?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/gm%20korea?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/gm%20daewoo?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/daewoo?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/chevrolet?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/cami?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/new%20united%20motor?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/holden?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/shanghai?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/saic?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/suzuki?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/isuzu?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/avtovaz?format=json"
+  ],
+  "decodeWmiEndpoint": "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeWMI/{wmi}?format=json",
+  "wmis": [
+   {
+    "wmi": "1G1",
+    "type": "Passenger car",
+    "manufacturer": "General Motors LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1GA",
+    "type": "Bus",
+    "manufacturer": "General Motors LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1GB",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "General Motors LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1GC",
+    "type": "Truck",
+    "manufacturer": "General Motors LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1GN",
+    "type": "SUV / MPV",
+    "manufacturer": "General Motors LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1Y1",
+    "type": "Passenger car",
+    "manufacturer": "New United Motor Manufacturing, Inc.",
+    "country": "United States",
+    "sharedWith": [
+     "Geo"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2C1",
+    "type": "Passenger car",
+    "manufacturer": "General Motors LLC",
+    "country": "United States",
+    "sharedWith": [
+     "Geo"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2CC",
+    "type": "SUV / MPV",
+    "manufacturer": "Cami Automotive Inc",
+    "country": "Canada",
+    "sharedWith": [
+     "American Motors"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2CN",
+    "type": "SUV / MPV",
+    "manufacturer": "General Motors LLC",
+    "country": "United States",
+    "sharedWith": [
+     "Geo"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2G1",
+    "type": "Passenger car",
+    "manufacturer": "General Motors LLC",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2G5",
+    "type": "Truck",
+    "manufacturer": "General Motors LLC",
+    "country": "Canada",
+    "sharedWith": [
+     "Brightdrop"
+    ],
+    "since": "2017-01-23"
+   },
+   {
+    "wmi": "2G8",
+    "type": "SUV / MPV",
+    "manufacturer": "General Motors LLC",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2017-01-24"
+   },
+   {
+    "wmi": "2GA",
+    "type": "Bus",
+    "manufacturer": "General Motors LLC",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2016-12-22"
+   },
+   {
+    "wmi": "2GB",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "General Motors LLC",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2GC",
+    "type": "Truck",
+    "manufacturer": "General Motors LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2GN",
+    "type": "SUV / MPV",
+    "manufacturer": "General Motors LLC",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3G1",
+    "type": "Passenger car",
+    "manufacturer": "General Motors LLC",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3GB",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "General Motors LLC",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3GC",
+    "type": "Truck",
+    "manufacturer": "General Motors LLC",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3GM",
+    "type": "SUV / MPV",
+    "manufacturer": "General Motors LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3GN",
+    "type": "SUV / MPV",
+    "manufacturer": "General Motors LLC",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "4G1",
+    "type": "Passenger car",
+    "manufacturer": "General Motors LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-09-14"
+   },
+   {
+    "wmi": "4G3",
+    "type": "Passenger car",
+    "manufacturer": "General Motors LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-09-11"
+   },
+   {
+    "wmi": "4KB",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "General Motors LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "4W1",
+    "type": "SUV / MPV",
+    "manufacturer": "General Motors LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2024-09-20"
+   },
+   {
+    "wmi": "6G1",
+    "type": "Passenger car",
+    "manufacturer": "General Motors LLC",
+    "country": "Australia",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "6G3",
+    "type": "Passenger car",
+    "manufacturer": "General Motors LLC",
+    "country": "",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "722",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "Isuzu North America Corporation",
+    "country": "United States",
+    "sharedWith": [
+     "Isuzu"
+    ],
+    "since": "2026-01-09"
+   },
+   {
+    "wmi": "J81",
+    "type": "Passenger car",
+    "manufacturer": "Isuzu Motors Limited, Japan",
+    "country": "Japan",
+    "sharedWith": [
+     "Geo"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "J8B",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "Isuzu Motors Limited, Japan",
+    "country": "Japan",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "J8Z",
+    "type": "Truck",
+    "manufacturer": "Isuzu Motors Limited, Japan",
+    "country": "Japan",
+    "sharedWith": [],
+    "since": "2017-03-06"
+   },
+   {
+    "wmi": "JAL",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "Isuzu Motors Limited, Japan",
+    "country": "Japan",
+    "sharedWith": [
+     "Hino",
+     "Isuzu"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JG1",
+    "type": "Passenger car",
+    "manufacturer": "General Motors LLC",
+    "country": "United States",
+    "sharedWith": [
+     "Geo"
+    ],
+    "since": "2015-09-22"
+   },
+   {
+    "wmi": "KL1",
+    "type": "Passenger car",
+    "manufacturer": "General Motors LLC",
+    "country": "South Korea",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "KL7",
+    "type": "SUV / MPV",
+    "manufacturer": "General Motors LLC",
+    "country": "",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "KL8",
+    "type": "Passenger car",
+    "manufacturer": "General Motors LLC",
+    "country": "",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   }
+  ]
+ },
+ "nissan": {
+  "fetched": "2026-09-15",
+  "method": "vPIC GetWMIsForManufacturer for the manufacturer-name searches below, then vPIC DecodeWMI on every candidate; a WMI is kept only when DecodeWMI names this make.",
+  "searches": [
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/nissan?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/renault%20samsung?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/renault?format=json"
+  ],
+  "decodeWmiEndpoint": "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeWMI/{wmi}?format=json",
+  "wmis": [
+   {
+    "wmi": "1N4",
+    "type": "Passenger car",
+    "manufacturer": "Nissan North America, Inc.",
+    "country": "United States",
+    "sharedWith": [
+     "Infiniti"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1N6",
+    "type": "Truck",
+    "manufacturer": "Nissan North America, Inc.",
+    "country": "United States",
+    "sharedWith": [
+     "Infiniti"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3N1",
+    "type": "Passenger car",
+    "manufacturer": "Nissan Mexicana, S.A. de C.V.",
+    "country": "Mexico",
+    "sharedWith": [
+     "Infiniti"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3N6",
+    "type": "Truck",
+    "manufacturer": "Nissan Mexicana, S.A. de C.V.",
+    "country": "Mexico",
+    "sharedWith": [
+     "Chevrolet",
+     "Infiniti"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3N8",
+    "type": "SUV / MPV",
+    "manufacturer": "Nissan Mexicana, S.A. de C.V.",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3PC",
+    "type": "SUV / MPV",
+    "manufacturer": "Nissan North America, Inc.",
+    "country": "Mexico",
+    "sharedWith": [
+     "Infiniti"
+    ],
+    "since": "2018-10-10"
+   },
+   {
+    "wmi": "5BZ",
+    "type": "Bus",
+    "manufacturer": "Nissan North America, Inc.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "5N1",
+    "type": "SUV / MPV",
+    "manufacturer": "Nissan North America, Inc.",
+    "country": "United States",
+    "sharedWith": [
+     "Infiniti"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JN1",
+    "type": "Passenger car",
+    "manufacturer": "Nissan Motor Company, Ltd",
+    "country": "Japan",
+    "sharedWith": [
+     "Infiniti",
+     "Datsun"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JN3",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "Nissan Motor Company, Ltd",
+    "country": "Japan",
+    "sharedWith": [
+     "Infiniti"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JN6",
+    "type": "Truck",
+    "manufacturer": "Nissan Motor Company, Ltd",
+    "country": "Japan",
+    "sharedWith": [
+     "Chevrolet"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JN8",
+    "type": "SUV / MPV",
+    "manufacturer": "Nissan Motor Company, Ltd",
+    "country": "Japan",
+    "sharedWith": [
+     "Infiniti"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "KNM",
+    "type": "SUV / MPV",
+    "manufacturer": "Renault Samsung Motors Co., Ltd",
+    "country": "South Korea",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "SJK",
+    "type": "Passenger car",
+    "manufacturer": "Nissan Motor Manufacturing (UK) Ltd",
+    "country": "United Kingdom",
+    "sharedWith": [
+     "Infiniti"
+    ],
+    "since": "2016-10-03"
+   }
+  ]
+ },
+ "bmw": {
+  "fetched": "2026-09-15",
+  "method": "vPIC GetWMIsForManufacturer for the manufacturer-name searches below, then vPIC DecodeWMI on every candidate; a WMI is kept only when DecodeWMI names this make.",
+  "searches": [
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/bmw?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/magna%20steyr?format=json"
+  ],
+  "decodeWmiEndpoint": "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeWMI/{wmi}?format=json",
+  "wmis": [
+   {
+    "wmi": "3MF",
+    "type": "Passenger car",
+    "manufacturer": "BMW AG",
+    "country": "Germany",
+    "sharedWith": [],
+    "since": "2022-08-04"
+   },
+   {
+    "wmi": "3MW",
+    "type": "Passenger car",
+    "manufacturer": "BMW AG",
+    "country": "Germany",
+    "sharedWith": [],
+    "since": "2019-05-14"
+   },
+   {
+    "wmi": "4US",
+    "type": "Passenger car",
+    "manufacturer": "BMW Manufacturer Corporation / BMW North America",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "5UM",
+    "type": "Passenger car",
+    "manufacturer": "BMW AG",
+    "country": "Germany",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "5UX",
+    "type": "SUV / MPV",
+    "manufacturer": "BMW Manufacturer Corporation / BMW North America",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "5YM",
+    "type": "SUV / MPV",
+    "manufacturer": "BMW Manufacturer Corporation / BMW North America",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "WAP",
+    "type": "Passenger car",
+    "manufacturer": "BMW of North America, LLC",
+    "country": "Germany",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "WB1",
+    "type": "Motorcycle",
+    "manufacturer": "BMW AG Motorcycles",
+    "country": "Germany",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "WB3",
+    "type": "Motorcycle",
+    "manufacturer": "BMW AG Motorcycles",
+    "country": "Germany",
+    "sharedWith": [],
+    "since": "2018-05-24"
+   },
+   {
+    "wmi": "WB4",
+    "type": "Motorcycle",
+    "manufacturer": "BMW AG Motorcycles",
+    "country": "Germany",
+    "sharedWith": [],
+    "since": "2019-07-26"
+   },
+   {
+    "wmi": "WB5",
+    "type": "SUV / MPV",
+    "manufacturer": "BMW AG",
+    "country": "Germany",
+    "sharedWith": [],
+    "since": "2022-01-12"
+   },
+   {
+    "wmi": "WBA",
+    "type": "Passenger car",
+    "manufacturer": "BMW AG",
+    "country": "Germany",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "WBS",
+    "type": "Passenger car",
+    "manufacturer": "BMW M GmbH",
+    "country": "Germany",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "WBX",
+    "type": "SUV / MPV",
+    "manufacturer": "BMW AG",
+    "country": "Germany",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "WBY",
+    "type": "Passenger car",
+    "manufacturer": "BMW AG",
+    "country": "Germany",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   }
+  ]
+ },
+ "audi": {
+  "fetched": "2026-09-15",
+  "method": "vPIC GetWMIsForManufacturer for the manufacturer-name searches below, then vPIC DecodeWMI on every candidate; a WMI is kept only when DecodeWMI names this make.",
+  "searches": [
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/audi?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/volkswagen?format=json"
+  ],
+  "decodeWmiEndpoint": "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeWMI/{wmi}?format=json",
+  "wmis": [
+   {
+    "wmi": "TRU",
+    "type": "Passenger car",
+    "manufacturer": "Audi AG",
+    "country": "Hungary",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "WA1",
+    "type": "SUV / MPV",
+    "manufacturer": "Audi AG",
+    "country": "Germany",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "WAU",
+    "type": "Passenger car",
+    "manufacturer": "Audi AG",
+    "country": "Germany",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "WU1",
+    "type": "SUV / MPV",
+    "manufacturer": "Audi Sport GmbH",
+    "country": "Germany",
+    "sharedWith": [],
+    "since": "2020-04-28"
+   },
+   {
+    "wmi": "WUA",
+    "type": "Passenger car",
+    "manufacturer": "Audi Sport GmbH",
+    "country": "Germany",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   }
+  ]
+ },
+ "jeep": {
+  "fetched": "2026-09-15",
+  "method": "vPIC GetWMIsForManufacturer for the manufacturer-name searches below, then vPIC DecodeWMI on every candidate; a WMI is kept only when DecodeWMI names this make.",
+  "searches": [
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/fca?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/chrysler?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/jeep?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/stellantis?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/magna%20steyr?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/american%20motors?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/daimlerchrysler?format=json"
+  ],
+  "decodeWmiEndpoint": "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeWMI/{wmi}?format=json",
+  "wmis": [
+   {
+    "wmi": "1C4",
+    "type": "SUV / MPV",
+    "manufacturer": "FCA US LLC",
+    "country": "United States",
+    "sharedWith": [
+     "Dodge",
+     "Chrysler",
+     "Volkswagen",
+     "Fiat",
+     "Ram",
+     "Lancia"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1C6",
+    "type": "Truck",
+    "manufacturer": "FCA US LLC",
+    "country": "United States",
+    "sharedWith": [
+     "Dodge",
+     "Chrysler",
+     "Volkswagen",
+     "Fiat",
+     "Ram",
+     "Lancia"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1C7",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "FCA US LLC",
+    "country": "United States",
+    "sharedWith": [
+     "Dodge",
+     "Chrysler",
+     "Volkswagen",
+     "Fiat",
+     "Ram",
+     "Lancia"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1J2",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "FCA US LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1J3",
+    "type": "Truck",
+    "manufacturer": "FCA US LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1J4",
+    "type": "SUV / MPV",
+    "manufacturer": "FCA US LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1J5",
+    "type": "Bus",
+    "manufacturer": "FCA US LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-07-28"
+   },
+   {
+    "wmi": "1J6",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "FCA US LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1J7",
+    "type": "Truck",
+    "manufacturer": "FCA US LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1J8",
+    "type": "SUV / MPV",
+    "manufacturer": "FCA US LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "1JC",
+    "type": "SUV / MPV",
+    "manufacturer": "FCA US LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2017-02-03"
+   },
+   {
+    "wmi": "1JD",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "FCA US LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2017-02-07"
+   },
+   {
+    "wmi": "1JT",
+    "type": "Truck",
+    "manufacturer": "FCA US LLC",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2017-02-03"
+   },
+   {
+    "wmi": "2BC",
+    "type": "SUV / MPV",
+    "manufacturer": "American Motors Corp.",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2016-07-05"
+   },
+   {
+    "wmi": "2C4",
+    "type": "SUV / MPV",
+    "manufacturer": "FCA Canada Inc.",
+    "country": "Canada",
+    "sharedWith": [
+     "Dodge",
+     "Chrysler",
+     "Volkswagen",
+     "Fiat",
+     "Ram",
+     "Lancia"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2C6",
+    "type": "Truck",
+    "manufacturer": "FCA Canada Inc.",
+    "country": "Canada",
+    "sharedWith": [
+     "Dodge",
+     "Chrysler",
+     "Volkswagen",
+     "Fiat",
+     "Ram",
+     "Lancia"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2C7",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "FCA Canada Inc.",
+    "country": "Canada",
+    "sharedWith": [
+     "Dodge",
+     "Chrysler",
+     "Volkswagen",
+     "Fiat",
+     "Ram",
+     "Lancia",
+     "Pontiac"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2J4",
+    "type": "SUV / MPV",
+    "manufacturer": "FCA Canada Inc.",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "2J5",
+    "type": "Bus",
+    "manufacturer": "FCA Canada Inc.",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2015-07-28"
+   },
+   {
+    "wmi": "2J6",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "FCA Canada Inc.",
+    "country": "Canada",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3C4",
+    "type": "SUV / MPV",
+    "manufacturer": "Chrysler de Mexico Toluca",
+    "country": "Mexico",
+    "sharedWith": [
+     "Dodge",
+     "Chrysler",
+     "Volkswagen",
+     "Fiat",
+     "Ram",
+     "Lancia"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3C6",
+    "type": "Truck",
+    "manufacturer": "Chrysler de Mexico Toluca",
+    "country": "Mexico",
+    "sharedWith": [
+     "Dodge",
+     "Chrysler",
+     "Volkswagen",
+     "Fiat",
+     "Ram",
+     "Lancia"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3C7",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "Chrysler de Mexico Toluca",
+    "country": "Mexico",
+    "sharedWith": [
+     "Dodge",
+     "Chrysler",
+     "Volkswagen",
+     "Fiat",
+     "Ram",
+     "Lancia"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3J4",
+    "type": "SUV / MPV",
+    "manufacturer": "Chrysler de Mexico Toluca",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "3J5",
+    "type": "Bus",
+    "manufacturer": "Chrysler de Mexico Toluca",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-07-28"
+   },
+   {
+    "wmi": "3J6",
+    "type": "Incomplete vehicle (chassis)",
+    "manufacturer": "Chrysler de Mexico Toluca",
+    "country": "Mexico",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "ZAC",
+    "type": "SUV / MPV",
+    "manufacturer": "FCA Italy S.p.A.",
+    "country": "United States",
+    "sharedWith": [
+     "Dodge",
+     "Fiat",
+     "Ram"
+    ],
+    "since": "2015-10-27"
+   },
+   {
+    "wmi": "ZFB",
+    "type": "SUV / MPV",
+    "manufacturer": "FCA Italy S.p.A.",
+    "country": "Italy",
+    "sharedWith": [
+     "Fiat",
+     "Ram"
+    ],
+    "since": "2015-01-01"
+   }
+  ]
+ },
+ "subaru": {
+  "fetched": "2026-09-15",
+  "method": "vPIC GetWMIsForManufacturer for the manufacturer-name searches below, then vPIC DecodeWMI on every candidate; a WMI is kept only when DecodeWMI names this make.",
+  "searches": [
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/subaru?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/fuji%20heavy?format=json"
+  ],
+  "decodeWmiEndpoint": "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeWMI/{wmi}?format=json",
+  "wmis": [
+   {
+    "wmi": "4S3",
+    "type": "Passenger car",
+    "manufacturer": "Subaru of America, Inc",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "4S4",
+    "type": "SUV / MPV",
+    "manufacturer": "Subaru of America, Inc",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JF1",
+    "type": "Passenger car",
+    "manufacturer": "Subaru Corporation",
+    "country": "Japan",
+    "sharedWith": [
+     "Toyota"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JF2",
+    "type": "SUV / MPV",
+    "manufacturer": "Subaru Corporation",
+    "country": "Japan",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "JF3",
+    "type": "Truck",
+    "manufacturer": "Fuji Heavy Industries U.S.A., Inc. (C/O Subaru of America)",
+    "country": "Japan",
+    "sharedWith": [],
+    "since": "2016-11-15"
+   }
+  ]
+ },
+ "hyundai": {
+  "fetched": "2026-09-15",
+  "method": "vPIC GetWMIsForManufacturer for the manufacturer-name searches below, then vPIC DecodeWMI on every candidate; a WMI is kept only when DecodeWMI names this make.",
+  "searches": [
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/hyundai?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/kia?format=json"
+  ],
+  "decodeWmiEndpoint": "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeWMI/{wmi}?format=json",
+  "wmis": [
+   {
+    "wmi": "3KM",
+    "type": "SUV / MPV",
+    "manufacturer": "Kia Mexico S.A. de C.V.",
+    "country": "Mexico",
+    "sharedWith": [
+     "Kia"
+    ],
+    "since": "2022-02-28"
+   },
+   {
+    "wmi": "3KP",
+    "type": "Passenger car",
+    "manufacturer": "Kia Mexico S.A. de C.V.",
+    "country": "Mexico",
+    "sharedWith": [
+     "Kia"
+    ],
+    "since": "2016-09-12"
+   },
+   {
+    "wmi": "5NM",
+    "type": "SUV / MPV",
+    "manufacturer": "Hyundai Motor Manufacturing Alabama LLC (HMMA)",
+    "country": "United States",
+    "sharedWith": [
+     "Genesis"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "5NP",
+    "type": "Passenger car",
+    "manufacturer": "Hyundai-Kia America Technical Center Inc (HATCI)",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "5NT",
+    "type": "Truck",
+    "manufacturer": "Hyundai Motor Manufacturing Alabama LLC (HMMA)",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2021-06-02"
+   },
+   {
+    "wmi": "5XY",
+    "type": "SUV / MPV",
+    "manufacturer": "Kia Georgia, Inc",
+    "country": "United States",
+    "sharedWith": [
+     "Kia"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "7YA",
+    "type": "SUV / MPV",
+    "manufacturer": "Hyundai Motor Group Metaplant America",
+    "country": "",
+    "sharedWith": [
+     "Kia"
+    ],
+    "since": "2024-10-01"
+   },
+   {
+    "wmi": "KM8",
+    "type": "SUV / MPV",
+    "manufacturer": "Hyundai Motor Co",
+    "country": "South Korea",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "KME",
+    "type": "Truck",
+    "manufacturer": "Hyundai Motor Co",
+    "country": "",
+    "sharedWith": [],
+    "since": "2022-09-26"
+   },
+   {
+    "wmi": "KMH",
+    "type": "Passenger car",
+    "manufacturer": "Hyundai Motor Co",
+    "country": "South Korea",
+    "sharedWith": [
+     "Genesis"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "KMU",
+    "type": "SUV / MPV",
+    "manufacturer": "Hyundai Motor Co",
+    "country": "South Korea",
+    "sharedWith": [
+     "Genesis",
+     "HMC"
+    ],
+    "since": "2020-05-04"
+   },
+   {
+    "wmi": "KND",
+    "type": "SUV / MPV",
+    "manufacturer": "Kia Corporation",
+    "country": "South Korea",
+    "sharedWith": [
+     "Kia"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "PFD",
+    "type": "SUV / MPV",
+    "manufacturer": "Hyundai Motor Group Innovation Centre In Singapore",
+    "country": "Singapore",
+    "sharedWith": [],
+    "since": "2023-10-02"
+   },
+   {
+    "wmi": "U5Y",
+    "type": "Passenger car",
+    "manufacturer": "Hyundai-Kia America Technical Center Inc (HATCI)",
+    "country": "United States",
+    "sharedWith": [
+     "Kia"
+    ],
+    "since": "2015-01-01"
+   }
+  ]
+ },
+ "kia": {
+  "fetched": "2026-09-15",
+  "method": "vPIC GetWMIsForManufacturer for the manufacturer-name searches below, then vPIC DecodeWMI on every candidate; a WMI is kept only when DecodeWMI names this make.",
+  "searches": [
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/kia?format=json",
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/hyundai?format=json"
+  ],
+  "decodeWmiEndpoint": "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeWMI/{wmi}?format=json",
+  "wmis": [
+   {
+    "wmi": "3KM",
+    "type": "SUV / MPV",
+    "manufacturer": "Kia Mexico S.A. de C.V.",
+    "country": "Mexico",
+    "sharedWith": [
+     "Hyundai"
+    ],
+    "since": "2022-02-28"
+   },
+   {
+    "wmi": "3KP",
+    "type": "Passenger car",
+    "manufacturer": "Kia Mexico S.A. de C.V.",
+    "country": "Mexico",
+    "sharedWith": [
+     "Hyundai"
+    ],
+    "since": "2016-09-12"
+   },
+   {
+    "wmi": "5XX",
+    "type": "Passenger car",
+    "manufacturer": "Kia Georgia, Inc",
+    "country": "United States",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "5XY",
+    "type": "SUV / MPV",
+    "manufacturer": "Kia Georgia, Inc",
+    "country": "United States",
+    "sharedWith": [
+     "Hyundai"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "7YA",
+    "type": "SUV / MPV",
+    "manufacturer": "Hyundai Motor Group Metaplant America",
+    "country": "",
+    "sharedWith": [
+     "Hyundai"
+    ],
+    "since": "2024-10-01"
+   },
+   {
+    "wmi": "KNA",
+    "type": "Passenger car",
+    "manufacturer": "Kia Corporation",
+    "country": "South Korea",
+    "sharedWith": [],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "KND",
+    "type": "SUV / MPV",
+    "manufacturer": "Kia Corporation",
+    "country": "South Korea",
+    "sharedWith": [
+     "Hyundai"
+    ],
+    "since": "2015-01-01"
+   },
+   {
+    "wmi": "U5Y",
+    "type": "Passenger car",
+    "manufacturer": "Hyundai-Kia America Technical Center Inc (HATCI)",
+    "country": "United States",
+    "sharedWith": [
+     "Hyundai"
+    ],
+    "since": "2015-01-01"
+   }
+  ]
+ },
+ "harley-davidson": {
+  "fetched": "2026-09-15",
+  "method": "vPIC GetWMIsForManufacturer for the manufacturer-name searches below, then vPIC DecodeWMI on every candidate; a WMI is kept only when DecodeWMI names this make.",
+  "searches": [
+   "https://vpic.nhtsa.dot.gov/api/vehicles/GetWMIsForManufacturer/harley?format=json"
+  ],
+  "decodeWmiEndpoint": "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeWMI/{wmi}?format=json",
+  "wmis": [
+   {
+    "wmi": "1HD",
+    "type": "Motorcycle",
+    "manufacturer": "Harley-Davidson Motor Company",
+    "country": "United States",
+    "sharedWith": [
+     "Livewire"
+    ],
+    "since": "2015-08-20"
+   },
+   {
+    "wmi": "5HD",
+    "type": "Motorcycle",
+    "manufacturer": "Harley-Davidson Motor Company",
+    "country": "",
+    "sharedWith": [],
+    "since": "2016-04-11"
+   },
+   {
+    "wmi": "932",
+    "type": "Motorcycle",
+    "manufacturer": "Harley-Davidson Do Brasil Ltda",
+    "country": "Brazil",
+    "sharedWith": [],
+    "since": "2016-04-11"
+   },
+   {
+    "wmi": "HDR",
+    "type": "Motorcycle",
+    "manufacturer": "Harley-Davidson Off-Road",
+    "country": "",
+    "sharedWith": [],
+    "since": "2016-05-02"
+   }
+  ]
+ }
+}

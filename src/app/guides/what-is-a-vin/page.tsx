@@ -42,6 +42,11 @@ export default function Page() {
           <li><strong>Characters 12-17</strong>, the unique serial number of that specific car.</li>
         </ul>
         <p>Note: a valid VIN never contains the letters <strong>I, O or Q</strong>, to avoid confusion with 1 and 0.</p>
+        <p>
+          The 10th-character year codes for 1980 to 2030 are on the <Link href="/vin-year-chart">VIN year chart</Link>; the per-make
+          WMI tables are on the <Link href="/vin-decoder">VIN decoder</Link> pages. For what a VIN cannot tell you, see the{' '}
+          <Link href="/title-check">title check</Link>.
+        </p>
 
         <h2>Check any VIN for free</h2>
         <p>Enter a VIN below to instantly decode the specification, see open safety recalls and crash-test ratings, and get its running costs. No signup.</p>

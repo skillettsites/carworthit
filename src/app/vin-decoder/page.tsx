@@ -5,6 +5,8 @@ import JsonLd from '@/components/JsonLd';
 import StickyVinCta from '@/components/StickyVinCta';
 import { faqSchema, breadcrumbSchema } from '@/lib/schema';
 import { SITE_URL, PRODUCTS } from '@/lib/constants';
+import { MAKES } from '@/lib/vin-tools/makes';
+import { VEHICLE_TYPES } from '@/lib/vin-tools/vehicle-types';
 
 export const metadata: Metadata = {
   title: 'Free VIN Decoder, Then Value the Car from $2.99',
@@ -156,6 +158,71 @@ export default function Page() {
           </Link>
           .
         </p>
+
+        <h2 className="mt-10 text-2xl font-extrabold">Decoders by make</h2>
+        <p className="mt-3 leading-relaxed text-ink-2">
+          Each make page lists every World Manufacturer Identifier that NHTSA vPIC returns for that make (fetched September 15,
+          2026), where the VIN is on that make, a sample decode showing which fields the manufacturer files, and the model-year
+          chart.
+        </p>
+        <ul className="mt-3 flex flex-wrap gap-2">
+          {MAKES.map((m) => (
+            <li key={m.slug}>
+              <Link
+                href={`/vin-decoder/${m.slug}`}
+                className="inline-block rounded-full border border-border bg-white px-3 py-1.5 text-sm font-semibold text-ink transition-colors hover:border-brand hover:text-brand"
+              >
+                {m.name} VIN decoder
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        <h2 className="mt-10 text-2xl font-extrabold">Decoders by vehicle type, and by question</h2>
+        <p className="mt-3 leading-relaxed text-ink-2">
+          vPIC decodes motorcycles, trailers, motorhome chassis and ATVs too, with fewer fields for some. Each type page shows what
+          came back for real test VINs. The question pages lead with the one field you came for.
+        </p>
+        <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+          {[
+            ...VEHICLE_TYPES.map((t) => ({ href: `/${t.slug}`, label: t.title })),
+            { href: '/classic-car-vin-decoder', label: 'Classic car VIN decoder (pre-1981)' },
+            { href: '/transmission-by-vin', label: 'Transmission by VIN' },
+            { href: '/engine-by-vin', label: 'Engine by VIN' },
+            { href: '/vin-year-chart', label: 'VIN year chart (10th character)' },
+            { href: '/paint-code-by-vin', label: 'Paint code by VIN' },
+            { href: '/window-sticker', label: 'Window sticker by VIN' },
+            { href: '/check-warranty-by-vin', label: 'Warranty by VIN' },
+          ].map((l) => (
+            <li key={l.href}>
+              <Link
+                href={l.href}
+                className="block rounded-xl border border-border bg-white px-4 py-3 text-sm font-semibold text-ink transition-colors hover:border-brand hover:text-brand"
+              >
+                {l.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        <h2 className="mt-10 text-2xl font-extrabold">The checks a decode cannot do, and where to do them free</h2>
+        <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+          {[
+            { href: '/title-check', label: 'Title check: brands, NICB VINCheck, NMVTIS' },
+            { href: '/lien-check', label: 'Lien check: is money still owed on it?' },
+            { href: '/odometer-check', label: 'Odometer rollback check' },
+            { href: '/stolen-vehicle-check', label: 'Stolen vehicle check' },
+          ].map((l) => (
+            <li key={l.href}>
+              <Link
+                href={l.href}
+                className="block rounded-xl border border-border bg-white px-4 py-3 text-sm font-semibold text-ink transition-colors hover:border-brand hover:text-brand"
+              >
+                {l.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
 
         <h2 className="mt-10 text-2xl font-extrabold">Common questions</h2>
         <div className="mt-4 space-y-5">

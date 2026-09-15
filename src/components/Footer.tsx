@@ -23,6 +23,19 @@ export default function Footer() {
             <li><Link href="/about" className="hover:text-ink">About</Link></li>
             <li><Link href="/press" className="hover:text-ink">Press</Link></li>
           </ul>
+          {/* The VIN tool cluster (September 15, 2026): free NHTSA-data pages
+              that route history questions to the official sources. Sitewide
+              links so each new page has an inbound link from every page. */}
+          <div className="mb-3 mt-6 font-semibold text-ink">Free VIN tools</div>
+          <ul className="space-y-2 text-ink-2">
+            <li><Link href="/vin-decoder" className="hover:text-ink">VIN decoder</Link></li>
+            <li><Link href="/title-check" className="hover:text-ink">Title check</Link></li>
+            <li><Link href="/lien-check" className="hover:text-ink">Lien check</Link></li>
+            <li><Link href="/stolen-vehicle-check" className="hover:text-ink">Stolen vehicle check</Link></li>
+            <li><Link href="/window-sticker" className="hover:text-ink">Window sticker by VIN</Link></li>
+            <li><Link href="/vin-year-chart" className="hover:text-ink">VIN year chart</Link></li>
+            <li><Link href="/tools" className="hover:text-ink">All tools</Link></li>
+          </ul>
         </div>
         <div>
           {/* The diminished-value cluster is the strategic bet, so it gets a

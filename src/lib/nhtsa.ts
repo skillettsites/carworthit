@@ -83,6 +83,29 @@ export async function decodeVin(vin: string): Promise<VehicleSpecs | null> {
     plantCountry: val('PlantCountry'),
     vehicleType: val('VehicleType'),
     gvwr: val('GVWR'),
+    // Extra vPIC attributes for the tool pages. Field names verified against
+    // DecodeVinValues output on September 15, 2026 (see FINDINGS for the VINs).
+    manufacturer: val('Manufacturer'),
+    series: val('Series'),
+    transmissionSpeeds: val('TransmissionSpeeds'),
+    engineModel: val('EngineModel'),
+    engineHP: val('EngineHP'),
+    engineConfiguration: val('EngineConfiguration'),
+    engineManufacturer: val('EngineManufacturer'),
+    turbo: val('Turbo'),
+    otherEngineInfo: val('OtherEngineInfo'),
+    electrificationLevel: val('ElectrificationLevel'),
+    plantCity: val('PlantCity'),
+    plantState: val('PlantState'),
+    plantCompany: val('PlantCompanyName'),
+    trailerType: val('TrailerType'),
+    trailerBodyType: val('TrailerBodyType'),
+    trailerLength: val('TrailerLength'),
+    axles: val('Axles'),
+    motorcycleChassisType: val('MotorcycleChassisType'),
+    motorcycleSuspensionType: val('MotorcycleSuspensionType'),
+    errorCode: val('ErrorCode'),
+    errorText: val('ErrorText'),
   };
 }
 
