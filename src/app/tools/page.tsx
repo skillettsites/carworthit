@@ -7,7 +7,7 @@ import { SITE_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Free Car Cost Calculators & Tools',
-  description: 'Free car tools: VIN decoder, diminished value calculator, fuel cost calculator and depreciation calculator. Plus a free VIN report for any US used car.',
+  description: 'Free car tools: VIN decoder, car sales tax calculator by state, out-the-door price calculator, dealer doc fee and registration fee tables, diminished value, fuel cost and depreciation calculators.',
   alternates: { canonical: `${SITE_URL}/tools` },
 };
 
@@ -35,6 +35,30 @@ const tools = [
     title: 'Depreciation Calculator',
     desc: 'Project what a car will be worth in 1 to 15 years and how much value it loses each year.',
     icon: '📉',
+  },
+  {
+    href: '/car-sales-tax-calculator',
+    title: 'Car Sales Tax Calculator',
+    desc: 'Sales tax on a used car in any state, with the trade-in credit and local rate applied. Every rate sourced from the state, plus a page per state.',
+    icon: '🧾',
+  },
+  {
+    href: '/out-the-door-price-calculator',
+    title: 'Out-the-Door Price Calculator',
+    desc: 'Asking price plus tax, doc fee, title and registration, itemized and pre-filled for your state, with which lines you can negotiate.',
+    icon: '🚗',
+  },
+  {
+    href: '/dealer-doc-fee-by-state',
+    title: 'Dealer Doc Fees by State',
+    desc: 'The legal cap on dealer documentation fees in every state, or the typical fee where there is none, with the statute.',
+    icon: '📋',
+  },
+  {
+    href: '/car-registration-fees-by-state',
+    title: 'Registration and Title Fees by State',
+    desc: 'Title fee and annual registration fee for a passenger car in every state, and what each fee is based on.',
+    icon: '🪪',
   },
 ];
 
