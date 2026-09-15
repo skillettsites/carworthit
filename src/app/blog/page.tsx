@@ -15,6 +15,27 @@ export const metadata: Metadata = {
 
 type Article = { slug: string; title: string; metaDescription: string; published?: string; updated?: string };
 
+// Posts that live at /blog/<slug> but are built as pages rather than JSON
+// bodies, because their prices come from src/lib/vhr-providers.ts and must
+// not be copied into static HTML. Listed here so the index, and the ItemList
+// below, still see them.
+const PAGE_POSTS: Article[] = [
+  {
+    slug: 'carfax-report-cost',
+    title: 'How Much Does a Carfax Report Cost? (Checked September 2026)',
+    metaDescription: 'What Carfax charges today for one, two and four reports, the three ways to get one free, why the $3.99 resellers are a risk, and what an NMVTIS-approved alternative costs.',
+    published: '2026-09-15',
+    updated: '2026-09-15',
+  },
+  {
+    slug: 'is-carfax-worth-it',
+    title: 'Is Carfax Worth It? A Direct Answer, With Today’s Prices',
+    metaDescription: 'Yes for one expensive car where the service trail matters, no for screening a shortlist. What Carfax has that cheaper reports do not, with every price dated.',
+    published: '2026-07-13',
+    updated: '2026-09-15',
+  },
+];
+
 // Grouped rather than dumped as one 48-item list. A flat list buries the
 // cluster that matters and gives crawlers no sense of which pages are the
 // hubs, and readers no way to find the one thing they came for.
@@ -47,11 +68,10 @@ const GROUPS: { heading: string; blurb: string; slugs: string[] }[] = [
     heading: 'Checking a car before you buy',
     blurb: 'What the paid history services actually give you, and what you can get for nothing.',
     slugs: [
-      'cheapest-vin-check',
-      'free-vin-check',
-      'carfax-alternatives',
-      'autocheck-vs-carfax',
       'is-carfax-worth-it',
+      'carfax-report-cost',
+      'free-vin-check',
+      'autocheck-vs-carfax',
       'certified-pre-owned-vs-used',
       'electric-vs-gas-cost-to-own',
       'cheapest-cars-to-insure',
@@ -61,8 +81,6 @@ const GROUPS: { heading: string; blurb: string; slugs: string[] }[] = [
     heading: 'Before you buy',
     blurb: 'The checks worth doing, and the ones people skip and regret.',
     slugs: [
-      'how-to-check-a-used-car-before-buying',
-      'used-car-inspection-checklist',
       'how-to-check-car-recalls-vin',
       'how-to-check-a-car-title-status',
       'how-to-check-if-a-car-has-a-lien',
@@ -89,7 +107,7 @@ const GROUPS: { heading: string; blurb: string; slugs: string[] }[] = [
 ];
 
 export default function BlogIndex() {
-  const all = articles as Article[];
+  const all = [...(articles as Article[]), ...PAGE_POSTS];
   const bySlug = new Map(all.map((a) => [a.slug, a]));
   const grouped = new Set(GROUPS.flatMap((g) => g.slugs));
   // Anything not explicitly placed still gets listed, so adding an article can
@@ -116,8 +134,8 @@ export default function BlogIndex() {
               author: { '@type': 'Person', name: ANALYST.name, jobTitle: ANALYST.role },
               mainEntity: {
                 '@type': 'ItemList',
-                numberOfItems: (articles as Article[]).length,
-                itemListElement: (articles as Article[]).map((a, i) => ({
+                numberOfItems: all.length,
+                itemListElement: all.map((a, i) => ({
                   '@type': 'ListItem',
                   position: i + 1,
                   url: `${SITE_URL}/blog/${a.slug}`,
@@ -175,6 +193,19 @@ export default function BlogIndex() {
           </div>
         </section>
       )}
+
+      <section className="mt-12 rounded-2xl border border-border bg-white p-6">
+        <h2 className="text-2xl font-bold">Decision pages, with dated prices</h2>
+        <p className="mt-1 text-ink-2">Every provider price on these pages was read from the provider&apos;s own site on the date shown.</p>
+        <ul className="mt-4 grid gap-2 sm:grid-cols-2 text-sm">
+          <li><Link href="/best-vehicle-history-report" className="text-brand underline">Best vehicle history report: every provider compared</Link></li>
+          <li><Link href="/vehicle-history-faq" className="text-brand underline">Vehicle history FAQ: brands, NMVTIS, prices, refunds</Link></li>
+          <li><Link href="/bumper-review" className="text-brand underline">Bumper review: trial, monthly price, cancellation</Link></li>
+          <li><Link href="/autocheck-free" className="text-brand underline">How to get an AutoCheck report free</Link></li>
+          <li><Link href="/guides/used-car-checklist" className="text-brand underline">The used-car checklist (printable)</Link></li>
+          <li><Link href="/vin-decoder" className="text-brand underline">Free VIN decoder</Link></li>
+        </ul>
+      </section>
 
       <div className="mt-16 rounded-2xl border border-border bg-surface p-6">
         <h2 className="text-xl font-bold">Check a specific car</h2>

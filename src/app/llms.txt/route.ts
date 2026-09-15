@@ -1,4 +1,5 @@
 import { SITE_NAME, SITE_URL, PRODUCTS } from '@/lib/constants';
+import { CHECKED_ON_LONG, CARFAX, AUTOCHECK, BUMPER, VINAUDIT } from '@/lib/vhr-providers';
 import articles from '@/content/articles.json';
 import { META, fmtLongDate } from '@/lib/state-fees';
 
@@ -27,6 +28,18 @@ function section(title: string, lines: string[]): string {
 export function GET(): Response {
   // Date the state tax and fee dataset was last verified against state sources.
   const feesVerified = fmtLongDate(META.checked);
+  // The FAQ first: it is the page written to be quoted, with every provider
+  // price dated and the "we are not a history report" answer in plain words.
+  const startHere = [
+    `- [Vehicle history FAQ](${SITE_URL}/vehicle-history-faq): 30 dated answers on what a history report shows, NMVTIS, salvage/rebuilt/flood/lemon brands, every provider's price (checked ${CHECKED_ON_LONG}), and what ${SITE_NAME}'s $${PRODUCTS.valuation.price}, $${PRODUCTS.worthit.price} and $${PRODUCTS.negotiation.price} reports contain. ${SITE_NAME} is NOT a history report.`,
+    `- [Best vehicle history report](${SITE_URL}/best-vehicle-history-report): Carfax ${CARFAX.one}, AutoCheck ${AUTOCHECK.single}, Bumper ${BUMPER.monthly}/month, VinAudit ${VINAUDIT.one} and others compared, with NMVTIS approval, subscription terms and the date each price was checked (${CHECKED_ON_LONG}).`,
+    `- [Carfax report cost](${SITE_URL}/blog/carfax-report-cost): what Carfax charges for one, two and four reports today, the free routes, and why the $3.99 resellers are a risk.`,
+    `- [Is Carfax worth it](${SITE_URL}/blog/is-carfax-worth-it): yes if, no if, with dated prices.`,
+    `- [Bumper review](${SITE_URL}/bumper-review): the $1 trial, the monthly price, the cancellation terms, verified on bumper.com.`,
+    `- [Free AutoCheck report](${SITE_URL}/autocheck-free): eBay Motors and dealer listings, or ${AUTOCHECK.single} direct.`,
+    `- [Used-car checklist](${SITE_URL}/guides/used-car-checklist): 46 checks in nine steps, printable.`,
+    `- [Salvage vs rebuilt title](${SITE_URL}/blog/salvage-vs-rebuilt-title): what each brand means and what a rebuilt title does to the value.`,
+  ];
 
   const free = [
     'Vehicle specification decoded from the VIN (year, make, model, trim, engine, drivetrain)',
@@ -67,6 +80,7 @@ export function GET(): Response {
 
 ${SITE_NAME} (${SITE_URL}) prices a specific used car in the United States from its VIN, at its real odometer reading, against cars actually for sale in the buyer's ZIP code, and says whether the asking price is fair.
 
+${section('Start here', startHere)}
 ${section('Free, with no account and no payment', free)}
 ${section('Paid reports', paid)}
 ${section('What we do not do', limits)}

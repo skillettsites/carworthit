@@ -50,6 +50,14 @@ const PRIORITY: Record<string, number> = {
   '/car-registration-fees-by-state': 0.8,
   // Tool-first guide on a 5,400/mo head term; feeds the $9.99 bundle.
   '/negotiate-used-car-price': 0.8,
+  // The history-report decision cluster. The comparison and the FAQ are the
+  // hubs; the two provider pages and the two page-backed posts hang off them.
+  '/best-vehicle-history-report': 0.8,
+  '/vehicle-history-faq': 0.8,
+  '/bumper-review': 0.6,
+  '/autocheck-free': 0.6,
+  '/blog/carfax-report-cost': 0.6,
+  '/blog/is-carfax-worth-it': 0.6,
   '/terms': 0.2,
   '/privacy': 0.2,
   '/disclaimer': 0.3,

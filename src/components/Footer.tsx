@@ -5,7 +5,7 @@ export default function Footer() {
   const year = 2026;
   return (
     <footer className="mt-16 border-t border-border bg-surface">
-      <div className="container-x grid gap-8 py-12 text-sm md:grid-cols-4">
+      <div className="container-x grid gap-8 py-12 text-sm sm:grid-cols-2 lg:grid-cols-5">
         <div>
           <div className="mb-2 font-bold text-ink">
             Car<span className="text-brand">Worth</span>It
@@ -41,6 +41,18 @@ export default function Footer() {
             <li><Link href="/out-the-door-price-calculator" className="hover:text-ink">Out-the-door price</Link></li>
             <li><Link href="/dealer-doc-fee-by-state" className="hover:text-ink">Dealer doc fees by state</Link></li>
             <li><Link href="/car-registration-fees-by-state" className="hover:text-ink">Registration fees by state</Link></li>
+          </ul>
+        </div>
+        <div>
+          {/* The history-report cluster: the pages that say, with dated prices,
+              what the history providers charge and that we are not one. */}
+          <div className="mb-3 font-semibold text-ink">Checking a used car</div>
+          <ul className="space-y-2 text-ink-2">
+            <li><Link href="/best-vehicle-history-report" className="hover:text-ink">Best vehicle history report</Link></li>
+            <li><Link href="/vehicle-history-faq" className="hover:text-ink">Vehicle history FAQ</Link></li>
+            <li><Link href="/blog/carfax-report-cost" className="hover:text-ink">Carfax report cost</Link></li>
+            <li><Link href="/guides/used-car-checklist" className="hover:text-ink">Used-car checklist</Link></li>
+            <li><Link href="/vin-decoder" className="hover:text-ink">Free VIN decoder</Link></li>
           </ul>
         </div>
         <div>
