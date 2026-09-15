@@ -41,6 +41,8 @@ const PRIORITY: Record<string, number> = {
   '/diminished-value-calculator': 0.9,
   '/how-much-is-my-car-worth': 0.9,
   '/check-car-value': 0.9,
+  // Tool-first guide on a 5,400/mo head term; feeds the $9.99 bundle.
+  '/negotiate-used-car-price': 0.8,
   '/terms': 0.2,
   '/privacy': 0.2,
   '/disclaimer': 0.3,

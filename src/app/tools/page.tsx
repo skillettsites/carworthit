@@ -7,7 +7,7 @@ import { SITE_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Free Car Cost Calculators & Tools',
-  description: 'Free car tools: VIN decoder, diminished value calculator, fuel cost calculator and depreciation calculator. Plus a free VIN report for any US used car.',
+  description: 'Free car tools: VIN decoder, used car negotiation calculator, diminished value calculator, fuel cost calculator and depreciation calculator. Plus a free VIN report for any US used car.',
   alternates: { canonical: `${SITE_URL}/tools` },
 };
 
@@ -23,6 +23,12 @@ const tools = [
     title: 'Diminished Value Calculator',
     desc: 'What an insurer will offer for the value your car lost in an accident, using the 17c formula they apply.',
     icon: '📉',
+  },
+  {
+    href: '/negotiate-used-car-price',
+    title: 'Used Car Negotiation Calculator',
+    desc: 'Asking price in, opening offer, target and walk-away price out, with the reasoning and sources for each. Dealer or private sale.',
+    icon: '🤝',
   },
   {
     href: '/fuel-cost-calculator',

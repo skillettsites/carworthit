@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SITE_URL } from '@/lib/constants';
+import Link from 'next/link';
 import Article from '@/components/Article';
 import VinForm from '@/components/VinForm';
 
@@ -41,6 +42,14 @@ export default function Page() {
           A cheap car with high running costs isn&apos;t cheap. Before you commit, look at the <strong>true cost to own</strong>:
           fuel, insurance, maintenance, repairs and depreciation over five years. It often changes which car is actually
           the better buy.
+        </p>
+
+        <h2>5. Set your three prices before you talk money</h2>
+        <p>
+          Decide an opening offer, a target and a walk-away price before the conversation starts, and write them down.
+          The free <Link href="/negotiate-used-car-price">used car negotiation calculator</Link> turns the asking price,
+          the seller type and anything the inspection found into those three numbers, with the published ranges behind
+          each one. A number decided in the room is a number decided by the seller.
         </p>
 
         <h2>Start with the VIN</h2>
