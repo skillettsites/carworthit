@@ -155,8 +155,8 @@ export default async function Page({ params }: { params: Promise<{ make: string 
       <h2>{m.name} WMI codes (the first three characters)</h2>
       <p>
         Every row below was returned by NHTSA vPIC on {fmtDate(table.fetched)}. The method: query vPIC&apos;s GetWMIsForManufacturer
-        endpoint for the manufacturer names that build {m.name} vehicles, then confirm each candidate with vPIC&apos;s DecodeWMI endpoint
-        and keep it only when DecodeWMI names {m.name} as a make for that WMI. Nothing was added by hand. &quot;Also decodes as&quot; lists
+        endpoint for the manufacturer names that build {m.name}{' '}vehicles, then confirm each candidate with vPIC&apos;s DecodeWMI endpoint
+        and keep it only when DecodeWMI names {m.name}{' '}as a make for that WMI. Nothing was added by hand. &quot;Also decodes as&quot; lists
         the other makes vPIC returns for the same three characters.
       </p>
       <WmiTable rows={wmis} make={m.name} />
