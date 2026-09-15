@@ -18,7 +18,7 @@ type Article = { slug: string; title: string; metaDescription: string; published
 // Grouped rather than dumped as one 48-item list. A flat list buries the
 // cluster that matters and gives crawlers no sense of which pages are the
 // hubs, and readers no way to find the one thing they came for.
-const GROUPS: { heading: string; blurb: string; slugs: string[] }[] = [
+const GROUPS: { heading: string; blurb: string; slugs: string[]; tools?: { href: string; label: string }[] }[] = [
   {
     heading: 'What a car is worth',
     blurb:
@@ -60,13 +60,20 @@ const GROUPS: { heading: string; blurb: string; slugs: string[] }[] = [
   {
     heading: 'Before you buy',
     blurb: 'The checks worth doing, and the ones people skip and regret.',
+    tools: [
+      { href: '/title-check', label: 'Title check' },
+      { href: '/lien-check', label: 'Lien check' },
+      { href: '/odometer-check', label: 'Odometer check' },
+      { href: '/stolen-vehicle-check', label: 'Stolen vehicle check' },
+      { href: '/window-sticker', label: 'Window sticker by VIN' },
+    ],
     slugs: [
       'how-to-check-a-used-car-before-buying',
       'used-car-inspection-checklist',
       'how-to-check-car-recalls-vin',
-      'how-to-check-a-car-title-status',
-      'how-to-check-if-a-car-has-a-lien',
-      'how-to-check-a-car-for-odometer-fraud',
+      // The title, lien and odometer posts became tool pages on September 15,
+      // 2026 (/title-check, /lien-check, /odometer-check) and 301 there; the
+      // group blurb links them so the cluster stays discoverable from here.
       'how-to-spot-flood-damaged-car',
       'salvage-vs-rebuilt-title',
       'what-does-a-vehicle-history-report-show',
@@ -139,6 +146,19 @@ export default function BlogIndex() {
         <section key={g.heading} className="mt-12">
           <h2 className="text-2xl font-bold">{g.heading}</h2>
           <p className="mt-1 max-w-2xl text-ink-2">{g.blurb}</p>
+          {g.tools && (
+            <p className="mt-2 text-sm text-ink-2">
+              Free tools:{' '}
+              {g.tools.map((t, i) => (
+                <span key={t.href}>
+                  {i > 0 && ' · '}
+                  <Link href={t.href} className="text-brand underline">
+                    {t.label}
+                  </Link>
+                </span>
+              ))}
+            </p>
+          )}
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             {g.slugs.map((slug) => {
               const a = bySlug.get(slug);

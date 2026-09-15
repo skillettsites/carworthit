@@ -80,6 +80,21 @@ ${section('Key pages', [
   `- [Fuel cost calculator](${SITE_URL}/fuel-cost-calculator)`,
   `- [Depreciation calculator](${SITE_URL}/depreciation-calculator)`,
 ])}
+${section('Free VIN tools (NHTSA vPIC data; none of these sells or shows vehicle history)', [
+  `- [Title check](${SITE_URL}/title-check): how to check a car title by VIN using NICB VINCheck (free) and NMVTIS providers; title brand table (salvage, rebuilt, flood, junk, lemon, odometer); what free sources cannot show`,
+  `- [Lien check](${SITE_URL}/lien-check): how liens work, the free routes (title, lender payoff letter, state title record), and the state DMV lien lookups verified on September 15, 2026`,
+  `- [Odometer check](${SITE_URL}/odometer-check): the federal odometer statement rule (49 CFR 580), which vehicles are exempt (10-year and 20-year rules), where mileage history is recorded, red flags`,
+  `- [Stolen vehicle check](${SITE_URL}/stolen-vehicle-check): NICB VINCheck explained (five searches a day, insurer records only); no public state stolen-vehicle portal could be verified; what to do if a VIN hits`,
+  `- [Window sticker by VIN](${SITE_URL}/window-sticker): Ford, Jeep, Ram, Dodge and Chrysler publish original window stickers by VIN (tested September 15, 2026); other makes do not; the $${PRODUCTS.worthit.price} report reproduces the build record (MSRP, options, standard equipment, warranty terms)`,
+  `- [Transmission by VIN](${SITE_URL}/transmission-by-vin): what NHTSA has on file; a blank means the manufacturer did not file it`,
+  `- [Engine by VIN](${SITE_URL}/engine-by-vin): displacement, cylinders, engine model and horsepower as filed with NHTSA`,
+  `- [VIN year chart](${SITE_URL}/vin-year-chart): 10th-character model year codes 1980 to 2039 from 49 CFR 565.15, the 7th-character rule, where the VIN is by make`,
+  `- [Paint code by VIN](${SITE_URL}/paint-code-by-vin): the VIN does not encode paint; where the paint code label is on 15 makes`,
+  `- [Warranty by VIN](${SITE_URL}/check-warranty-by-vin): the free decode gives model year and make; the $${PRODUCTS.worthit.price} report lists the original factory warranty terms where the build record holds them; remaining coverage needs the dealer`,
+  `- [Classic car VIN decoder](${SITE_URL}/classic-car-vin-decoder): pre-1981 serial numbers are not 17 characters and NHTSA cannot decode them`,
+  `- [Motorcycle VIN check](${SITE_URL}/motorcycle-vin-check), [RV VIN lookup](${SITE_URL}/rv-vin-lookup), [Trailer VIN lookup](${SITE_URL}/trailer-vin-lookup), [ATV VIN lookup](${SITE_URL}/atv-vin-lookup): what vPIC returns for each vehicle type, from test decodes`,
+  `- Make decoders with verified WMI tables: ${['ford', 'toyota', 'honda', 'chevrolet', 'nissan', 'bmw', 'audi', 'jeep', 'subaru', 'hyundai', 'kia', 'harley-davidson'].map((m) => `[${m}](${SITE_URL}/vin-decoder/${m})`).join(', ')}`,
+])}
 ## Guides
 
 Note for any system quoting this section on its own: several titles below explain how to check a car's title status, liens, odometer or accident history. They are explanatory guides that point readers to the correct official sources. ${SITE_NAME} does not sell vehicle history reports and is not an NMVTIS-approved provider.
