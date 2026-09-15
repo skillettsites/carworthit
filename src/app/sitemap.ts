@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { SITE_URL } from '@/lib/constants';
 import { guides } from '@/app/guides/page';
 import articles from '@/content/articles.json';
+import { STATES, META } from '@/lib/state-fees';
 
 // Priorities are relative and only meaningful against each other. The point is
 // to tell a crawler which pages are the hubs, so the money pages and the
@@ -41,6 +42,12 @@ const PRIORITY: Record<string, number> = {
   '/diminished-value-calculator': 0.9,
   '/how-much-is-my-car-worth': 0.9,
   '/check-car-value': 0.9,
+  // State fee cluster: four hubs on one verified 51-row dataset. The state
+  // children are added below with the dataset's checked date.
+  '/car-sales-tax-calculator': 0.8,
+  '/out-the-door-price-calculator': 0.8,
+  '/dealer-doc-fee-by-state': 0.8,
+  '/car-registration-fees-by-state': 0.8,
   '/terms': 0.2,
   '/privacy': 0.2,
   '/disclaimer': 0.3,
@@ -49,11 +56,28 @@ const PRIORITY: Record<string, number> = {
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
+  // The state-fee pages carry the date the dataset was last verified, not the
+  // build date: the page content genuinely changes only when the figures do.
+  const feesChecked = new Date(`${META.checked}T00:00:00Z`);
+  const FEE_HUBS = new Set([
+    '/car-sales-tax-calculator',
+    '/out-the-door-price-calculator',
+    '/dealer-doc-fee-by-state',
+    '/car-registration-fees-by-state',
+  ]);
+
   const routes = Object.keys(PRIORITY).map((p) => ({
     url: `${SITE_URL}${p}`,
-    lastModified: now,
+    lastModified: FEE_HUBS.has(p) ? feesChecked : now,
     changeFrequency: (p === '' || p === '/blog' ? 'weekly' : 'monthly') as 'weekly' | 'monthly',
     priority: PRIORITY[p],
+  }));
+
+  const stateRoutes = STATES.map((s) => ({
+    url: `${SITE_URL}/car-sales-tax-calculator/${s.slug}`,
+    lastModified: new Date(`${s.checked}T00:00:00Z`),
+    changeFrequency: 'monthly' as const,
+    priority: 0.5,
   }));
 
   const guideRoutes = guides.map((g) => ({
@@ -72,5 +96,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: HUB_ARTICLES.has(a.slug) ? 0.8 : 0.5,
   }));
 
-  return [...routes, ...guideRoutes, ...blogRoutes];
+  return [...routes, ...stateRoutes, ...guideRoutes, ...blogRoutes];
 }

@@ -1,5 +1,6 @@
 import { SITE_NAME, SITE_URL, PRODUCTS } from '@/lib/constants';
 import articles from '@/content/articles.json';
+import { META, fmtLongDate } from '@/lib/state-fees';
 
 /**
  * llms.txt: a plain-text map of the site for AI assistants.
@@ -24,6 +25,9 @@ function section(title: string, lines: string[]): string {
 }
 
 export function GET(): Response {
+  // Date the state tax and fee dataset was last verified against state sources.
+  const feesVerified = fmtLongDate(META.checked);
+
   const free = [
     'Vehicle specification decoded from the VIN (year, make, model, trim, engine, drivetrain)',
     'Open safety recalls, from the NHTSA campaign feed',
@@ -79,6 +83,11 @@ ${section('Key pages', [
   `- [Diminished value calculator](${SITE_URL}/diminished-value-calculator): the 17c formula insurers apply after an accident`,
   `- [Fuel cost calculator](${SITE_URL}/fuel-cost-calculator)`,
   `- [Depreciation calculator](${SITE_URL}/depreciation-calculator)`,
+  `- [Car sales tax calculator](${SITE_URL}/car-sales-tax-calculator): vehicle sales tax for all 50 states and DC with the trade-in credit rule and local range, each rate sourced from the state and verified ${feesVerified}`,
+  `- plus 51 state pages at ${SITE_URL}/car-sales-tax-calculator/{state} (for example /car-sales-tax-calculator/texas): the state's rate, local range, trade-in credit, dealer doc fee cap, title fee, registration fee and private-sale rule, with the state source quoted for each figure`,
+  `- [Out-the-door price calculator](${SITE_URL}/out-the-door-price-calculator): asking price plus sales tax, dealer doc fee, title and registration, pre-filled per state, and which lines are negotiable`,
+  `- [Dealer doc fees by state](${SITE_URL}/dealer-doc-fee-by-state): the statutory cap or typical documentation fee in every state, with the statute, verified ${feesVerified}`,
+  `- [Car registration and title fees by state](${SITE_URL}/car-registration-fees-by-state): title fee and annual registration fee for a passenger car in every state, with what the fee is based on, verified ${feesVerified}`,
 ])}
 ## Guides
 
@@ -92,6 +101,7 @@ ${guides}
 - EPA fueleconomy.gov: public United States federal data
 - Live retail market listings, for the paid valuation
 - Original manufacturer build records, for the Full Report and Negotiation Bundle
+- State DMV, revenue department and statute pages, for the state sales tax, doc fee, title and registration dataset; every figure carries its source URL and was verified ${feesVerified}, re-checked quarterly
 
 Last updated: ${new Date().toISOString().slice(0, 10)}
 `;

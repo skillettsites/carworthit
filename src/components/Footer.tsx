@@ -34,6 +34,14 @@ export default function Footer() {
             <li><Link href="/blog/how-to-file-a-diminished-value-claim" className="hover:text-ink">Filing a claim</Link></li>
             <li><Link href="/blog/diminished-value-by-state" className="hover:text-ink">Rules by state</Link></li>
           </ul>
+          {/* The state tax and fee cluster: four hubs on one verified dataset. */}
+          <div className="mb-3 mt-6 font-semibold text-ink">Taxes and fees</div>
+          <ul className="space-y-2 text-ink-2">
+            <li><Link href="/car-sales-tax-calculator" className="hover:text-ink">Car sales tax by state</Link></li>
+            <li><Link href="/out-the-door-price-calculator" className="hover:text-ink">Out-the-door price</Link></li>
+            <li><Link href="/dealer-doc-fee-by-state" className="hover:text-ink">Dealer doc fees by state</Link></li>
+            <li><Link href="/car-registration-fees-by-state" className="hover:text-ink">Registration fees by state</Link></li>
+          </ul>
         </div>
         <div>
           <div className="mb-3 font-semibold text-ink">What a car is worth</div>
