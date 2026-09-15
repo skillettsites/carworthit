@@ -81,6 +81,7 @@ ${section('Key pages', [
   `- [Check car value](${SITE_URL}/check-car-value): check a used car by VIN from $${PRODUCTS.valuation.price}`,
   `- [Free VIN decoder](${SITE_URL}/vin-decoder): decode any 17-character VIN, no account`,
   `- [Diminished value calculator](${SITE_URL}/diminished-value-calculator): the 17c formula insurers apply after an accident`,
+  `- [Negotiate a used car price](${SITE_URL}/negotiate-used-car-price): how much you can negotiate on a used car (median 8% off asking, Consumer Reports), an opening offer, target and walk-away calculator, the 10 levers that move price, dealer vs private`,
   `- [Fuel cost calculator](${SITE_URL}/fuel-cost-calculator)`,
   `- [Depreciation calculator](${SITE_URL}/depreciation-calculator)`,
   `- [Car sales tax calculator](${SITE_URL}/car-sales-tax-calculator): vehicle sales tax for all 50 states and DC with the trade-in credit rule and local range, each rate sourced from the state and verified ${feesVerified}`,

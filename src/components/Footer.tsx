@@ -50,6 +50,7 @@ export default function Footer() {
             <li><Link href="/blog/kelley-blue-book-alternatives" className="hover:text-ink">KBB alternatives</Link></li>
             <li><Link href="/blog/kbb-vs-edmunds-vs-nada" className="hover:text-ink">KBB vs Edmunds vs NADA</Link></li>
             <li><Link href="/blog/carvana-vs-carmax-offer" className="hover:text-ink">Carvana vs CarMax</Link></li>
+            <li><Link href="/negotiate-used-car-price" className="hover:text-ink">Negotiate a used car price</Link></li>
             <li><Link href="/blog" className="hover:text-ink">All guides</Link></li>
           </ul>
           <div className="mb-3 mt-6 font-semibold text-ink">Legal</div>

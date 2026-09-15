@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import VinForm from '@/components/VinForm';
 import { PRODUCTS, SITE_URL } from '@/lib/constants';
 import { howToSchema, breadcrumbSchema } from '@/lib/schema';
@@ -73,6 +74,14 @@ export default function HowItWorks() {
           </li>
         ))}
       </ol>
+
+      <p className="mt-8 text-sm leading-relaxed text-ink-2">
+        Want a feel for the numbers first? The free{' '}
+        <Link href="/negotiate-used-car-price" className="font-semibold text-brand underline">
+          used car negotiation calculator
+        </Link>{' '}
+        shows how much room a typical used car has, from Consumer Reports and dealer-margin data, before you buy anything.
+      </p>
 
       <div className="mt-12 rounded-2xl border border-border bg-white p-6">
         <h2 className="text-xl font-bold">What we don&apos;t do</h2>

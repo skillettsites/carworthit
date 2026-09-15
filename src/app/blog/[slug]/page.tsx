@@ -5,8 +5,9 @@ import articles from '@/content/articles.json';
 import JsonLd from '@/components/JsonLd';
 import SearchBox from '@/components/SearchBox';
 import StickyVinCta from '@/components/StickyVinCta';
+import VinForm from '@/components/VinForm';
 import { articleSchema, faqSchema, breadcrumbSchema } from '@/lib/schema';
-import { SITE_URL, ANALYST } from '@/lib/constants';
+import { SITE_URL, ANALYST, PRODUCTS } from '@/lib/constants';
 
 // Compact inline CTA injected mid-article (right after the problems table).
 function InlineCta() {
@@ -22,6 +23,31 @@ function InlineCta() {
       >
         Check a VIN free
       </Link>
+    </div>
+  );
+}
+
+// The model guides get a VIN box rather than a link: a reader who has just
+// seen which years to avoid has a specific car in mind, and the free report
+// answers the two things the table cannot (this VIN's spec and its open
+// recalls) before the $2.99 valuation answers the price.
+function modelName(title: string) {
+  const i = title.search(/ common problems/i);
+  return i > 0 ? title.slice(0, i) : 'car';
+}
+
+function ModelCheckCta({ model }: { model: string }) {
+  return (
+    <div className="not-prose my-8 rounded-2xl border-2 border-brand/40 bg-gradient-to-br from-blue-50 to-cyan-50 p-5 sm:p-6">
+      <p className="font-bold text-ink text-lg">Check a specific {model} before you buy</p>
+      <p className="text-sm text-ink-2 mt-1">
+        Enter its 17-character VIN for the free report: the exact year, trim and engine it was built with, every open safety
+        recall NHTSA lists for it, its crash-test ratings and running costs. No account. Then, from ${PRODUCTS.valuation.price},
+        see what that {model} is worth at its mileage near your ZIP code and whether the asking price is fair.
+      </p>
+      <div className="mt-4">
+        <VinForm size="md" />
+      </div>
     </div>
   );
 }
@@ -168,7 +194,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
           )}
         </div>
         <div className="article-body" dangerouslySetInnerHTML={{ __html: bodyBefore }} />
-        <InlineCta />
+        {slug.endsWith('-common-problems') ? <ModelCheckCta model={modelName(a.title)} /> : <InlineCta />}
         {bodyAfter && <div className="article-body" dangerouslySetInnerHTML={{ __html: bodyAfter }} />}
 
         <div className="mt-12 rounded-2xl border-2 border-brand bg-gradient-to-br from-blue-50 to-cyan-50 p-6 md:p-8 text-center">

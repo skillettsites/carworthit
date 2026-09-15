@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import SearchBox from '@/components/SearchBox';
 import { PRODUCTS, SITE_URL, SITE_NAME, upgradePriceCents } from '@/lib/constants';
 import { faqSchema, breadcrumbSchema } from '@/lib/schema';
@@ -152,6 +153,15 @@ export default function Pricing() {
         We don&apos;t quote our competitors&apos; prices because they change them without notice. Carfax is the
         priciest of the mainstream single-report options and AutoCheck sits below it; check their sites for what they
         charge today.
+      </p>
+
+      <p className="mt-4 text-center text-sm text-ink-2 max-w-2xl mx-auto">
+        Not sure what a normal discount looks like before you buy? The free{' '}
+        <Link href="/negotiate-used-car-price" className="font-semibold text-brand underline">
+          used car negotiation calculator
+        </Link>{' '}
+        turns any asking price into an opening offer, target and walk-away from published typical ranges. The Negotiation
+        Bundle does the same for the actual VIN against live local listings.
       </p>
 
       <div className="mt-12 max-w-xl mx-auto">

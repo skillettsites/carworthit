@@ -48,6 +48,8 @@ const PRIORITY: Record<string, number> = {
   '/out-the-door-price-calculator': 0.8,
   '/dealer-doc-fee-by-state': 0.8,
   '/car-registration-fees-by-state': 0.8,
+  // Tool-first guide on a 5,400/mo head term; feeds the $9.99 bundle.
+  '/negotiate-used-car-price': 0.8,
   '/terms': 0.2,
   '/privacy': 0.2,
   '/disclaimer': 0.3,
