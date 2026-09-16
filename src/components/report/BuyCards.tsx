@@ -206,7 +206,7 @@ export default function BuyCards({
 
   return (
     <>
-      <div className="border-b border-border bg-surface">
+      <div className="border-b border-border bg-surface" id="buy">
         <div className="container-x max-w-4xl py-6">
       <div className="cxc print:hidden">
         <div className="grid">

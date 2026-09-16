@@ -89,7 +89,7 @@ export function splitDesc(
   return { year, make: make || titleCase(fbMake), model: model || fbModel, trim: trimParts.join(' ') || null };
 }
 
-const titleCase = (s: string) =>
+export const titleCase = (s: string) =>
   s
     .toLowerCase()
     .split(/(\s+|-)/)

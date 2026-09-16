@@ -7,7 +7,11 @@ import { after } from 'next/server';
 import { getMarketValuation, getFactoryData, getRecallReport, getRetailMarketValue } from '@/lib/apis/oneauto';
 import { getPaidSession } from '@/lib/stripe';
 import { buildVerdict, valuationFromEvidence } from '@/lib/worthit-report';
-import { toModelRow, upsertModelValue } from '@/lib/model-values';
+import { toModelRow, upsertModelValue, getModelValues, getModelIndex, slugify } from '@/lib/model-values';
+import { getComplaints } from '@/lib/nhtsaComplaints';
+import { getStateByCode } from '@/lib/state-fees';
+import FreeExtras from '@/components/report/FreeExtras';
+import articles from '@/content/articles.json';
 import { buildNegotiationPack, type NegotiationPack } from '@/lib/negotiation';
 import { SITE_URL, includesFactory, includesNegotiation, includesRecallCheck } from '@/lib/constants';
 import { logLookup, logPurchase, getCachedReport, cacheReport, healCachedReport } from '@/lib/db';
@@ -265,7 +269,42 @@ export default async function ReportPage({ params, searchParams }: { params: Par
   }
 
   // The paid listings feed is called only inside the `paid` branch above. A
-  // free view never touches a paid API (decision of 16 September 2026).
+  // free view never touches a paid API (decision of 16 September 2026). What
+  // it gets instead is everything we already hold or can fetch for nothing:
+  // our own model-value rows, NHTSA complaints, and the state fee dataset.
+  let extras: React.ReactNode = null;
+  if (!paid) {
+    const slug = `${free.specs.year}-${slugify(free.specs.make || '')}-${slugify(free.specs.model || '')}`;
+    const region = h.get('x-vercel-ip-country-region') || '';
+    const country = h.get('x-vercel-ip-country') || '';
+    const [modelRows, index, complaints] = await Promise.all([
+      getModelValues(slug),
+      getModelIndex(),
+      getComplaints(free.specs.year, free.specs.make, free.specs.model),
+    ]);
+    const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const makeKey = norm(free.specs.make || '');
+    const modelKey = norm(free.specs.model || '');
+    const otherYears = index
+      .filter((r) => norm(r.make) === makeKey && norm(r.model) === modelKey && r.slug !== slug)
+      .sort((a, b) => b.year - a.year);
+    // The common-problems guides use "chevy" for Chevrolet and drop hyphens.
+    const makeAlias = makeKey === 'chevrolet' ? 'chevy' : makeKey;
+    const problemsSlug =
+      (articles as { slug: string }[])
+        .map((a) => a.slug)
+        .find((s) => s.endsWith('-common-problems') && norm(s.replace(/-common-problems$/, '')) === makeAlias + modelKey) ?? null;
+    extras = (
+      <FreeExtras
+        specs={free.specs}
+        modelRows={modelRows}
+        otherYears={otherYears}
+        complaints={complaints}
+        state={country === 'US' && region ? (getStateByCode(region) ?? null) : null}
+        problemsSlug={problemsSlug}
+      />
+    );
+  }
 
   const verdict = buildVerdict(paid?.ctx.asking ?? null, valuation);
 
@@ -288,6 +327,7 @@ export default async function ReportPage({ params, searchParams }: { params: Par
       <WorthItReport
         report={{ free, valuation, factory, recalls, verdict, askingPrice: paid?.ctx.asking ?? null, evidence, tier: paid?.product ?? null }}
         pack={pack}
+        extras={extras}
         siblings={
           paid && paid.vins.length > 1
             ? { vins: paid.vins, index: paid.index, token: sp.paid as string }
