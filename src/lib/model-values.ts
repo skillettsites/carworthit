@@ -173,12 +173,6 @@ async function select<T>(query: string, revalidate = 86400): Promise<T[]> {
   }
 }
 
-/** Does a row already exist for this VIN prefix? Free-view seeding must not overwrite a row struck at a real odometer reading. */
-export async function hasModelValue(prefix: string): Promise<boolean> {
-  const rows = await select<{ prefix: string }>(`select=prefix&prefix=eq.${encodeURIComponent(prefix)}&limit=1`, 0);
-  return rows.length > 0;
-}
-
 /** Every trim row for one model page, newest first. */
 export function getModelValues(slug: string): Promise<ModelValueRow[]> {
   return select<ModelValueRow>(`slug=eq.${encodeURIComponent(slug)}&order=fetched_at.desc`);

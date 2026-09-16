@@ -7,8 +7,7 @@ import { after } from 'next/server';
 import { getMarketValuation, getFactoryData, getRecallReport, getRetailMarketValue } from '@/lib/apis/oneauto';
 import { getPaidSession } from '@/lib/stripe';
 import { buildVerdict, valuationFromEvidence } from '@/lib/worthit-report';
-import { toModelRow, upsertModelValue, hasModelValue } from '@/lib/model-values';
-import { FREE_EVIDENCE_TEASER } from '@/lib/constants';
+import { toModelRow, upsertModelValue } from '@/lib/model-values';
 import { buildNegotiationPack, type NegotiationPack } from '@/lib/negotiation';
 import { SITE_URL, includesFactory, includesNegotiation, includesRecallCheck } from '@/lib/constants';
 import { logLookup, logPurchase, getCachedReport, cacheReport, healCachedReport } from '@/lib/db';
@@ -149,13 +148,11 @@ export default async function ReportPage({ params, searchParams }: { params: Par
   let evidence: MarketEvidence | null = null;
   // Every model page grows from real lookups: a fresh national valuation is
   // reduced to its public aggregates and written after the response is sent.
-  // A paid report was struck at the real odometer reading and always writes;
-  // a free view was struck at an age-based guess and only fills a gap.
-  const seedModelPage = (ev: MarketEvidence, mode: 'paid' | 'free') => {
+  // Struck at the buyer's real odometer reading, so it always writes.
+  const seedModelPage = (ev: MarketEvidence) => {
     const row = toModelRow(vin, ev, free.specs);
     if (!row) return;
     const work = async () => {
-      if (mode === 'free' && (await hasModelValue(row.prefix))) return;
       await upsertModelValue(row);
     };
     try {
@@ -211,7 +208,7 @@ export default async function ReportPage({ params, searchParams }: { params: Par
         evidence = await getRetailMarketValue(vin, paid.ctx.mileage);
         if (evidence) {
           healCachedReport(token, { valuation, factory, recalls, evidence });
-          seedModelPage(evidence, 'paid');
+          seedModelPage(evidence);
         }
       }
     } else {
@@ -227,7 +224,7 @@ export default async function ReportPage({ params, searchParams }: { params: Par
       if (!factory && cached?.factory) factory = cached.factory;
       if (!recalls && cached?.recalls) recalls = cached.recalls;
       if (!evidence && cached?.evidence) evidence = cached.evidence;
-      if (evidence) seedModelPage(evidence, 'paid');
+      if (evidence) seedModelPage(evidence);
 
       // Only write a row we would be happy to serve forever. An incomplete
       // result is retried on the next visit instead of being frozen in. The
@@ -267,21 +264,8 @@ export default async function ReportPage({ params, searchParams }: { params: Par
     }
   }
 
-  // Free view: count the listings for this exact model so the buy cards can
-  // say what the paid report is built on. Human visitors only (a crawler
-  // hitting a thousand VINs would run up the bill), one national call cached
-  // a week per VIN, priced at the US average mileage for the car's age since
-  // the odometer is not known yet. The same call seeds the model page.
-  let teaser: { count: number; desc: string } | null = null;
-  if (!paid && FREE_EVIDENCE_TEASER && !isBot) {
-    const age = Math.max(0, new Date().getUTCFullYear() - Number(free.specs.year || 0));
-    const ok = Number.isFinite(age) && age <= 25;
-    const ev = ok ? await getRetailMarketValue(vin, Math.min(250000, Math.max(5000, Math.round(age * 13500)))) : null;
-    if (ev && ev.count > 0) {
-      teaser = { count: ev.count, desc: ev.vehicleDesc };
-      seedModelPage(ev, 'free');
-    }
-  }
+  // The paid listings feed is called only inside the `paid` branch above. A
+  // free view never touches a paid API (decision of 16 September 2026).
 
   const verdict = buildVerdict(paid?.ctx.asking ?? null, valuation);
 
@@ -319,7 +303,6 @@ export default async function ReportPage({ params, searchParams }: { params: Par
             tier={paid?.product ?? null}
             defaults={paid ? { mileage: paid.ctx.mileage, zip: paid.ctx.zip, asking: paid.ctx.asking } : undefined}
             paidToken={paid ? (sp.paid as string) : null}
-            teaser={teaser}
           />
         }
         // Offered to everyone, paid or not. A free visitor leaving an address is

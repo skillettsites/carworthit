@@ -35,7 +35,6 @@ export default function BuyCards({
   tier,
   paidToken,
   defaults,
-  teaser,
 }: {
   vin: string;
   /** "2021 Toyota Corolla LE", for the modal heading. */
@@ -44,12 +43,6 @@ export default function BuyCards({
   tier: ProductId | null;
   paidToken?: string | null;
   defaults?: { mileage?: number; zip?: string; asking?: number | null };
-  /**
-   * How many real US listings the national feed holds for this exact model,
-   * counted on the free view. The one number a free visitor is shown, so the
-   * cards sell a report built on evidence rather than a promise of one.
-   */
-  teaser?: { count: number; desc: string } | null;
 }) {
   const offered = TIER_ORDER.filter((t) => (tier === null ? true : tierRank(t) > tierRank(tier)));
 
@@ -215,11 +208,6 @@ export default function BuyCards({
     <>
       <div className="border-b border-border bg-surface">
         <div className="container-x max-w-4xl py-6">
-      {teaser && (
-        <p className="mb-4 rounded-xl border border-brand/30 bg-brand/5 px-4 py-3 text-sm text-ink">
-          <strong>{teaser.count.toLocaleString('en-US')} real US listings</strong> for this exact model ({teaser.desc}) are behind the paid valuation: the national low, average and high, the price bands, and the nearest cars to your ZIP with their mileage and price.
-        </p>
-      )}
       <div className="cxc print:hidden">
         <div className="grid">
           {offered
