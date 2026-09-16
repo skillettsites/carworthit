@@ -11,12 +11,12 @@ export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://carworthit.
 export const SITE_TAGLINE = 'How much is a car worth? Find out by VIN, with the listings to prove it.';
 
 /**
- * On the FREE report, run the national listings feed once per VIN (24p, cached
- * a week, humans only) so the buy cards can say how many real listings the
- * paid valuation is built on. Only the count is shown free; the prices, the
- * bands and the listings themselves stay inside the paid report.
+ * Off by decision (16 September 2026): the paid listings feed is only called
+ * when a report has been bought. Switching this on runs the feed once per VIN
+ * on the FREE report (24p, cached a week, humans only) so the buy cards can
+ * quote the listing count; the prices, bands and listings stay paid either way.
  */
-export const FREE_EVIDENCE_TEASER = true;
+export const FREE_EVIDENCE_TEASER = false;
 export const GA_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-GKFGSRW0KL';
 
 // Leads on the VIN valuation intent, which is where the search volume actually
