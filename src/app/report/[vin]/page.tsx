@@ -23,6 +23,13 @@ import SearchBox from '@/components/SearchBox';
 
 export const dynamic = 'force-dynamic';
 
+type CachedReport = {
+  valuation: MarketValuation | null;
+  factory: FactoryData | null;
+  recalls?: RecallReport | null;
+  evidence?: MarketEvidence | null;
+};
+
 type Params = Promise<{ vin: string }>;
 type Search = Promise<{ paid?: string; utm_source?: string }>;
 
@@ -60,7 +67,17 @@ export default async function ReportPage({ params, searchParams }: { params: Par
     );
   }
 
-  const free = await buildFreeReport(vin);
+  // The NHTSA decode and the Stripe verification do not depend on each other,
+  // so they run together. On the landing after payment that removes a whole
+  // Stripe round trip from the time to first paint. The cache row for vehicle 1
+  // is keyed on the raw session id, so it is read optimistically here too and
+  // only used once the session has been verified and the index confirmed.
+  const token = typeof sp.paid === 'string' ? sp.paid : '';
+  const [free, paidEarly, cachedEarly] = await Promise.all([
+    buildFreeReport(vin),
+    token ? getPaidSession(vin, token) : Promise.resolve(null),
+    token ? getCachedReport<CachedReport>(token) : Promise.resolve(null),
+  ]);
   if (!free) {
     // A paying customer must never hit a dead end here.
     //
@@ -71,7 +88,7 @@ export default async function ReportPage({ params, searchParams }: { params: Par
     // decode lost the only door into their order: no sibling links, no
     // comparison, no refund route. So resolve the payment before bailing, and
     // if there is one, hand back the rest of the order and a way to reach us.
-    const paidOnFail = typeof sp.paid === 'string' ? await getPaidSession(vin, sp.paid) : null;
+    const paidOnFail = paidEarly;
     return (
       <Shell>
         <h1 className="text-2xl font-bold">We couldn&apos;t decode that VIN</h1>
@@ -127,6 +144,8 @@ export default async function ReportPage({ params, searchParams }: { params: Par
   const h = await headers();
   const ua = h.get('user-agent') || '';
   const isBot = /bot|crawl|spider|headless|preview|monitor/i.test(ua);
+  const postal = (h.get('x-vercel-ip-postal-code') || '').trim();
+  const zipHint = h.get('x-vercel-ip-country') === 'US' && /^\d{5}$/.test(postal) ? postal : '';
   logLookup({
     vin,
     year: free.specs.year,
@@ -144,7 +163,7 @@ export default async function ReportPage({ params, searchParams }: { params: Par
 
   // Paid data is fetched only for a verified, paid Stripe session, and only
   // for the VIN that session was created against.
-  const paid = typeof sp.paid === 'string' ? await getPaidSession(vin, sp.paid) : null;
+  const paid = paidEarly;
 
   let valuation: MarketValuation | null = null;
   let factory: FactoryData | null = null;
@@ -169,7 +188,7 @@ export default async function ReportPage({ params, searchParams }: { params: Par
     // The cache key, NOT the raw session id. One payment can cover five
     // vehicles, and `cwi_reports` is keyed on this value, so sharing the raw
     // session id across them would give all five the first vehicle's report.
-    const token = paid.cacheKey;
+    const cacheKey = paid.cacheKey;
 
     // Serve a previously purchased report from cache. Without this, every
     // revisit re-calls the paid APIs: a buyer who bookmarks their report and
@@ -180,12 +199,8 @@ export default async function ReportPage({ params, searchParams }: { params: Par
     const wantsFactory = includesFactory(paid.product);
     const wantsRecalls = includesRecallCheck(paid.product);
 
-    const cached = await getCachedReport<{
-      valuation: MarketValuation | null;
-      factory: FactoryData | null;
-      recalls?: RecallReport | null;
-      evidence?: MarketEvidence | null;
-    }>(token);
+    // Vehicle 1's row was already read in parallel with the Stripe check.
+    const cached = paid.index === 0 ? cachedEarly : await getCachedReport<CachedReport>(cacheKey);
     // A cache entry is only usable if it holds everything this tier paid for.
     // `cwi_reports` is keyed on the session id, the anon role has INSERT only
     // and there is no upsert, so the first write wins permanently. A row cached
@@ -211,7 +226,7 @@ export default async function ReportPage({ params, searchParams }: { params: Par
       if (!evidence) {
         evidence = await getRetailMarketValue(vin, paid.ctx.mileage);
         if (evidence) {
-          healCachedReport(token, { valuation, factory, recalls, evidence });
+          healCachedReport(cacheKey, { valuation, factory, recalls, evidence });
           seedModelPage(evidence);
         }
       }
@@ -239,8 +254,8 @@ export default async function ReportPage({ params, searchParams }: { params: Par
       if (worthCaching) {
         // Heal rather than insert when a poisoned row is already there, since
         // the session id is the primary key and anon cannot upsert.
-        if (cached) healCachedReport(token, { valuation, factory, recalls, evidence });
-        else cacheReport(token, vin, paid.product, { valuation, factory, recalls, evidence });
+        if (cached) healCachedReport(cacheKey, { valuation, factory, recalls, evidence });
+        else cacheReport(cacheKey, vin, paid.product, { valuation, factory, recalls, evidence });
       }
     }
 
@@ -341,7 +356,16 @@ export default async function ReportPage({ params, searchParams }: { params: Par
               .filter(Boolean)
               .join(' ')}
             tier={paid?.product ?? null}
-            defaults={paid ? { mileage: paid.ctx.mileage, zip: paid.ctx.zip, asking: paid.ctx.asking } : undefined}
+            // Pre-fill the ZIP from the visitor's location for a free view so
+            // the buy form is one field shorter. It is a guess they can change;
+            // US-only, five digits, and never used for anything but the default.
+            defaults={
+              paid
+                ? { mileage: paid.ctx.mileage, zip: paid.ctx.zip, asking: paid.ctx.asking }
+                : zipHint
+                  ? { zip: zipHint }
+                  : undefined
+            }
             paidToken={paid ? (sp.paid as string) : null}
           />
         }
