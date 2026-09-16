@@ -7,7 +7,7 @@
 // is a segment AFTER the service name, then the version. Carketa is the
 // exception and has neither. These paths are not in any published swagger; they
 // come from the raw HTML of the public service pages.
-import type { FactoryData, MarketValuation, RecallReport } from '../types';
+import type { FactoryData, MarketEvidence, MarketListing, MarketValuation, RecallReport } from '../types';
 
 const BASE_URL = 'https://api.oneautoapi.com';
 
@@ -221,5 +221,90 @@ export function parseRecallReport(body: Record<string, unknown> | null): RecallR
     nhtsaCount,
     manufacturerCount,
     items,
+  };
+}
+
+/**
+ * Retail Market Value (US), VIN Audit via OneAuto. Path found by probing on
+ * 16 September 2026 (it was not in the Swagger spec yet); it wants the VIN
+ * and `current_mileage`, and answers 200 with `success:true` plus
+ * `result.pricing_data`, `result.distribution_data`, `result.adjustments_data`
+ * and up to 1,000 rows of `result.sales_data`. A synthetic serial number
+ * (positions 12 to 17) values fine, which is what the model pages rely on.
+ *
+ * NATIONAL, not local: the feed values the year, make, model and trim across
+ * the whole country (a test VIN drew listings from New York to California).
+ * Every listing carries a ZIP and lat/long, so the local view is computed on
+ * our side in market-evidence.ts. Carketa stays the headline local number.
+ *
+ * Enterprise rate 24p a call. Cached a week per VIN and mileage: a buyer who
+ * upgrades from the Valuation to the Negotiation Bundle must not pay for the
+ * same listings twice.
+ */
+export async function getRetailMarketValue(vin: string, mileage: number): Promise<MarketEvidence | null> {
+  const key = apiKey();
+  if (!key) return null;
+  const qs = new URLSearchParams({
+    vehicle_identification_number: vin.trim().toUpperCase(),
+    current_mileage: String(Math.round(mileage)),
+  }).toString();
+  try {
+    const res = await fetch(`${BASE_URL}/vinaudit/retailmarketvalue/us/?${qs}`, {
+      headers: { 'x-api-key': key },
+      next: { revalidate: 604800 },
+    });
+    if (res.status === 204) return null;
+    const body = (await res.json().catch(() => null)) as Record<string, unknown> | null;
+    return parseRetailMarketValue(body, Math.round(mileage));
+  } catch {
+    return null;
+  }
+}
+
+export function parseRetailMarketValue(body: Record<string, unknown> | null, mileage: number): MarketEvidence | null {
+  if (!body || body.success !== true) return null;
+  const r = body.result as Record<string, unknown> | undefined;
+  const v = (r?.vehicle_data ?? {}) as Record<string, unknown>;
+  const p = (r?.pricing_data ?? {}) as Record<string, unknown>;
+  const adj = (r?.adjustments_data ?? {}) as Record<string, unknown>;
+  const avg = Number(p.retail_average_valuation_usd ?? p.mean_valuation_usd);
+  if (!Number.isFinite(avg) || avg <= 0) return null;
+
+  const num = (x: unknown): number => {
+    const y = Number(x);
+    return Number.isFinite(y) ? y : 0;
+  };
+  const bands = (Array.isArray(r?.distribution_data) ? (r!.distribution_data as Record<string, unknown>[]) : [])
+    .map((b) => ({ min: num(b.sale_price_min), max: num(b.sale_price_max), count: num(b.sale_prices_count) }))
+    .filter((b) => b.max > 0);
+  const listings: MarketListing[] = (Array.isArray(r?.sales_data) ? (r!.sales_data as Record<string, unknown>[]) : [])
+    .map((l) => ({
+      date: s(l.sale_date) || '',
+      mileage: num(l.mileage_observed),
+      price: num(l.advertised_price_usd),
+      adjPrice: Math.round(num(l.mileage_adjusted_price_usd)),
+      zip: String(l.zip_code ?? '').padStart(5, '0').slice(0, 5),
+      state: s(l.state_code) || '',
+      lat: num(l.latitude),
+      lng: num(l.longitude),
+    }))
+    .filter((l) => l.price > 0 && l.adjPrice > 0);
+
+  return {
+    vehicleDesc: s(v.vehicle_desc) || [v.model_year, v.manufacturer_desc, v.model_range_desc, v.trim_desc].filter(Boolean).join(' '),
+    mileage,
+    mean: Math.round(num(p.mean_valuation_usd) || avg),
+    standardDeviation: Math.round(num(p.standard_deviation_usd)),
+    count: Math.max(num(p.sale_prices_count), listings.length),
+    confidence: Math.max(0, Math.min(100, num(p.confidence_level))),
+    from: s(p.sale_date_from) || '',
+    to: s(p.sale_date_to) || '',
+    low: Math.round(num(p.retail_low_valuation_usd) || avg),
+    avg: Math.round(avg),
+    high: Math.round(num(p.retail_high_valuation_usd) || avg),
+    bands,
+    mileageAdjustment: Math.round(num(adj.mileage_adjustment)),
+    listings,
+    fetchedAt: new Date().toISOString(),
   };
 }

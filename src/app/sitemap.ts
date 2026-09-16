@@ -6,6 +6,7 @@ import { STATES, META } from '@/lib/state-fees';
 import { MAKES } from '@/lib/vin-tools/makes';
 import { VEHICLE_TYPES } from '@/lib/vin-tools/vehicle-types';
 import { STICKER_OEMS } from '@/lib/vin-tools/window-sticker';
+import { getModelIndex } from '@/lib/model-values';
 
 // Priorities are relative and only meaningful against each other. The point is
 // to tell a crawler which pages are the hubs, so the money pages and the
@@ -45,6 +46,11 @@ const PRIORITY: Record<string, number> = {
   '/diminished-value-calculator': 0.9,
   '/how-much-is-my-car-worth': 0.9,
   '/check-car-value': 0.9,
+  // The value cluster of September 16, 2026: the model-value index and the two
+  // pages that answer the KBB-shaped questions with dated, measured figures.
+  '/car-value': 0.9,
+  '/kbb-by-vin': 0.8,
+  '/is-kbb-accurate': 0.8,
   // State fee cluster: four hubs on one verified 51-row dataset. The state
   // children are added below with the dataset's checked date.
   '/car-sales-tax-calculator': 0.8,
@@ -85,7 +91,7 @@ const VIN_TOOL_CHILDREN = [
   ...STICKER_OEMS.map((o) => `/window-sticker/${o.slug}`),
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   // The state-fee pages carry the date the dataset was last verified, not the
@@ -135,5 +141,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: HUB_ARTICLES.has(a.slug) ? 0.8 : 0.5,
   }));
 
-  return [...routes, ...stateRoutes, ...vinToolRoutes, ...guideRoutes, ...blogRoutes];
+  // Model-value pages: one per model year with data, dated by the day the
+  // figures were struck. Read from the database, so a page appears here the
+  // day it gains a row and never before.
+  const modelRoutes = (await getModelIndex()).map((m) => ({
+    url: `${SITE_URL}/car-value/${m.slug}`,
+    lastModified: new Date(m.fetched_at),
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }));
+
+  return [...routes, ...stateRoutes, ...vinToolRoutes, ...guideRoutes, ...blogRoutes, ...modelRoutes];
 }

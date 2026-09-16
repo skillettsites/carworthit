@@ -3,13 +3,16 @@ import { headers } from 'next/headers';
 import type { Metadata } from 'next';
 import { isValidVin } from '@/lib/nhtsa';
 import { buildFreeReport } from '@/lib/report';
-import { getMarketValuation, getFactoryData, getRecallReport } from '@/lib/apis/oneauto';
+import { after } from 'next/server';
+import { getMarketValuation, getFactoryData, getRecallReport, getRetailMarketValue } from '@/lib/apis/oneauto';
 import { getPaidSession } from '@/lib/stripe';
-import { buildVerdict } from '@/lib/worthit-report';
+import { buildVerdict, valuationFromEvidence } from '@/lib/worthit-report';
+import { toModelRow, upsertModelValue, hasModelValue } from '@/lib/model-values';
+import { FREE_EVIDENCE_TEASER } from '@/lib/constants';
 import { buildNegotiationPack, type NegotiationPack } from '@/lib/negotiation';
 import { SITE_URL, includesFactory, includesNegotiation, includesRecallCheck } from '@/lib/constants';
 import { logLookup, logPurchase, getCachedReport, cacheReport, healCachedReport } from '@/lib/db';
-import type { FactoryData, MarketValuation, RecallReport } from '@/lib/types';
+import type { FactoryData, MarketEvidence, MarketValuation, RecallReport } from '@/lib/types';
 import WorthItReport from '@/components/report/WorthItReport';
 import BuyCards from '@/components/report/BuyCards';
 import EmailCapture from '@/components/EmailCapture';
@@ -120,6 +123,7 @@ export default async function ReportPage({ params, searchParams }: { params: Par
   // site will ever have and it cannot be backfilled.
   const h = await headers();
   const ua = h.get('user-agent') || '';
+  const isBot = /bot|crawl|spider|headless|preview|monitor/i.test(ua);
   logLookup({
     vin,
     year: free.specs.year,
@@ -132,7 +136,7 @@ export default async function ReportPage({ params, searchParams }: { params: Par
     country: h.get('x-vercel-ip-country'),
     referrer: h.get('referer'),
     utmSource: typeof sp.utm_source === 'string' ? sp.utm_source : null,
-    isBot: /bot|crawl|spider|headless|preview|monitor/i.test(ua),
+    isBot,
   });
 
   // Paid data is fetched only for a verified, paid Stripe session, and only
@@ -142,6 +146,24 @@ export default async function ReportPage({ params, searchParams }: { params: Par
   let valuation: MarketValuation | null = null;
   let factory: FactoryData | null = null;
   let recalls: RecallReport | null = null;
+  let evidence: MarketEvidence | null = null;
+  // Every model page grows from real lookups: a fresh national valuation is
+  // reduced to its public aggregates and written after the response is sent.
+  // A paid report was struck at the real odometer reading and always writes;
+  // a free view was struck at an age-based guess and only fills a gap.
+  const seedModelPage = (ev: MarketEvidence, mode: 'paid' | 'free') => {
+    const row = toModelRow(vin, ev, free.specs);
+    if (!row) return;
+    const work = async () => {
+      if (mode === 'free' && (await hasModelValue(row.prefix))) return;
+      await upsertModelValue(row);
+    };
+    try {
+      after(work);
+    } catch {
+      void work();
+    }
+  };
   if (paid) {
     // The cache key, NOT the raw session id. One payment can cover five
     // vehicles, and `cwi_reports` is keyed on this value, so sharing the raw
@@ -161,6 +183,7 @@ export default async function ReportPage({ params, searchParams }: { params: Par
       valuation: MarketValuation | null;
       factory: FactoryData | null;
       recalls?: RecallReport | null;
+      evidence?: MarketEvidence | null;
     }>(token);
     // A cache entry is only usable if it holds everything this tier paid for.
     // `cwi_reports` is keyed on the session id, the anon role has INSERT only
@@ -180,29 +203,50 @@ export default async function ReportPage({ params, searchParams }: { params: Par
       valuation = cached.valuation ?? null;
       factory = cached.factory ?? null;
       recalls = cached.recalls ?? null;
+      evidence = cached.evidence ?? null;
+      // Reports bought before the listings section existed have no evidence
+      // in their row. Fetch it once and heal the row, so the buyer gets the
+      // section on this visit and we do not pay for it again on the next.
+      if (!evidence) {
+        evidence = await getRetailMarketValue(vin, paid.ctx.mileage);
+        if (evidence) {
+          healCachedReport(token, { valuation, factory, recalls, evidence });
+          seedModelPage(evidence, 'paid');
+        }
+      }
     } else {
-      [valuation, factory, recalls] = await Promise.all([
+      [valuation, factory, recalls, evidence] = await Promise.all([
         getMarketValuation(vin, paid.ctx.zip, paid.ctx.mileage),
         wantsFactory ? getFactoryData(vin) : Promise.resolve(null),
         wantsRecalls ? getRecallReport(vin) : Promise.resolve(null),
+        getRetailMarketValue(vin, paid.ctx.mileage),
       ]);
       // Fall back to a partial cached row rather than showing less than a
       // previous visit did, in case this retry is the one that failed.
       if (!valuation && cached?.valuation) valuation = cached.valuation;
       if (!factory && cached?.factory) factory = cached.factory;
       if (!recalls && cached?.recalls) recalls = cached.recalls;
+      if (!evidence && cached?.evidence) evidence = cached.evidence;
+      if (evidence) seedModelPage(evidence, 'paid');
 
       // Only write a row we would be happy to serve forever. An incomplete
-      // result is retried on the next visit instead of being frozen in.
+      // result is retried on the next visit instead of being frozen in. The
+      // listings are not required: a car the national feed has never seen
+      // still has a Carketa figure to sell, and the row can be healed later.
       const worthCaching =
-        !!valuation && (!wantsFactory || factory != null) && (!wantsRecalls || recalls != null);
+        (!!valuation || !!evidence) && (!wantsFactory || factory != null) && (!wantsRecalls || recalls != null);
       if (worthCaching) {
         // Heal rather than insert when a poisoned row is already there, since
         // the session id is the primary key and anon cannot upsert.
-        if (cached) healCachedReport(token, { valuation, factory, recalls });
-        else cacheReport(token, vin, paid.product, { valuation, factory, recalls });
+        if (cached) healCachedReport(token, { valuation, factory, recalls, evidence });
+        else cacheReport(token, vin, paid.product, { valuation, factory, recalls, evidence });
       }
     }
+
+    // Carketa had nothing for this car but the national feed did: the report
+    // still gets a value, labelled national everywhere it is quoted, instead
+    // of a refund banner over a page full of listings.
+    if (!valuation && evidence) valuation = valuationFromEvidence(evidence, paid.ctx.zip);
 
     // Log the sale ONCE per order, against the first vehicle. Viewing vehicles
     // two through five must not each insert a row for the same payment: the
@@ -223,17 +267,33 @@ export default async function ReportPage({ params, searchParams }: { params: Par
     }
   }
 
+  // Free view: count the listings for this exact model so the buy cards can
+  // say what the paid report is built on. Human visitors only (a crawler
+  // hitting a thousand VINs would run up the bill), one national call cached
+  // a week per VIN, priced at the US average mileage for the car's age since
+  // the odometer is not known yet. The same call seeds the model page.
+  let teaser: { count: number; desc: string } | null = null;
+  if (!paid && FREE_EVIDENCE_TEASER && !isBot) {
+    const age = Math.max(0, new Date().getUTCFullYear() - Number(free.specs.year || 0));
+    const ok = Number.isFinite(age) && age <= 25;
+    const ev = ok ? await getRetailMarketValue(vin, Math.min(250000, Math.max(5000, Math.round(age * 13500)))) : null;
+    if (ev && ev.count > 0) {
+      teaser = { count: ev.count, desc: ev.vehicleDesc };
+      seedModelPage(ev, 'free');
+    }
+  }
+
   const verdict = buildVerdict(paid?.ctx.asking ?? null, valuation);
 
   // Built server-side, and only for a tier that paid for it.
   const pack: NegotiationPack | null =
     paid && includesNegotiation(paid.product) && valuation
-      ? buildNegotiationPack(free, valuation, factory, paid.ctx.asking)
+      ? buildNegotiationPack(free, valuation, factory, paid.ctx.asking, evidence)
       : null;
 
   return (
     <>
-      {paid && !valuation && (
+      {paid && !valuation && !evidence && (
         <div className="bg-warn/10 border-b border-warn/30 py-3 text-center text-sm">
           <strong className="text-warn">We couldn&apos;t price this one.</strong> No comparable cars were listed near
           ZIP {paid.ctx.zip}. Email{' '}
@@ -242,7 +302,7 @@ export default async function ReportPage({ params, searchParams }: { params: Par
         </div>
       )}
       <WorthItReport
-        report={{ free, valuation, factory, recalls, verdict, askingPrice: paid?.ctx.asking ?? null }}
+        report={{ free, valuation, factory, recalls, verdict, askingPrice: paid?.ctx.asking ?? null, evidence, tier: paid?.product ?? null }}
         pack={pack}
         siblings={
           paid && paid.vins.length > 1
@@ -259,6 +319,7 @@ export default async function ReportPage({ params, searchParams }: { params: Par
             tier={paid?.product ?? null}
             defaults={paid ? { mileage: paid.ctx.mileage, zip: paid.ctx.zip, asking: paid.ctx.asking } : undefined}
             paidToken={paid ? (sp.paid as string) : null}
+            teaser={teaser}
           />
         }
         // Offered to everyone, paid or not. A free visitor leaving an address is

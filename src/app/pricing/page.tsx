@@ -34,7 +34,9 @@ const tiers = [
     features: [
       'What it’s worth near your ZIP code',
       'Priced at your car’s real mileage',
-      'The local price range, low to high',
+      'National low, average and high from live listings',
+      'The ten price bands the listings fall into',
+      'The 5 nearest listings, by distance, mileage and price',
       'A verdict on the seller’s asking price',
       'Everything in the free report',
     ],
@@ -46,6 +48,7 @@ const tiers = [
     blurb: PRODUCTS.worthit.blurb,
     features: [
       'Everything in the Valuation',
+      'The 12 nearest listings',
       'What it cost new, for this exact VIN',
       'The factory options it was built with',
       'Dealer invoice price when new',
@@ -62,6 +65,7 @@ const tiers = [
     blurb: PRODUCTS.negotiation.blurb,
     features: [
       'Everything in the Full Report',
+      'The 30 nearest listings, the evidence in full',
       'Your opening offer, target and walk-away price',
       'Your case for paying less, every claim sourced',
       'What the seller will argue, and the counter',

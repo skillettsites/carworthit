@@ -6,7 +6,13 @@ import { buildNegotiationPack } from '@/lib/negotiation';
 import WorthItReport from '@/components/report/WorthItReport';
 import { SITE_URL, PRODUCTS } from '@/lib/constants';
 import { breadcrumbSchema } from '@/lib/schema';
-import type { FactoryData, FreeReport, MarketValuation, RecallReport } from '@/lib/types';
+import type { FactoryData, FreeReport, MarketEvidence, MarketValuation, RecallReport } from '@/lib/types';
+import sampleEvidence from '@/content/sample-evidence.json';
+
+// The listings section is a real Retail Market Value response for the same
+// VIN at 50,000 miles, captured 16 September 2026 and trimmed to the 60
+// listings nearest ZIP 10312 (of 1,000 returned). Listing VINs are dropped.
+const SAMPLE_EVIDENCE = sampleEvidence as unknown as MarketEvidence;
 
 // A worked example so buyers can see what they get before paying.
 //
@@ -174,7 +180,7 @@ export default async function SampleReport() {
   const verdict = buildVerdict(ASKING, SAMPLE_VALUATION);
   // Built from the same function the paid report uses, on the same fixed
   // snapshot, so the sample cannot drift away from what buyers actually get.
-  const pack = buildNegotiationPack(free, SAMPLE_VALUATION, SAMPLE_FACTORY, ASKING);
+  const pack = buildNegotiationPack(free, SAMPLE_VALUATION, SAMPLE_FACTORY, ASKING, SAMPLE_EVIDENCE);
 
   return (
     <>
@@ -195,7 +201,7 @@ export default async function SampleReport() {
         <Link href="/" className="font-semibold text-brand hover:underline">Check your own car →</Link>
       </div>
       <WorthItReport
-        report={{ free, valuation: SAMPLE_VALUATION, factory: SAMPLE_FACTORY, recalls: SAMPLE_RECALLS, verdict, askingPrice: ASKING }}
+        report={{ free, valuation: SAMPLE_VALUATION, factory: SAMPLE_FACTORY, recalls: SAMPLE_RECALLS, verdict, askingPrice: ASKING, evidence: SAMPLE_EVIDENCE, tier: 'sample' }}
         pack={pack}
       />
     </>

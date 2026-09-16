@@ -19,7 +19,7 @@ const faqs = [
   },
   {
     q: 'Is checking a car’s value free?',
-    a: 'The VIN report is free. The market valuation is paid, because it uses live local listings for that specific vehicle rather than a national trim average.',
+    a: 'The VIN report is free. The market valuation is paid, because it uses live listings for that specific vehicle at its mileage rather than a national trim average, and it shows you those listings: the national low, average and high, the price bands, and the nearest cars by distance with their mileage and price.',
   },
 ];
 

@@ -15,11 +15,15 @@
 //     odometer reading, so mileage is already inside the average. Mileage
 //     appears here as condition context, never as money off the valuation.
 //
-// ⚠️ LICENCE. Only the average, low and high price may be shown. The comparable
-// listings themselves, days-on-market and the comparables' mileage range are
-// trade-only. Nothing in this file may reference them.
-import type { FactoryData, FreeReport, MarketValuation } from './types';
+// ⚠️ LICENCE. Of CARKETA's data only the average, low and high price may be
+// shown; its comparable listings, days-on-market and mileage range are
+// trade-only and nothing here may reference them. The listings that ARE
+// quoted below come from the Retail Market Value feed (VIN Audit), which
+// OneAuto confirmed in writing on 15 September 2026 may be shown to a consumer
+// inside a paid report.
+import type { FactoryData, FreeReport, MarketEvidence, MarketValuation } from './types';
 import { depreciation } from './worthit-report';
+import { localMarket, cheaperThanShare, nationalMedian, windowLabel } from './market-evidence';
 
 /** FHWA average annual mileage for US drivers, used to judge use against age. */
 const US_MILES_PER_YEAR = 13500;
@@ -155,9 +159,15 @@ export function buildNegotiationPack(
   valuation: MarketValuation,
   factory: FactoryData | null,
   askingPrice: number | null,
+  evidence: MarketEvidence | null = null,
 ): NegotiationPack {
   const { averagePrice, lowPrice, highPrice, zip, mileage } = valuation;
   const asking = askingPrice && askingPrice > 0 ? askingPrice : null;
+  // 'local' is Carketa's ZIP-scaled figure. When Carketa had nothing and the
+  // national feed stood in, every sentence that says "local" must say so.
+  const national = valuation.basis === 'national';
+  const marketWord = national ? 'national' : 'local';
+  const nearWord = national ? 'across the US' : `near ZIP ${zip}`;
 
   // ---- The three numbers -------------------------------------------------
   //
@@ -221,7 +231,7 @@ export function buildNegotiationPack(
         : highPrice !== null
           ? `average ${usd(averagePrice)} and reach ${usd(highPrice)}`
           : `average ${usd(averagePrice)}`;
-  const near = `Comparable cars near ZIP ${zip} at around ${mileage.toLocaleString('en-US')} miles ${spread}.`;
+  const near = `Comparable cars ${nearWord} at around ${mileage.toLocaleString('en-US')} miles ${spread}.`;
 
   // The ceiling is the average, EXCEPT when the seller is asking less than the
   // average, in which case it is their own price. The reason has to follow the
@@ -231,21 +241,25 @@ export function buildNegotiationPack(
   const ceilingIsAsk = asking !== null && walkAway === asking;
   const ceiling = ceilingIsAsk
     ? `${usd(walkAway)} is your ceiling, because that is their own advertised price and a seller who raises it once you are interested is telling you something.`
-    : `${usd(walkAway)} is your ceiling: pay more and you are paying above the typical local car for no stated reason.`;
+    : `${usd(walkAway)} is your ceiling: pay more and you are paying above the typical ${marketWord} car for no stated reason.`;
 
   // "The cheapest comparable car" only exists when the feed gave us a low. With
   // no range, `opening` is just 90% of the average and must be described as
   // that, not as a real listing we can see.
-  const floorPhrase = hasRange ? 'the cheapest comparable car near you' : 'the bottom of the local range';
-  const belowAll = hasRange ? 'already under all of it' : 'already under the local average';
+  const floorPhrase = hasRange ? (national ? 'the cheapest comparable car in the country' : 'the cheapest comparable car near you') : `the bottom of the ${marketWord} range`;
+  const belowAll = hasRange ? 'already under all of it' : `already under the ${marketWord} average`;
 
   const basis = belowCheapest
     ? `${near} At ${usd(asking!)} this seller is ${belowAll}, so there is little room to argue on price and not much point trying hard. Your job here is not to talk the number down, it is to find out why it is that low before you commit. Open at ${usd(opening)} to see if there is anything there, take ${usd(asking!)} if there is not, and do not let anyone talk you above it.`
     : underTarget
-      ? `${near} At ${usd(asking!)} they are already asking under the local average, but still above ${floorPhrase}, so aim between the two: ${usd(target)}. There is real room here, just less of it than usual. ${ceiling}`
+      ? `${near} At ${usd(asking!)} they are already asking under the ${marketWord} average, but still above ${floorPhrase}, so aim between the two: ${usd(target)}. There is real room here, just less of it than usual. ${ceiling}`
       : hasRange
         ? `${near} Your opening number is the cheapest of them, your target is halfway between that and the average, and ${ceiling}`
         : `${near} The feed gave no spread for this one, so we have not invented one: open 10% under the average, aim 5% under, and ${ceiling}`;
+
+  const nationalLine = evidence
+    ? ` Nationally, ${evidence.count.toLocaleString('en-US')} listings for this exact model at this mileage average ${usd(evidence.avg)} (${usd(evidence.low)} to ${usd(evidence.high)}), observed ${windowLabel(evidence)}.`
+    : '';
 
   // ---- Levers ------------------------------------------------------------
   const levers: NegotiationLever[] = [];
@@ -255,10 +269,10 @@ export function buildNegotiationPack(
     if (asking > averagePrice) {
       const over = asking - averagePrice;
       levers.push({
-        title: `It is ${usd(over)} over the local average`,
+        title: `It is ${usd(over)} over the ${marketWord} average`,
         detail: hasRange
-          ? `The seller wants ${usd(asking)}. Comparable cars near ${zip} average ${usd(averagePrice)} and start at ${usd(lowPrice!)}. That gap is the single strongest thing you have, because it is a fact about their price rather than an opinion about their car.`
-          : `The seller wants ${usd(asking)} against a local average of ${usd(averagePrice)}. That gap is the strongest thing you have: it is a fact about their price, not an opinion about their car.`,
+          ? `The seller wants ${usd(asking)}. Comparable cars ${nearWord} average ${usd(averagePrice)} and start at ${usd(lowPrice!)}. That gap is the single strongest thing you have, because it is a fact about their price rather than an opinion about their car.`
+          : `The seller wants ${usd(asking)} against a ${marketWord} average of ${usd(averagePrice)}. That gap is the strongest thing you have: it is a fact about their price, not an opinion about their car.`,
         source: 'Local market pricing, licensed US vehicle-pricing provider',
         priceArgument: true,
         say: `I have looked at what comparable cars are going for near me at this mileage, and they are averaging ${usd(averagePrice)}. You are asking ${usd(asking)}.`,
@@ -266,8 +280,8 @@ export function buildNegotiationPack(
     }
     if (highPrice !== null && asking > highPrice) {
       levers.push({
-        title: 'It is priced above every comparable car near you',
-        detail: `At ${usd(asking)} this is above the dearest comparable car we can see near ${zip}, which tops out at ${usd(highPrice)}. Say that plainly and ask what justifies it. If the answer is not specification or exceptional condition, there is no answer.`,
+        title: national ? 'It is priced above every comparable car we can see' : 'It is priced above every comparable car near you',
+        detail: `At ${usd(asking)} this is above the dearest comparable car we can see ${nearWord}, which tops out at ${usd(highPrice)}. Say that plainly and ask what justifies it. If the answer is not specification or exceptional condition, there is no answer.`,
         source: 'Local market pricing, licensed US vehicle-pricing provider',
         priceArgument: true,
         say: `I cannot find a comparable car near me listed above ${usd(highPrice as number)}, and you are asking ${usd(asking)}.`,
@@ -275,10 +289,54 @@ export function buildNegotiationPack(
     }
     if (asking <= averagePrice) {
       sellerLevers.push({
-        title: 'They are already at or under the local average',
+        title: `They are already at or under the ${marketWord} average`,
         detail: `At ${usd(asking)} against an average of ${usd(averagePrice)}, the seller has a fair answer to "it is too expensive". Do not lead on price here. Lead on condition, on the checks below, and on being ready to buy today.`,
         source: 'Local market pricing, licensed US vehicle-pricing provider',
         priceArgument: false,
+      });
+    }
+  }
+
+  // ---- The listings themselves ----------------------------------------
+  //
+  // The strongest argument a buyer can make is a count of real cars: "eleven
+  // of the fourteen like this within a hundred miles are listed for less". The
+  // national feed gives every listing a ZIP, so the count is computed, not
+  // estimated, and the table it comes from is printed in the report.
+  const local = evidence ? localMarket(evidence, zip, 30) : null;
+  if (evidence && asking !== null) {
+    const natShare = cheaperThanShare(evidence.listings, asking);
+    const natMed = nationalMedian(evidence);
+    const src = `US retail listings observed ${windowLabel(evidence)}, licensed vehicle-pricing provider`;
+    if (local && local.radius !== null) {
+      // Counted over every listing inside the radius, not the rows the tier
+      // prints, so "19 of the 30" cannot sit under a heading that says 32.
+      const cheaper = local.inside.filter((l) => l.adjPrice < asking).length;
+      const shownCount = local.count;
+      if (asking > local.median && cheaper > 0) {
+        levers.unshift({
+          title: `${cheaper} of the ${shownCount} comparable cars within ${local.radius} miles are listed for less`,
+          detail: `Within ${local.radius} miles of ${zip} we can see ${local.count} ${evidence.vehicleDesc} listings at this car's mileage, with a median of ${usd(local.median)} and the cheapest at ${usd(local.min)}. The seller wants ${usd(asking)}. They are in the report by distance, mileage and price, so this is not an opinion, it is a list.`,
+          source: src,
+          priceArgument: true,
+          say: `I can see ${cheaper} of these within ${local.radius} miles listed for less than ${usd(asking)}, and the middle of that market is ${usd(local.median)}.`,
+        });
+      } else if (asking <= local.median) {
+        sellerLevers.unshift({
+          title: `They are under the median of the ${local.count} nearest listings`,
+          detail: `Within ${local.radius} miles the median comparable listing at this mileage is ${usd(local.median)} and they are asking ${usd(asking)}. Expect them to know it. The counter is not price, it is the inspection and the checks below.`,
+          source: src,
+          priceArgument: false,
+        });
+      }
+    }
+    if (natShare !== null && natShare >= 75 && !(local && local.radius !== null && asking > local.median)) {
+      levers.push({
+        title: `Higher than ${natShare}% of listings nationwide`,
+        detail: `Across ${evidence.count.toLocaleString('en-US')} US listings for this exact model at this mileage, ${natShare}% are cheaper than ${usd(asking)}; the national median is ${usd(natMed)}. Say the percentage: it is harder to argue with than a single competing car.`,
+        source: src,
+        priceArgument: true,
+        say: `Nationally, ${natShare} percent of these are listed for less than you are asking.`,
       });
     }
   }
@@ -504,7 +562,7 @@ export function buildNegotiationPack(
     target,
     walkAway,
     savingAtTarget: asking !== null ? asking - target : null,
-    basis,
+    basis: basis + nationalLine,
     levers,
     sellerLevers,
     script,

@@ -2,15 +2,17 @@ import type { WorthItReport as Report } from '@/lib/worthit-report';
 import { buildVerdict, depreciation, groupFeatures } from '@/lib/worthit-report';
 import type { NegotiationPack as Pack } from '@/lib/negotiation';
 import NegotiationPack from './NegotiationPack';
+import MarketEvidence from './MarketEvidence';
 
 // The paid Worth-It report.
 //
 // ⚠️ LICENCE CONSTRAINT, read before adding anything here.
 // Only three Carketa fields may be shown to a consumer: average, low and high
-// price. The comparable listings, the days-on-market figure and the
-// comparables' mileage range are trade-only. The API client already discards
-// them, so there is nothing in `valuation` that cannot be rendered, and it
-// must stay that way.
+// price. Carketa's comparable listings, days-on-market and mileage range are
+// trade-only. The API client already discards them, so there is nothing in
+// `valuation` that cannot be rendered, and it must stay that way. The listings
+// rendered by MarketEvidence come from a different feed (Retail Market Value,
+// VIN Audit) whose consumer display OneAuto confirmed on 15 September 2026.
 
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
 
@@ -81,7 +83,7 @@ export default function WorthItReport({
    */
   footer?: React.ReactNode;
 }) {
-  const { free, valuation, factory, recalls, askingPrice } = report;
+  const { free, valuation, factory, recalls, askingPrice, evidence, tier } = report;
   const specs = free.specs;
   const verdict = report.verdict ?? buildVerdict(askingPrice, valuation);
   const dep = depreciation(factory, valuation);
@@ -108,7 +110,10 @@ export default function WorthItReport({
           <div className="mt-2 font-mono text-sm text-slate-400">VIN {specs.vin}</div>
           {valuation ? (
             <div className="mt-1 text-sm text-slate-300">
-              Priced at {valuation.mileage.toLocaleString('en-US')} miles near ZIP {valuation.zip}
+              {valuation.basis === 'national'
+                ? `Priced at ${valuation.mileage.toLocaleString('en-US')} miles against the national market (no local comparables for ZIP ${valuation.zip})`
+                : `Priced at ${valuation.mileage.toLocaleString('en-US')} miles near ZIP ${valuation.zip}`}
+              {evidence ? `, ${evidence.count.toLocaleString('en-US')} listings in evidence` : ''}
             </div>
           ) : (
             <div className="mt-1 text-sm text-slate-300">Free report. Specs, recalls, safety and running costs.</div>
@@ -173,7 +178,11 @@ export default function WorthItReport({
         {valuation && (
           <Section
             title="What this car is worth"
-            sub={`Priced for this VIN: its exact trim and the options it was built with, at ${valuation.mileage.toLocaleString('en-US')} miles, in the market around ZIP ${valuation.zip}.`}
+            sub={
+              valuation.basis === 'national'
+                ? `Priced for this VIN: its exact trim, at ${valuation.mileage.toLocaleString('en-US')} miles, across the US market. No local comparables were found around ZIP ${valuation.zip}, so these are national figures and the evidence section below shows the nearest listings.`
+                : `Priced for this VIN: its exact trim and the options it was built with, at ${valuation.mileage.toLocaleString('en-US')} miles, in the market around ZIP ${valuation.zip}.`
+            }
           >
             {/* The low/high tiles only appear when the feed actually gave a
                 range. Repeating the average in all three slots would present a
@@ -219,6 +228,11 @@ export default function WorthItReport({
               </div>
             )}
           </Section>
+        )}
+
+        {/* THE LISTINGS: national figures, price bands and the nearest cars */}
+        {evidence && (
+          <MarketEvidence evidence={evidence} zip={valuation?.zip ?? ''} asking={askingPrice} tier={tier ?? 'valuation'} />
         )}
 
         {/* NEGOTIATION PACK, top tier only */}

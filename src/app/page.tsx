@@ -25,9 +25,9 @@ import { serviceSchema, faqSchema } from '@/lib/schema';
 // The description is kept under 160 characters so Google does not truncate
 // "No signup", which is the sharpest contrast with KBB's question wizard.
 export const metadata: Metadata = {
-  title: 'Car Value by VIN from $2.99: What Is This Car Worth?',
+  title: 'How Much Is a Car Worth? Value by VIN with Real Listings, $2.99',
   description:
-    'Price any car by its VIN, at its real mileage, against cars for sale near you. Free VIN report first. Valuation from $2.99. No signup.',
+    'Find out what a car is worth from its VIN: the local value, the national low, average and high from live listings, and the nearest cars for sale. Free VIN report first. From $2.99, no signup.',
   openGraph: { url: SITE_URL },
 };
 
@@ -38,6 +38,11 @@ const features = [
     icon: '🎯',
     title: 'What this car is worth',
     body: 'This VIN, at its odometer reading, in your local market. Not a national average for the model.',
+  },
+  {
+    icon: '📋',
+    title: 'The listings behind the number',
+    body: 'The national low, average and high from live listings for this exact model, the price bands, and the nearest cars for sale by distance with their mileage and price.',
   },
   {
     icon: '⚖️',
@@ -105,6 +110,10 @@ const faqs = [
     q: 'Is there a subscription?',
     a: 'No. One payment for one report, no account to create and nothing to cancel.',
   },
+  {
+    q: 'Can I see the listings the value is based on?',
+    a: 'Yes. Every paid report shows the national low, average and high from live US listings for that exact year, model and trim at your mileage, the ten price bands they fall into, and the nearest listings to your ZIP by distance with their mileage and asking price. The Valuation shows the five nearest, the Full Report twelve and the Negotiation Bundle thirty.',
+  },
 ];
 
 export default function Home() {
@@ -142,15 +151,15 @@ export default function Home() {
               </span>
             </h1>
             <p className="mt-5 text-xl leading-relaxed text-slate-300">
-              Enter the VIN. We price that exact car at its real mileage, against cars for sale near you, then tell
-              you whether the asking price is fair and what to pay.
+              Enter the VIN. We price that exact car at its real mileage, show you the cars for sale near you with
+              their prices, then tell you whether the asking price is fair and what to pay.
             </p>
             {/* The one line that separates us from the free valuations. Kelley
                 Blue Book prices a trim at an assumed mileage; this prices the
                 car in front of you. Said here because it is the reason to
                 choose us, not a footnote. */}
             <p className="mt-3 text-base text-slate-400">
-              Kelley Blue Book prices a trim. We price the VIN, your odometer reading and your ZIP code.
+              Kelley Blue Book prices a trim. We price the VIN, your odometer reading and your ZIP code, and print the listings.
             </p>
             <div className="mt-8" id="check">
               <SearchBox dark />

@@ -8,7 +8,15 @@ export const PLATE_ENABLED = false;
 
 export const SITE_NAME = 'CarWorthIt';
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://carworthit.com';
-export const SITE_TAGLINE = 'Price any used car by its VIN, and find out if it’s worth it.';
+export const SITE_TAGLINE = 'How much is a car worth? Find out by VIN, with the listings to prove it.';
+
+/**
+ * On the FREE report, run the national listings feed once per VIN (24p, cached
+ * a week, humans only) so the buy cards can say how many real listings the
+ * paid valuation is built on. Only the count is shown free; the prices, the
+ * bands and the listings themselves stay inside the paid report.
+ */
+export const FREE_EVIDENCE_TEASER = true;
 export const GA_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-GKFGSRW0KL';
 
 // Leads on the VIN valuation intent, which is where the search volume actually
@@ -49,7 +57,7 @@ export const PRODUCTS = {
     // description, so listing them here sold free content as part of the
     // purchase, on the last screen a buyer reads before paying. The same
     // page's own FAQ says those four are free, so it contradicted itself.
-    blurb: 'What it’s worth near you at its mileage, and a verdict on whether the asking price is fair.',
+    blurb: 'What it’s worth near you at its mileage, the national low, average and high, the nearest listings, and a verdict on the asking price.',
   },
   worthit: {
     id: 'worthit',
@@ -57,7 +65,7 @@ export const PRODUCTS = {
     price: 6.99,
     cents: 699,
     strike: null,
-    blurb: 'Everything in the Valuation, plus what it cost new, its factory options and full standard equipment.',
+    blurb: 'Everything in the Valuation with more of the nearest listings, plus what it cost new, its factory options and full standard equipment.',
   },
   negotiation: {
     id: 'negotiation',
@@ -66,7 +74,7 @@ export const PRODUCTS = {
     cents: 999,
     strike: null,
     blurb:
-      'Everything in both reports, plus your opening offer, your walk-away price and the evidence to argue for them.',
+      'Everything in both reports, plus your opening offer, your walk-away price, the 30 nearest listings and the evidence to argue for them.',
   },
 } as const;
 

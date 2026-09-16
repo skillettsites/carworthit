@@ -86,6 +86,12 @@ export interface MarketValuation {
   mileage: number; // what we asked for, so the report can state its own basis
   zip: string;
   fetchedAt: string;
+  /**
+   * 'local' is Carketa's ZIP-scaled figure (the default). 'national' means
+   * Carketa had nothing for this car and the Retail Market Value national
+   * figures stand in, which the report says in words wherever it quotes them.
+   */
+  basis?: 'local' | 'national';
 }
 
 /** The original factory record, from OneAuto VIN Decode Plus (US). */
@@ -170,5 +176,57 @@ export interface FreeReport {
   recalls: Recall[] | null;
   safety: SafetyRatings | null;
   ownership: OwnershipCostEstimate | null;
+  fetchedAt: string;
+}
+
+/**
+ * One listing behind a Retail Market Value figure. From VIN Audit via OneAuto.
+ * Unlike Carketa's comparables these MAY be shown to a consumer inside a paid
+ * report (confirmed in writing by OneAuto, 15 September 2026). The listing's
+ * own VIN is dropped at the client: it identifies somebody else's car and the
+ * report has no use for it.
+ */
+export interface MarketListing {
+  /** ISO date the listing was observed. */
+  date: string;
+  mileage: number;
+  /** Advertised asking price, USD. */
+  price: number;
+  /** The asking price adjusted to the subject car's mileage, USD. */
+  adjPrice: number;
+  zip: string;
+  state: string;
+  lat: number;
+  lng: number;
+}
+
+/**
+ * Retail Market Value (US) from VIN Audit via OneAuto: a NATIONAL retail value
+ * for this exact year, make, model and trim, at the stated mileage, built from
+ * live sales listings and refreshed daily. The local number in the report is
+ * still Carketa; this is the evidence behind it.
+ */
+export interface MarketEvidence {
+  /** "2018 Chevrolet Equinox LT" as the feed describes the VIN. */
+  vehicleDesc: string;
+  /** Odometer reading the figures were struck at. */
+  mileage: number;
+  mean: number;
+  standardDeviation: number;
+  /** Listings the feed counted. May exceed listings.length, which is capped. */
+  count: number;
+  /** 0 to 100, the feed's own confidence in the figure. */
+  confidence: number;
+  /** Observation window of the listings, ISO dates. */
+  from: string;
+  to: string;
+  low: number;
+  avg: number;
+  high: number;
+  /** Ten price bands with the number of listings in each. */
+  bands: { min: number; max: number; count: number }[];
+  /** Dollars the feed moved the value for this car's mileage against the pool. */
+  mileageAdjustment: number;
+  listings: MarketListing[];
   fetchedAt: string;
 }

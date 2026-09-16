@@ -71,6 +71,10 @@ export default function Footer() {
         <div>
           <div className="mb-3 font-semibold text-ink">What a car is worth</div>
           <ul className="space-y-2 text-ink-2">
+            <li><Link href="/how-much-is-my-car-worth" className="hover:text-ink">How much is my car worth?</Link></li>
+            <li><Link href="/car-value" className="hover:text-ink">Car values by model</Link></li>
+            <li><Link href="/kbb-by-vin" className="hover:text-ink">KBB by VIN</Link></li>
+            <li><Link href="/is-kbb-accurate" className="hover:text-ink">Is KBB accurate?</Link></li>
             <li><Link href="/blog/how-to-price-a-used-car-by-vin" className="hover:text-ink">Pricing a car by VIN</Link></li>
             <li><Link href="/blog/kelley-blue-book-alternatives" className="hover:text-ink">KBB alternatives</Link></li>
             <li><Link href="/blog/kbb-vs-edmunds-vs-nada" className="hover:text-ink">KBB vs Edmunds vs NADA</Link></li>

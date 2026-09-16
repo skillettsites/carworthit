@@ -1,0 +1,670 @@
+{
+ "vehicleDesc": "2021 Toyota Corolla LE",
+ "mileage": 50000,
+ "mean": 18486.56,
+ "standardDeviation": 2742,
+ "count": 1600,
+ "confidence": 99,
+ "from": "2026-08-17",
+ "to": "2026-09-07",
+ "low": 15744.36,
+ "avg": 18486.56,
+ "high": 21228.76,
+ "bands": [
+  {
+   "min": 8900,
+   "max": 12999,
+   "count": 161
+  },
+  {
+   "min": 12999,
+   "max": 14359,
+   "count": 160
+  },
+  {
+   "min": 14359,
+   "max": 15222,
+   "count": 160
+  },
+  {
+   "min": 15222,
+   "max": 15999,
+   "count": 160
+  },
+  {
+   "min": 15999,
+   "max": 16900,
+   "count": 160
+  },
+  {
+   "min": 16900,
+   "max": 17590,
+   "count": 160
+  },
+  {
+   "min": 17590,
+   "max": 18295,
+   "count": 160
+  },
+  {
+   "min": 18295,
+   "max": 18999,
+   "count": 160
+  },
+  {
+   "min": 18999,
+   "max": 20220,
+   "count": 160
+  },
+  {
+   "min": 20220,
+   "max": 24995,
+   "count": 159
+  }
+ ],
+ "mileageAdjustment": 1684,
+ "listings": [
+  {
+   "date": "2026-09-07",
+   "mileage": 56977,
+   "price": 16794,
+   "adjPrice": 17178,
+   "zip": "07001",
+   "state": "NJ",
+   "lat": 40.575,
+   "lng": -74.29
+  },
+  {
+   "date": "2026-08-17",
+   "mileage": 171430,
+   "price": 11499,
+   "adjPrice": 18184,
+   "zip": "07202",
+   "state": "NJ",
+   "lat": 40.653,
+   "lng": -74.222
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 107720,
+   "price": 13992,
+   "adjPrice": 17169,
+   "zip": "07202",
+   "state": "NJ",
+   "lat": 40.653,
+   "lng": -74.224
+  },
+  {
+   "date": "2026-09-06",
+   "mileage": 57118,
+   "price": 19399,
+   "adjPrice": 19791,
+   "zip": "07036",
+   "state": "NJ",
+   "lat": 40.65,
+   "lng": -74.24
+  },
+  {
+   "date": "2026-08-19",
+   "mileage": 69691,
+   "price": 16765,
+   "adjPrice": 17849,
+   "zip": "08857",
+   "state": "NJ",
+   "lat": 40.448,
+   "lng": -74.298
+  },
+  {
+   "date": "2026-08-24",
+   "mileage": 66489,
+   "price": 17683,
+   "adjPrice": 18591,
+   "zip": "11209",
+   "state": "NY",
+   "lat": 40.619,
+   "lng": -74.03
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 26045,
+   "price": 18320,
+   "adjPrice": 17001,
+   "zip": "11220",
+   "state": "NY",
+   "lat": 40.637,
+   "lng": -74.02
+  },
+  {
+   "date": "2026-09-06",
+   "mileage": 92464,
+   "price": 15900,
+   "adjPrice": 18238,
+   "zip": "07205",
+   "state": "NJ",
+   "lat": 40.697,
+   "lng": -74.22
+  },
+  {
+   "date": "2026-09-06",
+   "mileage": 31997,
+   "price": 24900,
+   "adjPrice": 23909,
+   "zip": "07205",
+   "state": "NJ",
+   "lat": 40.698,
+   "lng": -74.222
+  },
+  {
+   "date": "2026-09-06",
+   "mileage": 56518,
+   "price": 23900,
+   "adjPrice": 24259,
+   "zip": "07205",
+   "state": "NJ",
+   "lat": 40.698,
+   "lng": -74.222
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 95527,
+   "price": 18995,
+   "adjPrice": 21501,
+   "zip": "11218",
+   "state": "NY",
+   "lat": 40.638,
+   "lng": -73.969
+  },
+  {
+   "date": "2026-09-02",
+   "mileage": 95848,
+   "price": 16995,
+   "adjPrice": 19519,
+   "zip": "07111",
+   "state": "NJ",
+   "lat": 40.735,
+   "lng": -74.216
+  },
+  {
+   "date": "2026-09-06",
+   "mileage": 60605,
+   "price": 17255,
+   "adjPrice": 17839,
+   "zip": "07103",
+   "state": "NJ",
+   "lat": 40.739,
+   "lng": -74.203
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 49090,
+   "price": 18400,
+   "adjPrice": 18350,
+   "zip": "07103",
+   "state": "NJ",
+   "lat": 40.739,
+   "lng": -74.203
+  },
+  {
+   "date": "2026-09-05",
+   "mileage": 66191,
+   "price": 15888,
+   "adjPrice": 16779,
+   "zip": "08812",
+   "state": "NJ",
+   "lat": 40.607,
+   "lng": -74.468
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 93156,
+   "price": 17199,
+   "adjPrice": 19575,
+   "zip": "07104",
+   "state": "NJ",
+   "lat": 40.78,
+   "lng": -74.155
+  },
+  {
+   "date": "2026-09-05",
+   "mileage": 80546,
+   "price": 11900,
+   "adjPrice": 13582,
+   "zip": "07047",
+   "state": "NJ",
+   "lat": 40.79,
+   "lng": -74.029
+  },
+  {
+   "date": "2026-09-06",
+   "mileage": 32981,
+   "price": 21990,
+   "adjPrice": 21053,
+   "zip": "08835",
+   "state": "NJ",
+   "lat": 40.549,
+   "lng": -74.584
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 81101,
+   "price": 15495,
+   "adjPrice": 17207,
+   "zip": "07960",
+   "state": "NJ",
+   "lat": 40.796,
+   "lng": -74.473
+  },
+  {
+   "date": "2026-09-06",
+   "mileage": 98184,
+   "price": 12995,
+   "adjPrice": 15648,
+   "zip": "11096",
+   "state": "NY",
+   "lat": 40.623,
+   "lng": -73.74
+  },
+  {
+   "date": "2026-09-01",
+   "mileage": 163448,
+   "price": 10997,
+   "adjPrice": 17242,
+   "zip": "07512",
+   "state": "NJ",
+   "lat": 40.903,
+   "lng": -74.214
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 95032,
+   "price": 13820,
+   "adjPrice": 16299,
+   "zip": "11358",
+   "state": "NY",
+   "lat": 40.758,
+   "lng": -73.785
+  },
+  {
+   "date": "2026-09-05",
+   "mileage": 35837,
+   "price": 15995,
+   "adjPrice": 15215,
+   "zip": "10475",
+   "state": "NY",
+   "lat": 40.885,
+   "lng": -73.829
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 80224,
+   "price": 16000,
+   "adjPrice": 17664,
+   "zip": "08701",
+   "state": "NJ",
+   "lat": 40.107,
+   "lng": -74.223
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 81570,
+   "price": 15900,
+   "adjPrice": 17638,
+   "zip": "07803",
+   "state": "NJ",
+   "lat": 40.882,
+   "lng": -74.593
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 79003,
+   "price": 16900,
+   "adjPrice": 18497,
+   "zip": "08701",
+   "state": "NJ",
+   "lat": 40.083,
+   "lng": -74.216
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 132725,
+   "price": 12423,
+   "adjPrice": 16977,
+   "zip": "07852",
+   "state": "NJ",
+   "lat": 40.884,
+   "lng": -74.657
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 83972,
+   "price": 16999,
+   "adjPrice": 18869,
+   "zip": "19030",
+   "state": "PA",
+   "lat": 40.181,
+   "lng": -74.866
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 81438,
+   "price": 18485,
+   "adjPrice": 20216,
+   "zip": "19057",
+   "state": "PA",
+   "lat": 40.131,
+   "lng": -74.832
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 66560,
+   "price": 20998,
+   "adjPrice": 21910,
+   "zip": "19047",
+   "state": "PA",
+   "lat": 40.173,
+   "lng": -74.886
+  },
+  {
+   "date": "2026-08-26",
+   "mileage": 70878,
+   "price": 17513,
+   "adjPrice": 18662,
+   "zip": "07461",
+   "state": "NJ",
+   "lat": 41.197,
+   "lng": -74.592
+  },
+  {
+   "date": "2026-09-02",
+   "mileage": 65961,
+   "price": 17606,
+   "adjPrice": 18485,
+   "zip": "08016",
+   "state": "NJ",
+   "lat": 40.058,
+   "lng": -74.887
+  },
+  {
+   "date": "2026-09-06",
+   "mileage": 58014,
+   "price": 18590,
+   "adjPrice": 19031,
+   "zip": "08075",
+   "state": "NJ",
+   "lat": 40.042,
+   "lng": -74.932
+  },
+  {
+   "date": "2026-08-19",
+   "mileage": 31223,
+   "price": 21590,
+   "adjPrice": 20556,
+   "zip": "08075",
+   "state": "NJ",
+   "lat": 40.042,
+   "lng": -74.932
+  },
+  {
+   "date": "2026-09-04",
+   "mileage": 135736,
+   "price": 12895,
+   "adjPrice": 17615,
+   "zip": "11722",
+   "state": "NY",
+   "lat": 40.787,
+   "lng": -73.219
+  },
+  {
+   "date": "2026-08-24",
+   "mileage": 55081,
+   "price": 18354,
+   "adjPrice": 18634,
+   "zip": "06880",
+   "state": "CT",
+   "lat": 41.138,
+   "lng": -73.339
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 157813,
+   "price": 13880,
+   "adjPrice": 19815,
+   "zip": "19124",
+   "state": "PA",
+   "lat": 40.002,
+   "lng": -75.08
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 127943,
+   "price": 12498,
+   "adjPrice": 16789,
+   "zip": "19446",
+   "state": "PA",
+   "lat": 40.251,
+   "lng": -75.274
+  },
+  {
+   "date": "2026-08-29",
+   "mileage": 79337,
+   "price": 15998,
+   "adjPrice": 17613,
+   "zip": "19446",
+   "state": "PA",
+   "lat": 40.251,
+   "lng": -75.274
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 79424,
+   "price": 16585,
+   "adjPrice": 18205,
+   "zip": "18020",
+   "state": "PA",
+   "lat": 40.672,
+   "lng": -75.345
+  },
+  {
+   "date": "2026-09-06",
+   "mileage": 104624,
+   "price": 11000,
+   "adjPrice": 14007,
+   "zip": "11772",
+   "state": "NY",
+   "lat": 40.766,
+   "lng": -73.004
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 101000,
+   "price": 13500,
+   "adjPrice": 16308,
+   "zip": "11772",
+   "state": "NY",
+   "lat": 40.793,
+   "lng": -73.008
+  },
+  {
+   "date": "2026-08-24",
+   "mileage": 134864,
+   "price": 13000,
+   "adjPrice": 17672,
+   "zip": "06605",
+   "state": "CT",
+   "lat": 41.172,
+   "lng": -73.212
+  },
+  {
+   "date": "2026-09-06",
+   "mileage": 47546,
+   "price": 19995,
+   "adjPrice": 19860,
+   "zip": "06606",
+   "state": "CT",
+   "lat": 41.197,
+   "lng": -73.194
+  },
+  {
+   "date": "2026-09-06",
+   "mileage": 82274,
+   "price": 16985,
+   "adjPrice": 18762,
+   "zip": "18049",
+   "state": "PA",
+   "lat": 40.551,
+   "lng": -75.49
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 59909,
+   "price": 18985,
+   "adjPrice": 19530,
+   "zip": "18049",
+   "state": "PA",
+   "lat": 40.55,
+   "lng": -75.492
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 97425,
+   "price": 17998,
+   "adjPrice": 20609,
+   "zip": "19406",
+   "state": "PA",
+   "lat": 40.081,
+   "lng": -75.383
+  },
+  {
+   "date": "2026-08-19",
+   "mileage": 78283,
+   "price": 15740,
+   "adjPrice": 17297,
+   "zip": "06615",
+   "state": "CT",
+   "lat": 41.193,
+   "lng": -73.123
+  },
+  {
+   "date": "2026-08-20",
+   "mileage": 124783,
+   "price": 16264,
+   "adjPrice": 20381,
+   "zip": "06810",
+   "state": "CT",
+   "lat": 41.418,
+   "lng": -73.42
+  },
+  {
+   "date": "2026-08-29",
+   "mileage": 99855,
+   "price": 15605,
+   "adjPrice": 18350,
+   "zip": "06460",
+   "state": "CT",
+   "lat": 41.234,
+   "lng": -73.045
+  },
+  {
+   "date": "2026-09-06",
+   "mileage": 100205,
+   "price": 13995,
+   "adjPrice": 16759,
+   "zip": "19063",
+   "state": "PA",
+   "lat": 39.916,
+   "lng": -75.387
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 60839,
+   "price": 20998,
+   "adjPrice": 21595,
+   "zip": "08330",
+   "state": "NJ",
+   "lat": 39.445,
+   "lng": -74.625
+  },
+  {
+   "date": "2026-09-02",
+   "mileage": 60215,
+   "price": 16995,
+   "adjPrice": 17557,
+   "zip": "12603",
+   "state": "NY",
+   "lat": 41.697,
+   "lng": -73.908
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 62671,
+   "price": 20998,
+   "adjPrice": 21696,
+   "zip": "06512",
+   "state": "CT",
+   "lat": 41.289,
+   "lng": -72.884
+  },
+  {
+   "date": "2026-08-17",
+   "mileage": 106020,
+   "price": 17998,
+   "adjPrice": 21082,
+   "zip": "06512",
+   "state": "CT",
+   "lat": 41.289,
+   "lng": -72.884
+  },
+  {
+   "date": "2026-09-06",
+   "mileage": 29873,
+   "price": 17995,
+   "adjPrice": 16887,
+   "zip": "06770",
+   "state": "CT",
+   "lat": 41.512,
+   "lng": -73.022
+  },
+  {
+   "date": "2026-08-27",
+   "mileage": 42352,
+   "price": 18485,
+   "adjPrice": 18064,
+   "zip": "18509",
+   "state": "PA",
+   "lat": 41.418,
+   "lng": -75.653
+  },
+  {
+   "date": "2026-08-30",
+   "mileage": 50100,
+   "price": 20772,
+   "adjPrice": 20778,
+   "zip": "19711",
+   "state": "DE",
+   "lat": 39.687,
+   "lng": -75.742
+  },
+  {
+   "date": "2026-09-07",
+   "mileage": 85199,
+   "price": 16410,
+   "adjPrice": 18348,
+   "zip": "06062",
+   "state": "CT",
+   "lat": 41.664,
+   "lng": -72.864
+  },
+  {
+   "date": "2026-08-31",
+   "mileage": 64736,
+   "price": 19694,
+   "adjPrice": 20505,
+   "zip": "06042",
+   "state": "CT",
+   "lat": 41.812,
+   "lng": -72.515
+  }
+ ],
+ "fetchedAt": "2026-09-16T00:00:00.000Z",
+ "_note": "Real Retail Market Value response for the sample VIN, captured 16 September 2026; listings trimmed to the 60 nearest ZIP 10312 of 1,000 returned. Listing VINs dropped."
+}

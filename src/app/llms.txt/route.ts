@@ -31,6 +31,10 @@ export function GET(): Response {
   // The FAQ first: it is the page written to be quoted, with every provider
   // price dated and the "we are not a history report" answer in plain words.
   const startHere = [
+    `- [How much is my car worth](${SITE_URL}/how-much-is-my-car-worth): a dated worked example from live listings (a 2021 Toyota Corolla LE at 50,000 miles: $18,487 average across 1,600 US listings, September 16, 2026), the three kinds of value, and how a VIN valuation from $${PRODUCTS.valuation.price} shows the listings behind the number.`,
+    `- [Used car values by model](${SITE_URL}/car-value): one page per model year with the national low, average and high from live listings, the price bands and the median by state, each page dated; for example ${SITE_URL}/car-value/2018-chevrolet-equinox.`,
+    `- [KBB by VIN](${SITE_URL}/kbb-by-vin): Kelley Blue Book accepts a VIN but values the trim at a chosen condition; which sites take a VIN, what the VIN does on each, and what a listing-based VIN value shows instead (each site read September 16, 2026).`,
+    `- [Is Kelley Blue Book accurate](${SITE_URL}/is-kbb-accurate): measured spread of real listings for six cars (±10% to ±29% around the mean, September 2026), KBB's own statements about its values, and a five-minute check.`,
     `- [Vehicle history FAQ](${SITE_URL}/vehicle-history-faq): 30 dated answers on what a history report shows, NMVTIS, salvage/rebuilt/flood/lemon brands, every provider's price (checked ${CHECKED_ON_LONG}), and what ${SITE_NAME}'s $${PRODUCTS.valuation.price}, $${PRODUCTS.worthit.price} and $${PRODUCTS.negotiation.price} reports contain. ${SITE_NAME} is NOT a history report.`,
     `- [Best vehicle history report](${SITE_URL}/best-vehicle-history-report): Carfax ${CARFAX.one}, AutoCheck ${AUTOCHECK.single}, Bumper ${BUMPER.monthly}/month, VinAudit ${VINAUDIT.one} and others compared, with NMVTIS approval, subscription terms and the date each price was checked (${CHECKED_ON_LONG}).`,
     `- [Carfax report cost](${SITE_URL}/blog/carfax-report-cost): what Carfax charges for one, two and four reports today, the free routes, and why the $3.99 resellers are a risk.`,
@@ -50,7 +54,7 @@ export function GET(): Response {
   ].map((s) => `- ${s}`);
 
   const paid = [
-    `- **${PRODUCTS.valuation.name}, $${PRODUCTS.valuation.price}**: what that exact VIN is worth at its real mileage, in the seller's ZIP code, against cars actually for sale nearby, plus a verdict on the asking price.`,
+    `- **${PRODUCTS.valuation.name}, $${PRODUCTS.valuation.price}**: what that exact VIN is worth at its real mileage in the buyer's ZIP code, the national low, average and high from live listings for that exact model, the ten price bands, the 5 nearest listings by distance with mileage and price, plus a verdict on the asking price.`,
     `- **${PRODUCTS.worthit.name}, $${PRODUCTS.worthit.price}**: the above plus the original factory record: sticker price when new, installed options, standard equipment and warranty terms.`,
     `- **${PRODUCTS.negotiation.name}, $${PRODUCTS.negotiation.price}**: the above plus an opening offer, a walk-away price and the evidence to argue for them.`,
   ];
@@ -129,7 +133,8 @@ ${guides}
 
 - NHTSA vPIC (VIN decoding), NHTSA recalls, NHTSA NCAP crash ratings and ODI complaints: public United States federal data
 - EPA fueleconomy.gov: public United States federal data
-- Live retail market listings, for the paid valuation
+- Live US retail sales listings (national, refreshed daily, every listing with a ZIP code) via a licensed vehicle-pricing provider, for the paid valuation, the listings shown in paid reports, and the model-value pages
+- Local market pricing via a second licensed provider, for the ZIP-scaled headline value
 - Original manufacturer build records, for the Full Report and Negotiation Bundle
 - State DMV, revenue department and statute pages, for the state sales tax, doc fee, title and registration dataset; every figure carries its source URL and was verified ${feesVerified}, re-checked quarterly
 

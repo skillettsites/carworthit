@@ -69,7 +69,7 @@ const SOURCES = [
   },
   {
     field: 'Market value (average, low, high)',
-    source: 'Licensed US market-pricing feed built on dealer listing comparables',
+    source: 'Licensed US market-pricing feed built on dealer listing comparables, and a second licensed feed of national retail listings (every listing with its ZIP code, refreshed daily) that supplies the national low, average and high, the price bands, and the listings printed in paid reports and on the model-value pages',
     url: null,
     type: 'Modeled',
     updates: 'Per lookup, live',
