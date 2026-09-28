@@ -1,0 +1,116 @@
+[
+ {
+  "slug": "mazda-cx-5",
+  "name": "Mazda CX-5",
+  "make": "MAZDA",
+  "match": "^CX-5\\b",
+  "from": 2013,
+  "to": 2026
+ },
+ {
+  "slug": "honda-pilot",
+  "name": "Honda Pilot",
+  "make": "HONDA",
+  "match": "^PILOT\\b",
+  "from": 2003,
+  "to": 2026
+ },
+ {
+  "slug": "toyota-highlander",
+  "name": "Toyota Highlander",
+  "make": "TOYOTA",
+  "match": "^HIGHLANDER\\b",
+  "from": 2001,
+  "to": 2026
+ },
+ {
+  "slug": "chevy-trax",
+  "name": "Chevy Trax",
+  "make": "CHEVROLET",
+  "match": "^TRAX\\b",
+  "from": 2015,
+  "to": 2026
+ },
+ {
+  "slug": "subaru-forester",
+  "name": "Subaru Forester",
+  "make": "SUBARU",
+  "match": "^FORESTER\\b",
+  "from": 1998,
+  "to": 2026
+ },
+ {
+  "slug": "chevy-traverse",
+  "name": "Chevy Traverse",
+  "make": "CHEVROLET",
+  "match": "^TRAVERSE\\b",
+  "from": 2009,
+  "to": 2026
+ },
+ {
+  "slug": "toyota-tundra",
+  "name": "Toyota Tundra",
+  "make": "TOYOTA",
+  "match": "^TUNDRA\\b",
+  "from": 2000,
+  "to": 2026
+ },
+ {
+  "slug": "hyundai-tucson",
+  "name": "Hyundai Tucson",
+  "make": "HYUNDAI",
+  "match": "^TUCSON\\b",
+  "from": 2005,
+  "to": 2026
+ },
+ {
+  "slug": "subaru-crosstrek",
+  "name": "Subaru Crosstrek",
+  "make": "SUBARU",
+  "match": "^(XV )?CROSSTREK\\b",
+  "from": 2013,
+  "to": 2026
+ },
+ {
+  "slug": "gmc-acadia",
+  "name": "GMC Acadia",
+  "make": "GMC",
+  "match": "^ACADIA\\b",
+  "from": 2007,
+  "to": 2026
+ },
+ {
+  "slug": "hyundai-santa-fe",
+  "name": "Hyundai Santa Fe",
+  "make": "HYUNDAI",
+  "match": "^SANTA FE\\b",
+  "from": 2001,
+  "to": 2026
+ },
+ {
+  "slug": "kia-sorento",
+  "name": "Kia Sorento",
+  "make": "KIA",
+  "match": "^SORENTO\\b",
+  "from": 2003,
+  "to": 2026
+ },
+ {
+  "slug": "toyota-corolla",
+  "name": "Toyota Corolla",
+  "make": "TOYOTA",
+  "match": "^COROLLA\\b",
+  "exclude": "CROSS|\\bIM\\b|MATRIX",
+  "from": 2000,
+  "to": 2026
+ },
+ {
+  "slug": "hyundai-elantra",
+  "name": "Hyundai Elantra",
+  "make": "HYUNDAI",
+  "match": "^ELANTRA\\b",
+  "exclude": "\\bGT\\b|TOURING|COUPE|\\bN( ICE)?$",
+  "from": 2001,
+  "to": 2026
+ }
+]

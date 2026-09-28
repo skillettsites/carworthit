@@ -20,6 +20,7 @@ import WorthItReport from '@/components/report/WorthItReport';
 import BuyCards from '@/components/report/BuyCards';
 import EmailCapture from '@/components/EmailCapture';
 import SearchBox from '@/components/SearchBox';
+import PurchaseEvent from '@/components/report/PurchaseEvent';
 
 export const dynamic = 'force-dynamic';
 
@@ -331,6 +332,17 @@ export default async function ReportPage({ params, searchParams }: { params: Par
 
   return (
     <>
+      {/* GA4 purchase, once per order: vehicle 1 is where Stripe returns the
+          buyer, and the figures are the verified session's, not the URL's. */}
+      {paid && paid.index === 0 && !paid.refunded && paid.paymentIntentId && (
+        <PurchaseEvent
+          transactionId={paid.paymentIntentId}
+          product={paid.product}
+          amountCents={paid.amountCents}
+          vehicles={paid.vins.length}
+          createdAt={paid.created}
+        />
+      )}
       {paid && !valuation && !evidence && (
         <div className="bg-warn/10 border-b border-warn/30 py-3 text-center text-sm">
           <strong className="text-warn">We couldn&apos;t price this one.</strong> No comparable cars were listed near

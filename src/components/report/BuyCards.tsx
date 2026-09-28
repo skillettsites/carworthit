@@ -9,6 +9,7 @@ import {
   type ProductId,
 } from '@/lib/constants';
 import { MAX_VINS, ladderPriceCents, ladderTotalCents, ladderFullCents } from '@/lib/multi-vin';
+import { getAttribution } from '@/lib/tracking';
 
 // The buy cards that sit at the top of a report, ported from CarCostCheck's
 // PremiumHeaderButton. The .cxc card and .cxm modal styles were already in
@@ -158,6 +159,8 @@ export default function BuyCards({
           asking: askNum,
           upgradeFrom: upgrade && paidToken ? paidToken : undefined,
           extras: cleanExtras.length ? cleanExtras : undefined,
+          // Where this buyer first came from, for the Stripe session metadata.
+          attribution: getAttribution() ?? undefined,
         }),
       });
       const data = await res.json();

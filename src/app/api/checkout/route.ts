@@ -3,6 +3,7 @@ import { createCheckout, getPaidSession, type Vehicle } from '@/lib/stripe';
 import { isValidVin } from '@/lib/nhtsa';
 import { isProductId, CHECKOUT_ENABLED, tierRank } from '@/lib/constants';
 import { MAX_VINS } from '@/lib/multi-vin';
+import { attributionMetadata } from '@/lib/attribution';
 
 /** Ceiling on a stated asking price. Above this it is a typo, not a car. */
 const MAX_ASKING = 10_000_000;
@@ -130,11 +131,17 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // First-touch attribution from the browser. Sanitised and classified here
+  // (strings only, capped, query strings dropped), so a missing or tampered
+  // body still produces a complete, valid set of metadata keys.
+  const attribution = attributionMetadata(body.attribution);
+
   const { url } = await createCheckout(
     product,
     { vin, mileage: Math.round(mileage), zip, asking, extras },
     req.nextUrl.origin,
     upgradeFrom,
+    attribution,
   );
   return NextResponse.json({ url });
 }

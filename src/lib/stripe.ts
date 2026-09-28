@@ -51,6 +51,12 @@ export async function createCheckout(
    * against Stripe by the caller, never taken from the client.
    */
   upgradeFrom?: { product: ProductId; sessionId: string },
+  /**
+   * First-touch attribution from attributionMetadata(): referrer, channel,
+   * landing page and UTMs. Written into the session metadata so every sale in
+   * Stripe says where the buyer came from.
+   */
+  attribution: Record<string, string> = {},
 ): Promise<{ url: string }> {
   const p = PRODUCTS[product];
   if (!stripe) return { url: `/report/${ctx.vin}` };
@@ -108,6 +114,11 @@ export async function createCheckout(
     // handles the field, so we are not storing card data anywhere near us.
     customer_creation: 'if_required',
     metadata: {
+      // First touch: referrer_source, traffic_source, landing_page, referrer,
+      // utm_* and first_seen, each value capped at 200 characters, well inside
+      // Stripe's 50-key and 500-character limits. Spread first so none of the
+      // order keys below can ever be overwritten by it.
+      ...attribution,
       // `vin`, `mileage` and `asking` stay as the FIRST vehicle's values so
       // every session created before multi-VIN existed still reads correctly,
       // and so a single-vehicle order is byte-identical to what it was.
@@ -165,6 +176,13 @@ export interface PaidSession {
    * support work without protecting any revenue.
    */
   refunded: boolean;
+  /**
+   * The Stripe PaymentIntent id. Used as the GA4 transaction id because, unlike
+   * the Checkout Session id, it cannot be turned into a link to the report.
+   */
+  paymentIntentId: string | null;
+  /** When the Checkout Session was created, in epoch seconds. */
+  created: number;
 }
 
 /**
@@ -269,6 +287,8 @@ export async function getPaidSession(vin: string, token: string): Promise<PaidSe
       index,
       cacheKey: derivedSessionId(token, index),
       refunded,
+      paymentIntentId: typeof pi === 'string' ? pi : (pi?.id ?? null),
+      created: s.created,
     };
   } catch {
     return null;

@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import JsonLd from '@/components/JsonLd';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
+import AttributionCapture from '@/components/AttributionCapture';
 import { organizationSchema, websiteSchema } from '@/lib/schema';
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION } from '@/lib/constants';
 
@@ -52,6 +53,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="min-h-full flex flex-col bg-bg text-ink">
         <JsonLd data={[organizationSchema(), websiteSchema()]} />
         <GoogleAnalytics />
+        <AttributionCapture />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-brand focus:px-4 focus:py-2 focus:font-semibold focus:text-white"

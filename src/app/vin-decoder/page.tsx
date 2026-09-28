@@ -152,9 +152,13 @@ export default function Page() {
         </ul>
         <p className="mt-4 leading-relaxed text-ink-2">
           The paid tiers, from ${PRODUCTS.valuation.price}, add what that specific VIN is worth at its real mileage
-          against cars listed near you, and a verdict on the asking price.{' '}
+          against cars listed near you, and a verdict on the asking price. See{' '}
+          <Link href="/check-car-value" className="text-brand underline">
+            car value by VIN
+          </Link>{' '}
+          and{' '}
           <Link href="/how-it-works" className="text-brand underline">
-            How it works
+            how it works
           </Link>
           .
         </p>

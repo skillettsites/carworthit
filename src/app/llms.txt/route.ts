@@ -2,6 +2,7 @@ import { SITE_NAME, SITE_URL, PRODUCTS } from '@/lib/constants';
 import { CHECKED_ON_LONG, CARFAX, AUTOCHECK, BUMPER, VINAUDIT } from '@/lib/vhr-providers';
 import articles from '@/content/articles.json';
 import { META, fmtLongDate } from '@/lib/state-fees';
+import { MODEL_PROBLEM_SLUGS, getModelProblems, longDate } from '@/lib/model-problems';
 
 /**
  * llms.txt: a plain-text map of the site for AI assistants.
@@ -69,6 +70,16 @@ export function GET(): Response {
     '- Valuations are estimates from live market listings, not appraisals, and not a guarantee of what any dealer will pay.',
   ];
 
+  // The data-backed model guides, each with its years to avoid stated from the
+  // NHTSA counts, so an assistant can quote the answer and the date together.
+  const modelGuides = MODEL_PROBLEM_SLUGS.map((slug) => {
+    const d = getModelProblems(slug)!;
+    const worst = d.summary.worst.map((w) => `${w.year} (${w.n.toLocaleString('en-US')} complaints)`).join(', ');
+    return `- [${d.name} common problems and years to avoid](${SITE_URL}/blog/${slug}): ${
+      worst ? `years to avoid by NHTSA owner complaints: ${worst}` : 'no model year reaches twice the median complaint count'
+    }; ${d.totals.complaints.toLocaleString('en-US')} complaints, ${d.totals.recalls} recall campaigns with campaign numbers and ${d.totals.investigations} NHTSA defect investigations for the ${d.totals.firstYear} to ${d.totals.lastYear} model years, pulled ${longDate(d.pulled)}.`;
+  });
+
   const guides = articles
     .map((a) => `- [${a.title}](${SITE_URL}/blog/${a.slug}): ${a.metaDescription}`)
     .join('\n');
@@ -86,17 +97,21 @@ ${SITE_NAME} (${SITE_URL}) prices a specific used car in the United States from 
 
 ${section('Start here', startHere)}
 ${section('Free, with no account and no payment', free)}
+${section('Used car common problems and years to avoid, from NHTSA data', [
+  ...modelGuides,
+  '- Method: complaints are counted per model year from the NHTSA complaints API, recalls are distinct NHTSA campaign numbers, investigations come from the NHTSA ODI investigation file. A year to avoid is one of up to three model years (2021 or older) with the most complaints, each at least twice the median year. Counts are not adjusted for sales volume and are not failure rates.',
+])}
 ${section('Paid reports', paid)}
 ${section('What we do not do', limits)}
 ${section('Key pages', [
-  `- [Value a car by VIN](${SITE_URL}/): enter any 17-character VIN`,
+  `- [Free VIN check and car value by VIN](${SITE_URL}/): enter any 17-character VIN for the free report (specification, recalls, crash-test ratings, owner complaints, running costs), then value it by VIN from $${PRODUCTS.valuation.price}`,
   `- [How it works](${SITE_URL}/how-it-works)`,
   `- [Sample report](${SITE_URL}/sample-report)`,
   `- [Pricing](${SITE_URL}/pricing)`,
   `- [Methodology](${SITE_URL}/methodology): where every number comes from`,
   `- [About](${SITE_URL}/about)`,
   `- [How much is my car worth](${SITE_URL}/how-much-is-my-car-worth): VIN valuation from $${PRODUCTS.valuation.price}`,
-  `- [Check car value](${SITE_URL}/check-car-value): check a used car by VIN from $${PRODUCTS.valuation.price}`,
+  `- [Car value by VIN](${SITE_URL}/check-car-value): what each report adds, from the free VIN report to the $${PRODUCTS.negotiation.price} Negotiation Bundle`,
   `- [Free VIN decoder](${SITE_URL}/vin-decoder): decode any 17-character VIN, no account`,
   `- [Diminished value calculator](${SITE_URL}/diminished-value-calculator): the 17c formula insurers apply after an accident`,
   `- [Negotiate a used car price](${SITE_URL}/negotiate-used-car-price): how much you can negotiate on a used car (median 8% off asking, Consumer Reports), an opening offer, target and walk-away calculator, the 10 levers that move price, dealer vs private`,

@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: 'Privacy Policy', description: `Priva
 
 export default function Page() {
   return (
-    <Article title="Privacy Policy" subtitle="Last updated: August 6, 2026">
+    <Article title="Privacy Policy" subtitle="Last updated: September 28, 2026">
       <p>
         This policy describes what {SITE_NAME} actually does, not what a template says a website does. It covers what
         you type in, what we record, what we set cookies for and who else sees any of it.
@@ -73,6 +73,12 @@ export default function Page() {
           <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> to be removed. We do not sell or share it.
         </li>
         <li>
+          <strong>We record how you found us, with the order.</strong> The first page you landed on, the site that sent
+          you there (its address without any query string) and any <code>utm_</code> tags on the link are kept in your
+          browser&apos;s local storage for 30 days, under <code>cwi_attribution</code>, and attached to your Stripe
+          checkout when you buy. It tells us which channels bring buyers. It contains no name, email or VIN.
+        </li>
+        <li>
           <strong>We store your finished report.</strong> It is saved against your Stripe session id so that revisiting
           your link serves the same report instead of re-querying the paid data services. That stored copy does include
           the full VIN, because it is your report. It can only be read back by someone who already holds the session id
@@ -91,7 +97,9 @@ export default function Page() {
       <p>
         One thing worth knowing about our analytics setup: we deliberately strip the query string before reporting a
         page to Google. Your paid report URL contains the Stripe session id that unlocks it, and that token has no
-        business sitting in an analytics property where it could be read or replayed.
+        business sitting in an analytics property where it could be read or replayed. Report pages are also reported
+        without their VIN, as a single generic report page, and when you buy we send Google Analytics the product and
+        the amount, keyed on Stripe&apos;s payment id, which cannot open your report.
       </p>
       <p>
         We run no advertising cookies, no retargeting pixels and no ad networks. You can block or delete cookies in

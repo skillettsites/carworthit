@@ -8,6 +8,29 @@ import StickyVinCta from '@/components/StickyVinCta';
 import VinForm from '@/components/VinForm';
 import { articleSchema, faqSchema, breadcrumbSchema } from '@/lib/schema';
 import { SITE_URL, ANALYST, PRODUCTS } from '@/lib/constants';
+import { getModelProblems } from '@/lib/model-problems';
+import { getModelIndex, type ModelIndexRow } from '@/lib/model-values';
+import { ProblemsShortAnswer, ProblemsByYear, ProblemsDetail } from '@/components/ModelProblemsData';
+
+// The model-value pages (/car-value/2018-chevrolet-equinox) for the model a
+// problems guide covers. The problems guides are the pages Bing already ranks,
+// so linking from them is the shortest crawl path to the value pages, and a
+// reader deciding which year to buy wants to know what each year costs.
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+function valuePagesFor(slug: string, index: ModelIndexRow[]): ModelIndexRow[] {
+  if (!slug.endsWith('-common-problems')) return [];
+  const [makeRaw, ...modelParts] = slug.replace(/-common-problems$/, '').split('-');
+  const make = makeRaw === 'chevy' ? 'chevrolet' : makeRaw;
+  const model = modelParts.join('');
+  return index
+    .filter((r) => {
+      // Same model, or the same model with a numeric suffix ("Silverado 1500"),
+      // never a different model that shares a prefix ("Corolla Cross").
+      const rm = norm(r.model);
+      return norm(r.make) === make && (rm === model || (rm.startsWith(model) && /^\d+$/.test(rm.slice(model.length))));
+    })
+    .sort((a, b) => b.year - a.year);
+}
 
 // Compact inline CTA injected mid-article (right after the problems table).
 function InlineCta() {
@@ -39,20 +62,38 @@ function modelName(title: string) {
 function ModelCheckCta({ model }: { model: string }) {
   return (
     <div className="not-prose my-8 rounded-2xl border-2 border-brand/40 bg-gradient-to-br from-blue-50 to-cyan-50 p-5 sm:p-6">
-      <p className="font-bold text-ink text-lg">Check a specific {model} before you buy</p>
+      <p className="font-bold text-ink text-lg">Check the value and recall status of a specific {model}</p>
       <p className="text-sm text-ink-2 mt-1">
-        Enter its 17-character VIN for the free report: the exact year, trim and engine it was built with, every open safety
-        recall NHTSA lists for it, its crash-test ratings and running costs. No account. Then, from ${PRODUCTS.valuation.price},
-        see what that {model} is worth at its mileage near your ZIP code and whether the asking price is fair.
+        Model-year counts cannot tell you about the car in front of you. Enter its 17-character VIN for the free report:
+        the exact year, trim and engine it was built with, the safety recalls NHTSA lists for its year, make and model,
+        its crash-test ratings and running costs. No account. Then, from ${PRODUCTS.valuation.price}, see what that{' '}
+        {model} is worth at its mileage near your ZIP code, with the listings behind the number, and whether the asking
+        price is fair. The ${PRODUCTS.worthit.price} Full Report also checks that VIN for recalls still outstanding.
       </p>
       <div className="mt-4">
         <VinForm size="md" />
       </div>
+      <p className="mt-3 text-sm">
+        <Link href="/how-much-is-my-car-worth" className="font-semibold text-brand hover:underline">
+          How a VIN valuation works, with a dated example →
+        </Link>
+      </p>
     </div>
   );
 }
 
-type Article = { slug: string; title: string; metaTitle: string; metaDescription: string; bodyHtml: string; faqs: { q: string; a: string }[]; published?: string; updated?: string };
+type Article = {
+  slug: string;
+  title: string;
+  metaTitle: string;
+  metaDescription: string;
+  bodyHtml: string;
+  faqs: { q: string; a: string }[];
+  published?: string;
+  updated?: string;
+  /** Use metaTitle as the whole <title>, without the " | CarWorthIt" suffix, to keep it inside the length search engines show. */
+  titleAbsolute?: boolean;
+};
 const ARTICLES = articles as Article[];
 
 const fmtDate = (iso: string) =>
@@ -123,7 +164,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const a = ARTICLES.find((x) => x.slug === slug);
   if (!a) return {};
   return {
-    title: a.metaTitle || a.title,
+    title: a.titleAbsolute ? { absolute: a.metaTitle || a.title } : a.metaTitle || a.title,
     description: a.metaDescription,
     alternates: { canonical: `${SITE_URL}/blog/${slug}` },
     openGraph: {
@@ -151,6 +192,12 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
   // first table's wrapper into the second half, leaving unbalanced tags in both.
   const bodyBefore = scrollableTables(splitAt !== -1 ? html.slice(0, splitAt + '</table>'.length) : html);
   const bodyAfter = scrollableTables(splitAt !== -1 ? html.slice(splitAt + '</table>'.length) : '');
+  // Data-backed model pages: the NHTSA tables are rendered from
+  // src/content/model-problems.json and the article body carries only the
+  // prose, split at <!--data--> into the intro and the explanation.
+  const problems = getModelProblems(slug);
+  const [introHtml, restHtml] = problems ? [...html.split('<!--data-->'), ''] : ['', ''];
+  const valuePages = slug.endsWith('-common-problems') ? valuePagesFor(slug, await getModelIndex()) : [];
   return (
     <>
       <JsonLd
@@ -193,9 +240,44 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
             </>
           )}
         </div>
-        <div className="article-body" dangerouslySetInnerHTML={{ __html: bodyBefore }} />
-        {slug.endsWith('-common-problems') ? <ModelCheckCta model={modelName(a.title)} /> : <InlineCta />}
-        {bodyAfter && <div className="article-body" dangerouslySetInnerHTML={{ __html: bodyAfter }} />}
+        {problems ? (
+          <>
+            <ProblemsShortAnswer d={problems} />
+            <div className="article-body" dangerouslySetInnerHTML={{ __html: introHtml }} />
+            <ProblemsByYear d={problems} />
+            <ModelCheckCta model={problems.name} />
+            {restHtml && <div className="article-body" dangerouslySetInnerHTML={{ __html: restHtml }} />}
+            <ProblemsDetail d={problems} />
+          </>
+        ) : (
+          <>
+            <div className="article-body" dangerouslySetInnerHTML={{ __html: bodyBefore }} />
+            {slug.endsWith('-common-problems') ? <ModelCheckCta model={modelName(a.title)} /> : <InlineCta />}
+            {bodyAfter && <div className="article-body" dangerouslySetInnerHTML={{ __html: bodyAfter }} />}
+          </>
+        )}
+
+        {valuePages.length > 0 && (
+          <section className="mt-10 rounded-2xl border border-border bg-white p-6">
+            <h2 className="text-xl font-bold">What a used {problems?.name ?? modelName(a.title)} is worth, by model year</h2>
+            <p className="mt-1 text-sm text-ink-2">
+              National retail values from live listings, each page dated. Price a specific car by its VIN and mileage from $
+              {PRODUCTS.valuation.price}.
+            </p>
+            <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+              {valuePages.map((r) => (
+                <li key={r.slug}>
+                  <Link href={`/car-value/${r.slug}`} className="flex justify-between rounded-xl border border-border px-4 py-2 text-sm hover:border-brand">
+                    <span className="font-semibold">
+                      {r.year} {r.make} {r.model} value
+                    </span>
+                    <span className="text-ink-2">${Math.round(r.pricing.avg).toLocaleString('en-US')} avg</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         <div className="mt-12 rounded-2xl border-2 border-brand bg-gradient-to-br from-blue-50 to-cyan-50 p-6 md:p-8 text-center">
           <h2 className="text-xl font-bold">Check any car before you buy</h2>

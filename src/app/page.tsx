@@ -3,6 +3,7 @@ import Link from 'next/link';
 import SearchBox from '@/components/SearchBox';
 import { PRODUCTS, SITE_URL } from '@/lib/constants';
 import { serviceSchema, faqSchema } from '@/lib/schema';
+import articles from '@/content/articles.json';
 
 // The root layout no longer pins an og:url, because every page without its own
 // openGraph inherits it wholesale. The homepage claims it here instead.
@@ -24,14 +25,69 @@ import { serviceSchema, faqSchema } from '@/lib/schema';
 //
 // The description is kept under 160 characters so Google does not truncate
 // "No signup", which is the sharpest contrast with KBB's question wizard.
+//
+// September 28, 2026: retitled for the Bing family, which sends nearly all of
+// this site's search traffic. On Bing the homepage only surfaced for people
+// pasting a raw VIN, and its three big US terms are "vin check" (about 4,250
+// searches a month), "how much is my car worth" (about 1,760) and "car value
+// by vin" (about 575). The title now names the first and the third; the second
+// has its own page (/how-much-is-my-car-worth) so the two do not compete. The
+// free check is described exactly: specification, recalls, crash ratings,
+// owner complaints and running costs, never title or accident history.
 export const metadata: Metadata = {
-  title: 'How Much Is a Car Worth? Value by VIN with Real Listings, $2.99',
+  title: { absolute: 'Free VIN Check and Car Value by VIN | CarWorthIt' },
   description:
-    'Find out what a car is worth from its VIN: the local value, the national low, average and high from live listings, and the nearest cars for sale. Free VIN report first. From $2.99, no signup.',
+    'Free VIN check for any US car: exact specs, recalls, crash-test ratings and owner complaints. Then its value by VIN from live listings near you, from $2.99.',
   openGraph: { url: SITE_URL },
 };
 
 const price = `$${PRODUCTS.valuation.price}`;
+
+const LINK_GROUPS: { heading: string; links: { href: string; label: string }[] }[] = [
+  {
+    heading: 'What a car is worth',
+    links: [
+      { href: '/how-much-is-my-car-worth', label: 'How much is my car worth?' },
+      { href: '/check-car-value', label: 'Check a car’s value by VIN' },
+      { href: '/car-value', label: 'Used car values by model and year' },
+      { href: '/kbb-by-vin', label: 'KBB by VIN: what the VIN changes' },
+      { href: '/is-kbb-accurate', label: 'Is Kelley Blue Book accurate?' },
+      { href: '/negotiate-used-car-price', label: 'How much to offer on a used car' },
+    ],
+  },
+  {
+    heading: 'Free VIN tools',
+    links: [
+      { href: '/vin-decoder', label: 'Free VIN decoder' },
+      { href: '/blog/free-vin-check', label: 'What a free VIN check can tell you' },
+      { href: '/title-check', label: 'Title check by VIN' },
+      { href: '/lien-check', label: 'Lien check' },
+      { href: '/odometer-check', label: 'Odometer check' },
+      { href: '/stolen-vehicle-check', label: 'Stolen vehicle check' },
+      { href: '/window-sticker', label: 'Window sticker by VIN' },
+    ],
+  },
+  {
+    heading: 'Costs and history reports',
+    links: [
+      { href: '/car-sales-tax-calculator', label: 'Car sales tax calculator, every state' },
+      { href: '/out-the-door-price-calculator', label: 'Out-the-door price calculator' },
+      { href: '/dealer-doc-fee-by-state', label: 'Dealer doc fees by state' },
+      { href: '/best-vehicle-history-report', label: 'Best vehicle history report, compared' },
+      { href: '/vehicle-history-faq', label: 'Vehicle history FAQ' },
+      { href: '/blog/how-to-check-car-recalls-vin', label: 'How to check recalls by VIN' },
+    ],
+  },
+];
+
+// Every model guide, alphabetically, labelled by the model name in its title.
+const MODEL_GUIDES = (articles as { slug: string; title: string }[])
+  .filter((a) => a.slug.endsWith('-common-problems'))
+  .map((a) => {
+    const i = a.title.search(/ common problems| problems/i);
+    return { slug: a.slug, label: i > 0 ? a.title.slice(0, i) : a.title };
+  })
+  .sort((a, b) => a.label.localeCompare(b.label));
 
 const features = [
   {
@@ -141,18 +197,18 @@ export default function Home() {
                 car beats a trim average. Leading on the generic alone forfeits
                 the only phrase we can win. */}
             <h1 className="text-5xl font-extrabold leading-[1.05] tracking-tight text-white md:text-6xl">
-              What is this car{' '}
+              Free VIN check, then what it&apos;s{' '}
               <span className="bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent">
                 worth
               </span>
-              ?
               <span className="mt-3 block text-2xl font-bold text-slate-300 md:text-3xl">
-                Check any car&apos;s value by VIN
+                Car value by VIN, from the cars for sale near you
               </span>
             </h1>
             <p className="mt-5 text-xl leading-relaxed text-slate-300">
-              Enter the VIN. We price that exact car at its real mileage, show you the cars for sale near you with
-              their prices, then tell you whether the asking price is fair and what to pay.
+              Enter the VIN. The free check shows the exact specification, recalls, crash-test ratings and owner
+              complaints. Add the mileage and your ZIP code and we price that exact car against the cars for sale near
+              you, then tell you whether the asking price is fair and what to pay.
             </p>
             {/* The one line that separates us from the free valuations. Kelley
                 Blue Book prices a trim at an assumed mileage; this prices the
@@ -170,6 +226,40 @@ export default function Home() {
               <span>✓ Valuations from {price}</span>
               <span>✓ No subscription</span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* The direct answers, in the words people search with. A crawler and an
+          assistant can quote either box without reading the rest of the page. */}
+      <section className="container-x pt-14">
+        <div className="mx-auto grid max-w-5xl gap-5 md:grid-cols-2">
+          <div className="rounded-2xl border-2 border-brand/30 bg-gradient-to-br from-blue-50 to-cyan-50 p-6">
+            <h2 className="text-xl font-bold">What does a free VIN check show?</h2>
+            <p className="mt-2 leading-relaxed text-ink-2">
+              Here, for any 17-character US VIN, with no account: the exact year, make, model, trim and engine, and
+              where it was assembled, from NHTSA&apos;s decoder; the safety recalls NHTSA lists for that model year;
+              its crash-test ratings; the complaints owners of the same model have filed with NHTSA; and EPA fuel
+              economy with running costs. It is not a vehicle history
+              report: title brands, accidents and odometer records sit behind licenses we do not hold. See{' '}
+              <Link href="/blog/free-vin-check" className="font-medium text-brand hover:underline">
+                what you can check free, and where
+              </Link>
+              .
+            </p>
+          </div>
+          <div className="rounded-2xl border-2 border-brand/30 bg-gradient-to-br from-blue-50 to-cyan-50 p-6">
+            <h2 className="text-xl font-bold">How much is my car worth by VIN?</h2>
+            <p className="mt-2 leading-relaxed text-ink-2">
+              What the same year, make, model and trim is selling for at your mileage in your market. Enter the VIN,
+              then the odometer reading and your ZIP code: from {price} we price that exact car against live listings,
+              show the national low, average and high, and print the nearest cars for sale with their mileage and
+              price. A{' '}
+              <Link href="/how-much-is-my-car-worth" className="font-medium text-brand hover:underline">
+                dated worked example
+              </Link>{' '}
+              shows what the answer looks like.
+            </p>
           </div>
         </div>
       </section>
@@ -269,6 +359,44 @@ export default function Home() {
               <p className="mt-2 leading-relaxed text-ink-2">{f.a}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* In-content links to the tools and model guides. The footer carries
+          some of these, but a crawler weighs a link in the page body far above
+          one in a footer, and Bing, which crawls this page daily, had not yet
+          discovered most of the pages below. */}
+      <section className="border-t border-border bg-surface">
+        <div className="container-x py-16">
+          <h2 className="text-center text-3xl font-bold">More free checks</h2>
+          <div className="mx-auto mt-10 grid max-w-5xl gap-8 md:grid-cols-3">
+            {LINK_GROUPS.map((g) => (
+              <div key={g.heading}>
+                <h3 className="font-bold">{g.heading}</h3>
+                <ul className="mt-3 space-y-2 text-sm">
+                  {g.links.map((l) => (
+                    <li key={l.href}>
+                      <Link href={l.href} className="text-brand hover:underline">
+                        {l.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div className="mx-auto mt-12 max-w-5xl">
+            <h3 className="font-bold">Common problems and years to avoid, by model (NHTSA data)</h3>
+            <ul className="mt-3 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2 md:grid-cols-4">
+              {MODEL_GUIDES.map((m) => (
+                <li key={m.slug}>
+                  <Link href={`/blog/${m.slug}`} className="text-brand hover:underline">
+                    {m.label} problems
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 

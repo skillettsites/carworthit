@@ -52,3 +52,7 @@ fixtures/
 scratchpad/email-*.html
 scratchpad/email-*.txt
 scratchpad/email-qa.ts
+
+# NHTSA download cache for scripts/model-problems (raw API responses and the investigations zip)
+scripts/model-problems/.cache/
+__pycache__/

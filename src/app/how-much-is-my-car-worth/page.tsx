@@ -18,8 +18,11 @@ const CHECKED = 'September 16, 2026';
 const price = `$${PRODUCTS.valuation.price}`;
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
 
+// Title shortened on September 28, 2026 to fit Bing's display (the old one ran
+// to 71 characters with the site suffix) and to carry "car value by VIN", the
+// third of the Bing family's big terms, next to the head term.
 export const metadata: Metadata = {
-  title: `How Much Is My Car Worth? Real Listings by VIN, from ${price}`,
+  title: { absolute: 'How Much Is My Car Worth? Car Value by VIN | CarWorthIt' },
   description:
     `What a used car is worth in the US right now, with a dated example from live listings, the three kinds of value explained, and a VIN valuation from ${price} that shows the listings behind the number. Free VIN report first.`,
   alternates: { canonical: `${SITE_URL}/how-much-is-my-car-worth` },
@@ -87,6 +90,15 @@ export default async function Page() {
       />
 
       <h1 className="text-4xl font-extrabold">How much is my car worth?</h1>
+      <div className="mt-5 rounded-2xl border-2 border-brand/30 bg-gradient-to-br from-blue-50 to-cyan-50 p-5">
+        <p className="text-xs font-bold uppercase tracking-wide text-brand">Short answer</p>
+        <p className="mt-2 leading-relaxed text-ink">
+          Your car is worth what buyers are paying for the same year, make, model and trim at your mileage, near you. To
+          get that figure for your exact car, value it by VIN: enter the 17-character VIN, the odometer reading and your
+          ZIP code. The free VIN report comes first; the valuation, from {price}, prices that VIN against live listings
+          and shows you the listings behind the number.
+        </p>
+      </div>
       <p className="mt-4 text-lg leading-relaxed text-ink-2">
         What the same year, make, model and trim is selling for at your mileage in your market. A dated example: a 2021 Toyota Corolla LE at 50,000 miles was worth <strong className="text-ink">$18,487</strong> at retail on {CHECKED}, from 1,600 US listings observed August 17 to September 7, 2026, ranging $15,744 to $21,229. Your car sits inside a band like that, and the VIN valuation shows you where, with the listings printed.
       </p>

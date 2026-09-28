@@ -13,6 +13,11 @@ import { GA_ID } from '@/lib/constants';
 //
 // Campaign attribution still works: gtag reads utm_* from the real
 // document.location before this override is applied to the reported value.
+//
+// The VIN is kept out of GA as well. Report pages live at /report/<VIN> and
+// their title names the VIN, so both are reported generically as
+// /report/vin and "Vehicle report". Every report view still counts, grouped
+// under one path, and the purchase event fired there carries no VIN either.
 export default function GoogleAnalytics() {
   if (!GA_ID) return null;
   return (
@@ -23,7 +28,11 @@ export default function GoogleAnalytics() {
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', '${GA_ID}', {
+          var cwiReport = window.location.pathname.indexOf('/report/') === 0;
+          gtag('config', '${GA_ID}', cwiReport ? {
+            page_location: window.location.origin + '/report/vin',
+            page_title: 'Vehicle report'
+          } : {
             page_location: window.location.origin + window.location.pathname
           });
         `}
